@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>听写实验室 · 雅思机经词表</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F3EC;
+    --surface:#FFFFFF;
+    --ink:#211D17;
+    --ink-soft:#6B6358;
+    --ink-faint:#A39B8B;
+    --accent:#2F4368;
+    --accent-strong:#1F2E49;
+    --accent-soft:#E1E6EF;
+    --good:#3F7A52;
+    --good-soft:#E4EFE6;
+    --bad:#B23A2E;
+    --bad-soft:#F7E5E1;
+    --border:#E4DFD2;
+    --border-strong:#D2CBB8;
+    --radius-s:8px;
+    --radius-m:14px;
+    --radius-l:20px;
+    --font-display:'Source Serif 4', serif;
+    --font-body:'Inter', -apple-system, sans-serif;
+    --font-mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  #app{
+    max-width:480px;
+    margin:0 auto;
+    min-height:100vh;
+    padding:20px 18px 48px;
+    display:flex;
+    flex-direction:column;
+  }
+  .view{display:none;}
+  .view.active{display:flex; flex-direction:column; flex:1;}
+
+  /* ---------- typography ---------- */
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:12px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 6px;
+  }
+  h1{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:28px;
+    margin:0 0 4px;
+    line-height:1.2;
+    color:var(--ink);
+  }
+  h2{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:20px;
+    margin:0 0 2px;
+    color:var(--ink);
+  }
+  .sub{
+    font-size:14px;
+    color:var(--ink-soft);
+    margin:0;
+    line-height:1.5;
+  }
+
+  /* ---------- buttons ---------- */
+  button{font-family:var(--font-body);}
+  .btn{
+    appearance:none;
+    border:1px solid var(--border-strong);
+    background:var(--surface);
+    color:var(--ink);
+    font-size:15px;
+    font-weight:500;
+    padding:13px 18px;
+    border-radius:var(--radius-m);
+    cursor:pointer;
+    transition:transform .08s ease, background .15s ease;
+  }
+  .btn:active{transform:scale(0.97);}
+  .btn-primary{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+    width:100%;
+    font-size:16px;
+    padding:15px 18px;
+  }
+  .btn-primary:active{background:var(--accent-strong);}
+  .btn-primary:disabled{
+    opacity:0.4;
+    cursor:not-allowed;
+  }
+  .btn-ghost{
+    background:transparent;
+    border-color:transparent;
+    color:var(--ink-soft);
+  }
+  .btn-block{width:100%;}
+  .btn-row{display:flex; gap:10px;}
+  .btn-row .btn{flex:1;}
+
+  /* ---------- cards / surfaces ---------- */
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-l);
+    padding:16px 18px;
+  }
+  .stat-strip{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin:18px 0 22px;
+  }
+  .stat-box{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-m);
+    padding:12px 10px;
+    text-align:center;
+  }
+  .stat-box .num{
+    font-family:var(--font-display);
+    font-size:20px;
+    font-weight:600;
+    color:var(--accent);
+    display:block;
+  }
+  .stat-box .lbl{
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:2px;
+    display:block;
+  }
+
+  /* ---------- unit list ---------- */
+  .section-label{
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin:22px 0 10px;
+  }
+  .unit-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .unit-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-m);
+    padding:12px 14px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .unit-row.checked{
+    border-color:var(--accent);
+    background:var(--accent-soft);
+  }
+  .unit-check{
+    width:20px;height:20px;
+    border-radius:6px;
+    border:1.5px solid var(--border-strong);
+    flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+    background:#fff;
+  }
+  .unit-row.checked .unit-check{
+    background:var(--accent);
+    border-color:var(--accent);
+  }
+  .unit-check i{font-size:13px; color:#fff; opacity:0;}
+  .unit-row.checked .unit-check i{opacity:1;}
+  .unit-info{flex:1; min-width:0;}
+  .unit-info .name{font-size:14.5px; font-weight:500;}
+  .unit-info .meta{font-size:12px; color:var(--ink-soft); margin-top:1px;}
+  .unit-info .unit-prog-bar{
+    height:3px; background:var(--border); border-radius:2px;
+    margin-top:5px; overflow:hidden; width:100%;
+  }
+  .unit-info .unit-prog-fill{height:100%; background:var(--accent); border-radius:2px; transition:width .3s ease;}
+  .unit-acc{
+    font-family:var(--font-mono);
+    font-size:12px;
+    color:var(--ink-faint);
+    flex:0 0 auto;
+    text-align:right;
+  }
+  .unit-acc .acc-pct{display:block; color:var(--ink-soft);}
+  .unit-acc .acc-prog{display:block; font-size:10.5px; color:var(--ink-faint); margin-top:1px;}
+
+  /* 返回按钮（结果页顶部） */
+  .page-topbar{
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:16px;
+  }
+  .page-topbar .back-btn{
+    background:none; border:none;
+    font-size:20px; color:var(--ink-soft);
+    padding:4px 4px 4px 0; cursor:pointer; flex:0 0 auto;
+  }
+  .page-topbar .page-title{
+    font-family:var(--font-display);
+    font-size:19px; font-weight:600; margin:0;
+  }
+
+  /* 首页"听个大概"入口卡片 */
+  .guess-entry{
+    display:flex; align-items:center; gap:14px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-l);
+    padding:14px 18px;
+    cursor:pointer;
+    margin-top:18px;
+    transition:border-color .15s ease;
+  }
+  .guess-entry:hover{border-color:var(--accent);}
+  .guess-entry:active{transform:scale(0.98);}
+  .guess-entry .ge-icon{
+    width:44px; height:44px; border-radius:var(--radius-m);
+    background:#FBF0DE; color:#9C6A1E;
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px; flex:0 0 auto;
+  }
+  .guess-entry .ge-body{flex:1; min-width:0;}
+  .guess-entry .ge-title{font-size:15px; font-weight:600;}
+  .guess-entry .ge-sub{font-size:12px; color:var(--ink-soft); margin-top:2px;}
+  .guess-entry .ge-count{
+    font-family:var(--font-mono); font-size:13px;
+    color:#9C6A1E; font-weight:600; flex:0 0 auto;
+  }
+
+  /* 分析视图 */
+  .analysis-item{
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius-m); padding:13px 16px; margin-bottom:10px;
+  }
+  .analysis-item .ai-word{
+    font-family:var(--font-mono); font-size:15px; font-weight:600;
+    color:var(--ink); margin-bottom:8px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .analysis-item .ai-row{
+    display:flex; align-items:baseline; gap:8px; margin-bottom:4px;
+  }
+  .analysis-item .ai-label{
+    font-size:11px; color:var(--ink-faint); min-width:40px; flex:0 0 auto;
+  }
+  .analysis-item .ai-val{
+    font-family:var(--font-mono); font-size:13px;
+  }
+  .ai-val.wrong-val{color:var(--bad); text-decoration:line-through; opacity:0.75;}
+  .ai-val.correct-val{color:var(--good); font-weight:600;}
+  .analysis-item .ai-hint{
+    margin-top:8px; padding-top:8px; border-top:1px solid var(--border);
+    font-size:12px; color:var(--ink-soft); line-height:1.5;
+  }
+
+  /* ---- 音节块对比 ---- */
+  .syl-compare{
+    display:flex; flex-direction:column; gap:6px; margin-top:6px;
+  }
+  .syl-row{
+    display:flex; align-items:center; gap:4px; flex-wrap:wrap;
+  }
+  .syl-row-label{
+    font-size:10px; color:var(--ink-faint);
+    min-width:32px; flex:0 0 auto; text-align:right;
+    margin-right:2px; line-height:1;
+    font-family:var(--font-mono);
+  }
+  .syl{
+    font-family:var(--font-mono);
+    font-size:13px;
+    padding:3px 7px;
+    border-radius:5px;
+    line-height:1.4;
+    letter-spacing:0.01em;
+    position:relative;
+  }
+  /* 音节类型 */
+  .syl-match{
+    background:var(--accent-soft);
+    color:var(--accent);
+    border:1px solid #c8d1e4;
+  }
+  .syl-wrong{
+    background:var(--bad-soft);
+    color:var(--bad);
+    border:1px solid #e8c4be;
+    text-decoration:line-through;
+    text-decoration-thickness:1.5px;
+  }
+  .syl-correct{
+    background:var(--good-soft);
+    color:var(--good);
+    border:1px solid #b5d9be;
+    font-weight:600;
+  }
+  .syl-missing{
+    background:#f5f3ee;
+    color:var(--ink-faint);
+    border:1px dashed var(--border-strong);
+    font-style:italic;
+  }
+  .syl-sep{
+    font-size:10px; color:var(--border-strong);
+    user-select:none; font-family:var(--font-mono);
+    margin:0 -1px;
+  }
+  /* 音节提示行 */
+  .syl-tip{
+    font-size:11px; color:var(--ink-faint);
+    margin-top:4px; display:flex; align-items:center; gap:6px;
+    flex-wrap:wrap;
+  }
+  .syl-tip .tip-badge{
+    display:inline-flex; align-items:center; gap:3px;
+    padding:2px 7px; border-radius:999px;
+    font-size:10.5px;
+  }
+  .syl-tip .tip-badge.tb-miss{ background:var(--bad-soft); color:var(--bad);}
+  .syl-tip .tip-badge.tb-ok{   background:var(--accent-soft); color:var(--accent);}
+  .syl-tip .tip-badge.tb-add{  background:#FBF0DE; color:#9C6A1E;}
+
+  .analysis-section{margin-top:22px;}
+  .analysis-section .as-head{
+    font-size:13px; font-weight:600; color:var(--ink-soft);
+    margin:0 0 10px; display:flex; align-items:center; gap:6px;
+  }
+
+
+  .chip-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .chip{
+    border:1px solid var(--border-strong);
+    background:var(--surface);
+    color:var(--ink-soft);
+    font-size:13.5px;
+    font-weight:500;
+    padding:9px 16px;
+    border-radius:999px;
+    cursor:pointer;
+  }
+  .chip.active{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+
+  /* ---------- settings collapse ---------- */
+  .settings-toggle{
+    display:flex;align-items:center;gap:6px;
+    font-size:13px; color:var(--ink-soft);
+    margin:18px 0 0; cursor:pointer; width:fit-content;
+  }
+  .settings-panel{
+    display:none;
+    margin-top:14px;
+    padding-top:14px;
+    border-top:1px solid var(--border);
+  }
+  .settings-panel.open{display:block;}
+  .setting-row{margin-bottom:16px;}
+  .setting-row label{
+    display:flex; justify-content:space-between;
+    font-size:13px; color:var(--ink-soft); margin-bottom:8px;
+  }
+  .setting-row .val{font-family:var(--font-mono); color:var(--ink);}
+  input[type=range]{width:100%;}
+  select{
+    width:100%;
+    padding:10px 12px;
+    border-radius:var(--radius-s);
+    border:1px solid var(--border-strong);
+    background:#fff;
+    font-size:14px;
+    color:var(--ink);
+  }
+
+  footer.start-area{
+    margin-top:auto;
+    padding-top:24px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  /* ---------- practice view ---------- */
+  .practice-top{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:8px;
+  }
+  .progress-txt{
+    font-family:var(--font-mono);
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .timer-txt{
+    font-family:var(--font-mono);
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .progress-bar{
+    height:3px; background:var(--border);
+    border-radius:2px; overflow:hidden;
+    margin-bottom:28px;
+  }
+  .progress-bar > div{
+    height:100%; background:var(--accent);
+    transition:width .25s ease;
+  }
+  .icon-btn{
+    background:transparent;border:none;
+    color:var(--ink-soft);
+    font-size:20px;
+    padding:4px;
+    cursor:pointer;
+    line-height:1;
+  }
+
+  .play-zone{
+    display:flex; flex-direction:column; align-items:center;
+    margin:18px 0 30px;
+  }
+  .play-btn{
+    width:104px;height:104px;
+    border-radius:50%;
+    background:var(--accent);
+    border:none;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    position:relative;
+    flex:0 0 auto;
+  }
+  .play-btn i{font-size:38px; color:#fff;}
+  .play-btn:active{transform:scale(0.96);}
+  .wave{
+    display:flex; align-items:center; justify-content:center;
+    gap:4px; height:20px; margin-top:14px;
+  }
+  .wave span{
+    width:3px; background:var(--accent); border-radius:2px;
+    height:6px;
+    transition:height .15s ease;
+  }
+  .wave.speaking span{animation:wv 0.9s ease-in-out infinite;}
+  .wave span:nth-child(1){animation-delay:0s;}
+  .wave span:nth-child(2){animation-delay:.1s;}
+  .wave span:nth-child(3){animation-delay:.2s;}
+  .wave span:nth-child(4){animation-delay:.3s;}
+  .wave span:nth-child(5){animation-delay:.4s;}
+  @keyframes wv{
+    0%,100%{height:6px;}
+    50%{height:20px;}
+  }
+  .replay-link{
+    margin-top:12px;
+    font-size:13px;
+    color:var(--ink-soft);
+    background:none;border:none;
+    display:flex;align-items:center;gap:5px;
+    cursor:pointer;
+  }
+
+  .answer-area{margin-bottom:18px;}
+  #answerInput{
+    width:100%;
+    font-family:var(--font-mono);
+    font-size:22px;
+    text-align:center;
+    padding:16px 14px;
+    border-radius:var(--radius-m);
+    border:1.5px solid var(--border-strong);
+    background:#fff;
+    color:var(--ink);
+    letter-spacing:0.02em;
+  }
+  #answerInput:focus{outline:none; border-color:var(--accent);}
+  #answerInput.flash-good{border-color:var(--good); background:var(--good-soft);}
+  #answerInput.flash-bad{border-color:var(--bad); background:var(--bad-soft);}
+
+  .feedback{
+    display:none;
+    border-radius:var(--radius-m);
+    padding:13px 16px;
+    margin-bottom:16px;
+    align-items:center;
+    gap:10px;
+    font-size:14.5px;
+  }
+  .feedback.show{display:flex;}
+  .feedback.good{background:var(--good-soft); color:var(--good);}
+  .feedback.bad{background:var(--bad-soft); color:var(--bad);}
+  .feedback i{font-size:19px; flex:0 0 auto;}
+  .feedback .answer-word{font-family:var(--font-mono); font-weight:600;}
+
+  .reason-picker{
+    display:none;
+    margin-top:auto;
+    padding-top:14px;
+  }
+  .reason-picker.show{display:block;}
+  .reason-picker .ask{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    margin:0 0 10px;
+    text-align:center;
+  }
+  .reason-btn{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--surface);
+    border:1px solid var(--border-strong);
+    border-radius:var(--radius-m);
+    padding:14px 16px;
+    margin-bottom:10px;
+    cursor:pointer;
+    text-align:left;
+    font-family:var(--font-body);
+  }
+  .reason-btn:active{transform:scale(0.98);}
+  .reason-btn i{font-size:20px; color:var(--ink-soft); flex:0 0 auto;}
+  .reason-btn .rt{font-size:14.5px; font-weight:500; color:var(--ink);}
+  .reason-btn .rs{font-size:12px; color:var(--ink-soft); margin-top:1px;}
+  .reason-btn[data-reason="miss"]:hover, .reason-btn[data-reason="miss"]:active{border-color:var(--bad);}
+  .reason-btn[data-reason="guess"]:hover, .reason-btn[data-reason="guess"]:active{border-color:#C18A2E;}
+  .reason-btn[data-reason="spell"]:hover, .reason-btn[data-reason="spell"]:active{border-color:var(--accent);}
+
+  .reason-tag{
+    font-family:var(--font-mono);
+    font-size:10.5px;
+    padding:2px 8px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .reason-tag.miss{background:var(--bad-soft); color:var(--bad);}
+  .reason-tag.guess{background:#FBF0DE; color:#9C6A1E;}
+  .reason-tag.spell{background:var(--accent-soft); color:var(--accent);}
+
+  .reason-summary{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin:10px 0 0;
+  }
+  .reason-hint{
+    font-size:12px;
+    color:var(--ink-faint);
+    margin:10px 0 0;
+  }
+  .reason-summary .item{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    font-size:12px;
+    color:var(--ink-soft);
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:5px 11px;
+  }
+  .reason-summary .item.clickable{
+    cursor:pointer;
+    transition:transform .08s ease, border-color .15s ease;
+  }
+  .reason-summary .item.clickable:active{transform:scale(0.96);}
+  .reason-summary .item.clickable:not(.disabled):hover{border-color:var(--border-strong);}
+  .reason-summary .item.clickable[data-reason="miss"]:not(.disabled):hover{border-color:var(--bad);}
+  .reason-summary .item.clickable[data-reason="guess"]:not(.disabled):hover{border-color:#C18A2E;}
+  .reason-summary .item.clickable[data-reason="spell"]:not(.disabled):hover{border-color:var(--accent);}
+  .reason-summary .item.disabled{
+    opacity:0.4;
+    cursor:default;
+  }
+  .reason-summary .dot{width:7px; height:7px; border-radius:50%; flex:0 0 auto;}
+  .reason-summary .dot.miss{background:var(--bad);}
+  .reason-summary .dot.guess{background:#C18A2E;}
+  .reason-summary .dot.spell{background:var(--accent);}
+  .reason-summary .item b{color:var(--ink); font-weight:600;}
+
+  .practice-actions{margin-top:auto; padding-top:18px;}
+
+  /* ---------- results view ---------- */
+  .result-hero{
+    text-align:center;
+    padding:28px 0 18px;
+  }
+  .result-hero .big{
+    font-family:var(--font-display);
+    font-size:56px;
+    font-weight:600;
+    color:var(--accent);
+    line-height:1;
+  }
+  .result-hero .big sup{font-size:24px; font-weight:500;}
+  .result-hero .cap{
+    font-size:13px; color:var(--ink-soft); margin-top:8px;
+  }
+  .wrong-list{
+    display:flex; flex-direction:column; gap:8px;
+    margin:14px 0 0;
+  }
+  .wrong-item{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius-m); padding:11px 14px;
+  }
+  .wrong-item .left{display:flex; align-items:center; gap:8px; flex-wrap:wrap; min-width:0;}
+  .wrong-item .w{font-family:var(--font-mono); font-size:15px;}
+  .wrong-item .w .you{color:var(--bad); text-decoration:line-through; font-size:12.5px; margin-left:8px; opacity:0.8;}
+  .empty-note{
+    text-align:center; color:var(--ink-soft); font-size:13.5px;
+    padding:18px 0;
+  }
+
+  /* ---------- wrongbank view ---------- */
+  .bank-group{margin-bottom:18px;}
+  .bank-group .gname{font-size:13px; font-weight:600; color:var(--ink-soft); margin-bottom:8px;}
+  .bank-item{
+    display:flex; align-items:center; gap:10px;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius-m); padding:10px 14px; margin-bottom:7px;
+  }
+  .bank-item .w{flex:1; font-family:var(--font-mono); font-size:14.5px;}
+  .bank-item .cnt{
+    font-size:11px; color:#fff; background:var(--bad);
+    border-radius:999px; padding:2px 8px; font-family:var(--font-mono);
+  }
+  .bank-item button{
+    background:none;border:none;color:var(--ink-faint);
+    font-size:18px; cursor:pointer; padding:2px;
+  }
+
+  .topbar{
+    display:flex; align-items:center; gap:10px; margin-bottom:18px;
+  }
+  .topbar h2{flex:1;}
+
+  ::selection{background:var(--accent-soft);}
+  a{color:var(--accent);}
+
+  .sr-only{
+    position:absolute; width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ HOME VIEW ============ -->
+  <section id="view-home" class="view active">
+    <p class="eyebrow">IELTS Listening · 拼写听写</p>
+    <h1>听写实验室</h1>
+    <p class="sub">挑单元、定数量，开始今天的听力拼写训练</p>
+
+    <div class="stat-strip" id="homeStats"></div>
+    <div id="homeReasonSummary"></div>
+
+    <p class="section-label">选择单元</p>
+    <div class="unit-list" id="unitList"></div>
+
+    <p class="section-label">本组数量</p>
+    <div class="chip-row" id="countChips"></div>
+
+    <p class="section-label">出题顺序</p>
+    <div class="chip-row" id="orderChips">
+      <div class="chip active" data-order="random">随机</div>
+      <div class="chip" data-order="sequential">顺序</div>
+    </div>
+
+    <div class="settings-toggle" id="settingsToggle">
+      <i class="ti ti-adjustments-horizontal"></i>
+      <span>朗读设置</span>
+      <i class="ti ti-chevron-down" id="settingsChevron"></i>
+    </div>
+    <div class="settings-panel" id="settingsPanel">
+      <div class="setting-row">
+        <label>朗读声音</label>
+        <div style="display:flex; gap:8px;">
+          <select id="accentSelect" style="flex:1;">
+            <option value="">正在加载发音列表…</option>
+          </select>
+          <button class="btn" id="previewVoiceBtn" type="button" style="flex:0 0 auto; padding:0 16px;">试听</button>
+        </div>
+        <p class="sub" style="margin:8px 0 0; font-size:11.5px;">
+          列表来自你这台设备/浏览器自带的发音，不同设备列表不一样，听一下哪个顺耳就选哪个。
+        </p>
+      </div>
+      <div class="setting-row">
+        <label>语速 <span class="val" id="rateVal">0.85x</span></label>
+        <input type="range" id="rateSlider" min="0.6" max="1.1" step="0.05" value="0.85">
+      </div>
+      <div class="setting-row">
+        <label>自动朗读次数 <span class="val" id="repeatVal">1 次</span></label>
+        <input type="range" id="repeatSlider" min="1" max="2" step="1" value="1">
+      </div>
+    </div>
+
+    <div class="settings-toggle" id="backupToggle">
+      <i class="ti ti-cloud-download"></i>
+      <span>数据备份与恢复</span>
+      <i class="ti ti-chevron-down" id="backupChevron"></i>
+    </div>
+    <div class="settings-panel" id="backupPanel">
+      <p class="sub" style="margin:-2px 0 14px;">
+        进度存在本地浏览器里，换设备/清缓存会丢失。建议每隔一段时间导出一份存好。
+      </p>
+      <div class="btn-row">
+        <button class="btn" id="exportBackupBtn"><i class="ti ti-download" aria-hidden="true"></i> 导出备份</button>
+        <button class="btn" id="importBackupBtn"><i class="ti ti-upload" aria-hidden="true"></i> 导入备份</button>
+      </div>
+      <input type="file" id="importBackupFile" accept="application/json" style="display:none;">
+    </div>
+
+    <footer class="start-area">
+      <button class="btn btn-primary" id="startBtn">开始听写 →</button>
+      <div class="btn-row">
+        <button class="btn" id="wrongBankBtn"><i class="ti ti-notebook" aria-hidden="true"></i> 错词本</button>
+        <button class="btn" id="reviewWrongBtn" disabled><i class="ti ti-repeat" aria-hidden="true"></i> 错词重练</button>
+      </div>
+      <div class="guess-entry" id="guessEntryBtn">
+        <div class="ge-icon"><i class="ti ti-ear" aria-hidden="true"></i></div>
+        <div class="ge-body">
+          <div class="ge-title">听个大概 · 分析报告</div>
+          <div class="ge-sub">查看"听个大概"错词的发音对比与规律</div>
+        </div>
+        <span class="ge-count" id="guessEntryCount">0词</span>
+      </div>
+    </footer>
+  </section>
+
+  <!-- ============ PRACTICE VIEW ============ -->
+  <section id="view-practice" class="view">
+    <div class="practice-top">
+      <button class="icon-btn" id="exitBtn" aria-label="返回首页"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+      <span class="progress-txt" id="progressTxt">1 / 30</span>
+      <span class="timer-txt" id="timerTxt">00:00</span>
+    </div>
+    <div class="progress-bar"><div id="progressFill" style="width:0%"></div></div>
+
+    <div class="play-zone">
+      <button class="play-btn" id="playBtn" aria-label="播放单词">
+        <i class="ti ti-player-play-filled" aria-hidden="true" id="playIcon"></i>
+      </button>
+      <div class="wave" id="wave">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <button class="replay-link" id="replayBtn"><i class="ti ti-rotate" aria-hidden="true"></i> 重听</button>
+    </div>
+
+    <div class="feedback" id="feedback">
+      <i class="ti" id="feedbackIcon" aria-hidden="true"></i>
+      <span id="feedbackText"></span>
+    </div>
+
+    <div class="answer-area">
+      <input id="answerInput" type="text" placeholder="输入听到的词" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text">
+    </div>
+
+    <div class="practice-actions" id="practiceActions">
+      <button class="btn btn-primary" id="submitBtn">提交</button>
+    </div>
+
+    <div class="reason-picker" id="reasonPicker">
+      <p class="ask">这次错在哪？</p>
+      <div class="reason-btn" data-reason="miss">
+        <i class="ti ti-ear-off" aria-hidden="true"></i>
+        <div><div class="rt">完全没听出来</div><div class="rs">压根没捕捉到这个词</div></div>
+      </div>
+      <div class="reason-btn" data-reason="guess">
+        <i class="ti ti-ear" aria-hidden="true"></i>
+        <div><div class="rt">感觉听出来了</div><div class="rs">大概有印象，但没敢确定</div></div>
+      </div>
+      <div class="reason-btn" data-reason="spell">
+        <i class="ti ti-keyboard" aria-hidden="true"></i>
+        <div><div class="rt">听对了，拼错了</div><div class="rs">听力没问题，是拼写出了错</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS VIEW ============ -->
+  <section id="view-results" class="view">
+    <div class="page-topbar">
+      <button class="back-btn" id="resultsBackBtn" aria-label="返回首页"><i class="ti ti-arrow-left"></i></button>
+      <h2 class="page-title">本组结果</h2>
+    </div>
+    <div class="result-hero">
+      <div class="big" id="resultAcc">0<sup>%</sup></div>
+      <p class="cap" id="resultSub">0 / 0 正确 · 用时 00:00</p>
+    </div>
+
+    <div class="stat-strip" id="resultStats"></div>
+    <div id="resultReasonSummary"></div>
+
+    <div class="analysis-section" id="resultGuessSection" style="display:none;">
+      <p class="as-head"><i class="ti ti-ear"></i> 听个大概 · 本组分析</p>
+      <div id="resultGuessList"></div>
+    </div>
+
+    <p class="section-label">本组错词</p>
+    <div class="wrong-list" id="resultWrongList"></div>
+
+    <footer class="start-area">
+      <button class="btn btn-primary" id="retryWrongBtn">错词重练 →</button>
+      <div class="btn-row">
+        <button class="btn" id="newSetBtn">再来一组</button>
+        <button class="btn" id="homeBtn2">返回首页</button>
+      </div>
+    </footer>
+  </section>
+
+  <!-- ============ WRONG BANK VIEW ============ -->
+  <section id="view-bank" class="view">
+    <div class="topbar">
+      <button class="icon-btn" id="bankBackBtn" aria-label="返回"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+      <h2>错词本</h2>
+    </div>
+    <p class="sub" style="margin-bottom:16px;">历史听写中拼错过的词，按单元分组。点掌握可移出错词本。</p>
+    <div id="bankContent"></div>
+    <footer class="start-area">
+      <button class="btn btn-primary" id="bankPracticeBtn">练习全部错词 →</button>
+    </footer>
+  </section>
+
+  <!-- ============ GUESS ANALYSIS VIEW ============ -->
+  <section id="view-analysis" class="view">
+    <div class="page-topbar">
+      <button class="back-btn" id="analysisBackBtn" aria-label="返回"><i class="ti ti-arrow-left"></i></button>
+      <h2 class="page-title">听个大概 · 分析</h2>
+    </div>
+    <p class="sub" style="margin-bottom:16px;">错词本里标记为"听个大概"的词——你写的 vs 正确拼写，对比看自己容易混淆哪些音。</p>
+    <div id="analysisContent"></div>
+    <footer class="start-area">
+      <button class="btn btn-primary" id="analysisPracticeBtn">练习这些词 →</button>
+    </footer>
+  </section>
+
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.1.0/iconfont/tabler-icons.min.css">
+<script>
+const UNITS = [{"id":"u1","title":"第一单元 · 高频5次以上","words":["water","name","cheese","garden","photograph","cheque","insurance","piano","clay","bird","plant","clothes","transport","population","coast","glass","presentation","concentration","park","research","corn","interview","rock","cost","light","sea","deposit","station","shower","direction","city","social","discount","forest","sport","dry","school","storm","exercise","balcony","tennis","fear","family","tutor","friend","garage","weight","guide","map","age","health","museum","animal","history","river","bicycle","housing","time","camera","hunting","training","chemical","image","children","cleaning","Japanese","kitchen","coffee","job","magazine","confidence","lunch","wood","egg","meal","bone","entertainment","method","bridge","film","mirror","flower","food","negative","internet","helmet","nutrition","library","hotel","observation","parking","India","open","photo","nut","organic","supermarket","phone","painting","temperature","report","parent","website","restaurant","permit","café","sailing","pool","electricity","security","public","government","size","quality","plastic","skill","question","safety","speed","rainfall","stone","studio","record","beach","tax","relationship","fire","technology","sale","fish","traditional","sample","fishing","train","science","helicopter","video","seafood","insect","village","seminar","music","weather","silver","newspaper","behaviour","Spanish","radio","cake","standard","reference","car","store","soil","chocolate","street","wind","competition","sugar","airport","cooking","summer","bank","culture","sun","bike","decoration","survey","business","distance","team","cinema","equipment","tent","climate","flat","ticket","desert","flexible","tool","energy","fridge","tree","factory","gas","university","farm","genetic","view","feedback","gift","weekend","furniture","group","wheelchair","money","language","window","noise","locker","winter","reception","microwave","women","salt","north","action","theatre","oil","adult","boat","passport","advertisement","certificate","picture","alarm","clean","reading","bacteria","club","resource","bag","colour","road","band","communication","student","bathroom","computer","swimming","brick","disease","teenager","building","environment","traffic","camel","farming","academic","cash","golf","agriculture","castle","grass","apartment","cave","gym","back","central","hospital","basement","coach","lake","book","college","manager","booklet","commercial","market","box","conference","material","breakfast","mountain","bus"]},{"id":"u2","title":"第二单元 · 高频3-4次","words":["contract","washing","manual","crime","whale","mat","damage","workshop","math","dance","young","media","danger","accommodation","medicine","depth","accountant","meeting","desk","activity","member","diary","advertising","memory","diet","Africa","modern","donation","afternoon","monthly","drive","agency","mood","drum","aging","morning","education","air","mud","electronic","airline","natural","email","analysis","nature","engineer","application","neighbour","engineering","art","new","exhibition","Australian","night","expensive","automatic","none","eyes","beginner","note","face","blue","nurse","flooding","bright","oldest","fruit","candle","opera","game","carbon","outdoor","green","carpet","outside","heat","challenge","oxygen","holiday","change","packaging","house","chart","pain","human","chicken","paper","idea","closed","participation","income","clothing","part-time","information","comedy","party","ink","concert","password","irrigation","concrete","performance","jeans","conservation","personal","labour","cotton","pet","lecture","current","photography","legal","customer","picnic","location","dancing","plane","massage","dark","planet","mathematics","density","politics","meat","dentist","pollution","metal","discussion","poster","microscope","dishwasher","pottery","middle","display","powder","milk","diving","power","mineral","door","price","month","double","printing","movement","downhill","privacy","noisy","drama","private","number","drink","product","ocean","drug","promotion","office","economics","pump","online","economy","qualification","photocopy","emotion","race","pizza","engine","random","planning","evolution","rat","plate","example","reduction","playground","fashion","rice","police","feather","right","post","fertiliser","rope","problem","fight","salad","profit","flavour","sandwich","protection","flood","screen","purpose","foundation","seat","rain","fuel","second","risk","gender","senior","roof","global","service","rubber","gold","shell","rubbish","hair","signal","rule","heart","sleep","safe","honey","slide","salary","identification","small","sand","identity","smell","scientist","instrument","soft","shark","intermediate","sound","singing","international","south","software","jacket","southeast","song","joke","space","storage","keyboard","spring","stress","label","star","support","laundry","summary","taxi","learning","talent","teacher","license","teaching","top","link","telephone","tourism","liquid","tour","towel","lounge","toy","transportation","lower","travel","machine"]},{"id":"u3","title":"第三单元 · 高频2-3次","words":["triangle","crocodile","increase","tunnel","crop","ingredient","tutorial","crowded","intelligent","tyre","cultural","interaction","uniform","cup","journalism","visa","cycling","key","vision","data","king","waiter","date","knife","waitress","day","laboratory","walking","decline","land","wall","decorated","landlady","warning","demand","lawyer","waterfall","department","leader","wax","description","leaf","wedding","detail","lecturer","week","digestion","leg","wild","dinner","length","wildlife","diploma","letter","woman","direct","level","woodland","director","lid","word","dirt","lifestyle","yoga","distribution","lift","accept","doctor","list","accident","dog","listening","acid","donkey","loan","address","driver","local","administration","driving","lock","advanced","duration","loss","ancestor","eat","magnet","apology","elevator","mail","approach","employer","main","army","end","male","attitude","entrance","mammal","background","equal","man-made","ball","essay","marketing","barcode","estimate","medical","bargain","Europe","medication","baseball","evaporation","menu","bedroom","evening","message","bill","expectation","migration","blanket","experience","minibus","block","fabric","mistake","blood","fan","mixed","board","feet","moderate","body","field","monitor","bookshop","filmed","monkey","boot","finance","monument","brain","financial","morality","breathing","firework","motivation","bush","floor","movie","butterfly","football","multimedia","camp","footprint","mushroom","campus","fountain","native","caravan","France","nest","centre","freedom","northern","ceremony","freezer","notebook","chair","French","nursery","chairman","frequency","nylon","charity","frog","oral","cheaper","fur","orange","checklist","gap","organization","chemist","gardening","outline","Chinese","glove","oven","circle","grade","overseas","climbing","grey","paint","coastal","ground","partner","coconut","guest","people","code","guideline","perfume","coin","guitar","person","cold","habitat","personality","collect","hall","pest","common","hand","pilot","community","handle","pipe","company","harbour","plan","comparison","hard","poison","complex","harvest","potato","compulsory","hat","poverty","confusion","headache","present","construction","heater","print","context","heavy","printer","control","hill","prison","cookery","hole","processing","cool","home","professor","corner","homework","protected","cosmetic","hostel","country","hot","crack","humour","cream","hungry","critical","ice"]},{"id":"u4","title":"第四单元 · 频率2次","words":["protein","vacation","beginning","purple","variety","belt","queen","vegetarian","benefit","quiet","visit","Berlin","raining","voice","bin","range","volcano","biological","rare","walk","biology","reason","warm","birthday","recycling","waste","blind","refreshment","wealth","blues","regulation","weed","boiler","relative","weekday","bonus","reliable","whistle","booking","religion","white","bookkeeping","repair","work","bookshelf","respect","workplace","booth","retail","writer","boring","retired","writing","bottle","robot","yellow","boy","root","youth","brake","rose","ability","branch","round","accent","breathe","rural","access","breed","Russian","accountable","brightness","salesman","accuracy","British","sculpture","accurate","broken","season","acknowledgement","brush","secretary","actor","bucket","sell","administrator","budget","shade","adopt","buffet","share","ads","builder","shelf","advance","buried","shipping","adventure","butter","shoes","advertise","button","shop","advice","cabin","shopping","advisor","cabinet","shoulder","after-school","cable","side","agreement","cafeteria","signature","agricultural","calculation","silk","airplane","calculator","sing","alarming","calendar","singer","alternative","calm","slave","angle","campsite","slow","antibiotic","Canada","smoke","antifreeze","Canadian","snack","antiseptic","canteen","snake","appearance","captive","soap","apple","card","soldier","approval","cargo","soup","apron","carnival","square","area","carnivorous","stairs","Argentina","cartoon","statistics","arm","cashier","status","arrangement","casual","steel","arrow","category","stomach","artificial","catering","stored","artist","cattle","story","artistic","cause","strategy","ash","celebration","strength","Asia","celebrity","string","aspirin","chain","structure","assignment","challenging","subway","athlete","character","surface","Atlas","cheap","swim","attachment","cheapest","table","attack","chemistry","talk","attacked","chess","tank","audience","childhood","taste","august","choice","teeth","aunt","choosing","television","Australia","church","test","autumn","cigar","testing","award","circulation","timber","aware","citizen","tongue","axe","class","total","baby","classic","tourist","bakery","classical","tower","balance","classification","town","ban","claw","trash","banana","cleanest","trouser","base","clear","truck","basic","clerk","trust","basket","cliff","TV","bath","clinic","typed","battery","clock","uncomfortable","bear","clockwise","underground","bed","close","unemployed","beer","unnatural","bees"]},{"id":"u5","title":"第五单元 · 频率1次","words":["cloud","distribute","flamingo","coal","district","flashing","coat","dive","flight","collaborative","diversity","floated","collection","DJ","flooded","colony","document","flu","coloured","documentation","fluent","combination","dome","fluid","combined","downstairs","focus","comfortable","draft","folded","comic","drawer","font","commerce","dream","foot","commitment","dressing","form","committee","dried","fossil","companion","drinking","fragile","companionship","driveway","frame","compensation","drought","fresh","compete","drying","friction","composing","durable","friendly","comprehension","ear","friendship","computing","early","frozen","concentrated","earth","full-time","confident","east","fun","confirmation","eclipse","function","congratulation","ecology","funding","connected","ecosystem","further","consumer","edge","future","contact","edit","gallery","container","editor","gene","contamination","educational","general","continent","efficiency","generation","contrast","efficient","generator","contribution","elastic","geographic","convenient","electrical","germ","conversation","elephant","Germany","cook","emergency","glue","cooker","emotional","go","cooperative","emperor","golden","correction","employed","goods","costly","employee","gradual","council","employment","grain","counting","empty","grammar","couple","energy-saving","grandmother","course","English","graph","coursework","enjoyable","grassland","cousin","enlargement","gravity","cover","environmental","Greek","creative","erosion","grocery","creature","error","guard","credit","escape","guess","critic","European","guessing","crowd","evaluation","gun","crown","every","habit","Cuban","everything","half","curtain","evidence","handbook","cut","exam","handout","CV","excellent","happier","dam","excitement","hardware","damaged","existing","hardworking","dancer","expanded","harp","dangerous","expect","harvested","darkroom","experiment","hazel","database","explode","head","deadline","exploration","heading","decision","expression","headline","deep","external","healthcare","defence","extinct","healthier","definition","extinction","healthy","degree","extra","heated","democratic","facility","herbivorous","demonstration","fact","higher","departure","farmer","highway","depression","faster","hiking","deputy","fat","hive","design","fax","hockey","dessert","female","honest","development","fence","horizon","diamond","ferries","horizontal","dictation","fertilise","hormone","diesel","festival","horror","difficult","fighting","horsehair","digest","file","hospitality","digestive","filter","hour","digging","fireplace","humidity","disability","firewood","hunger","disappear","first","hurricane","discipline","fitness","hurt","disco","fixing","dismiss","flag"]},{"id":"u6","title":"第六单元 · 频率1次","words":["ID","machinery","petrol","illegal","Malaysia","philosopher","illness","management","philosophy","immigrant","manufacture","photographic","immigration","manufacturing","pirate","immune","mapping","placement","impact","marriage","planting","important","Mars","platform","imported","mask","play","impossible","maturity","pleasure","improvement","meaning","pocket","incorrect","measurement","poet","increased","meet","polish","independence","membership","polished","indoor","men","polite","industrial","mental","polluted","industry","methodology","pond","infection","Mexico","poor","informal","microbiology","popular","infrastructure","microchip","port","innovation","microfilm","portable","inscription","microphone","portrait","inspector","midmorning","position","install","midnight","postage","instinct","mid-range","postcard","instinctive","midweek","postgraduate","instruction","migrate","pot","insulation","mild","PowerPoint","integrate","mining","predator","intelligence","mixture","preparation","intense","mobile","prepared","interest","mobility","preposition","invented","model","preservation","investigation","moisture","preserved","invitation","mother","president","iron","motor","pressed","island","mould","pressure","IT","mouth","printed","Italian","myth","priority","italics","navigate","probability","Italy","navigation","procedure","Japan","navigational","process","jaw","neck","producer","jazz","nesting","production","joint","net","productive","journal","networking","productivity","judo","nitrogen","professional","juice","non-active","program","jungle","nonsmoking","project","junior","normal","projector","kidney","northeast","proof","kindness","note-taking","publication","knee","obesity","publishing","knowledge","object","pure","lab","objective","puzzle","ladder","obligation","questionnaire","lamb","occupancy","quiz","lamp","old","rabbit","landmark","opportunity","rack","lane","optional","radar","laptop","organisation","rainbow","larger","organised","rainwater","law","orientation","rationally","layer","origin","reaction","layout","originality","read","lead","outcome","real","leaflet","outstanding","realism","leak","overfill","realistic","learner","own","receiver","leisure","ozone","receptionist","lemon","package","recording","liberty","packed","recruitment","lifting","packing","recycled","lighting","painkiller","red","limitation","painter","reflective","line","palace","refund","lion","parcel","regional","literature","passive","registration","live","path","reinforced","living","pattern","reinvested","logic","pay","relaxation","logo","peer","relevant","London","peg","relocation","lonely","pen","remember","lost","pencil","replacement","loyal","perception","loyalty","permanent","lung","permission","luxurious","pesticide"]},{"id":"u7","title":"第七单元 · 频率1次","words":["reporter","sociable","tooth","reproduce","socialise","topic","reproduction","society","torn","reputation","sock","trace","researcher","solar","trade","resident","solution","trader","resistant","son","translation","responsibility","sour","translator","responsible","source","transparent","rest","southwest","travelling","result","souvenir","tray","retrained","Spain","treatment","return","spare","trend","review","speaker","trial","reward","species","tribe","riding","spice","trip","ring","spider","trumpet","rival","spine","T-shirt","Roman","spoon","tube","rumour","stand","tuna","running","starch","turn","rush","starvation","twice","Russia","state","typical","sad","statue","typing","safer","steam","U.K.","saliva","stem","umbrella","salty","stick","unanswered","same","sticker","uncle","sandglass","still","uncontrolled","sandy","stimulating","undergraduate","satellite","sting","understand","satisfactory","stopwatch","undeveloped","Saturday","storeroom","unfair","save","stream","unfurnished","scaffold","stressful","unimportant","scarce","stretching","unnecessary","scent","strict","urban","scheme","strike","use","scientific","strong","useless","score","stuck","value","scoring","subcommittee","variable","Scotland","subject","varied","sealed","subtitle","vary","seasonal","subtopic","vegetation","seasoned","success","ventilation","seating","suggestion","version","seaweed","summarise","vertical","see","suncream","vest","seed","sunlight","vetting","select","sunscreen","Vietnam","selected","sunset","violin","selection","sunshade","virus","self-centred","super","visitor","self-defence","supervision","vocabulary","self-employment","surfing","wage","self-evaluation","survival","waiting","self-locked","survive","wallet","self-motivation","sustainable","war","sensitive","swan","warming","settle","sweater","wash","shallow","Sweden","watch","shame","sweet","watering","shape","sweetener","waterproof","sharing","swimmer","way","sheet","symbolism","well-organised","shellfish","tape","whole","shelter","target","wider","ship","tea","wire","shipbuilding","teamwork","wool","shirt","tear","workforce","shoot","technician","working","shopper","technique","workload","short","temple","worksheet","showhouse","term","worm","shrimp","textbook","write","sign","textile","written","similar","theoretical","York","simple","theory","zoom","simulation","therapy","sink","threat","ski","thunderstorm","skin","Thursday","sloping","timetable","smart","title","smile","toaster","smoky","toes","smooth","toilet","smoother","tolerance","soccer","tomato"]},{"id":"u8","title":"第八单元 · 词组","words":["bus stop","back problems","computer breakdown","swimming pool","back wheel","computer programmer","credit card","background reading","computer room","student card","bad eyesight","computer science","air conditioner","Baked Earth","computer screen","back door","bank house","concert hall","central heating","bank robbery","concert room","post office","bank transfer","conference report","public transport","bathroom sink","contact number","action plan","be more decisive","cost effective","administration officer","bed sheet","country life","air pollution","behind the station","countryside living","bank statements","big five","courses from internet","bottled water","big social event","credit check","by cash","big toe","culture centre","car park","bike rack","customs office","carbon dioxide","bird's nest","cut and cover","case study","black coat","daily music","central park","black skirt","dark and light","city centre","black velvet","dark blue","club office","blood flow","data analysis","common room","blue card","date in history","conference centre","blue folder","decision making","driving license","blue skirt","deluxe standard","eye contact","blue sweater","department head","feed animals","body shape","department manager","free drink","book in advance","department stores","global warming","book loan","design research","hot meal","book talk","desk and TV","horse riding","booking form","desk lamp","ice pack","bowling alley","detail note","ice skating","branch manager","deteriorate for age","living room","bridge road","develop disease","lock all windows","British library","developing countries","long term","budget advice","digital system","Medical Centre","building material","dining room","North Africa","bunch of flowers","discussion group","North Gate","burning time","documentary film","north park","bus service","domestic smells","petrol station","business course","double bedroom","play music","business management","double grill","primary school","business plan","double lock","problem solving","business studies","double room","read aloud","cabin keys","double space","safety regulations","cable car","drink milk","save it","cable TV","drinking machines","senior advisor","call centre","drinks and snacks","small scale","calling diversion","each classroom","Sport Centre","camera man","early evening","tape recorder","car parking lot","easy to understand","Thursday morning","card catalogues","easy tune","top roof","card index","eating pattern","town hall","Career's Office","economic history","washing machine","carry post","electric card","water heater","castle hill","electronic directory","yellow box","casual clothes","email address","a clear argument","central location","email marketing","a shared room","central part","emergency contact number","a whole family","change behaviour","employee first","action movie","changing room","energy saving","action points","chat show","environmental damage","additional fee","cheapest budget","environmental issues","address card","check identities","escaping steam","advanced level","chemistry lab","essay outline","after lunch","chess club","essay writing","air filter","chewing gum","European Pass","alarm system","chief executive","evening meals","alternative energy","children's day","Evening News","animal life","city council","every year","animals' behaviour","city map","expected duration","annual report","class representative","explain the experiment","Ape Hour","classical history","express trains","Apple Day","classroom tour","extra resource","apple juice","cleaning materials","extra workload","application form","clear voice","eye drops","art gallery","climate change","face painting","articles from journals","closed down","family life","as a group","clothing sections","family members","as a whole","college coordinator","family photo","at risk","colour blind","fancy dress","attend regular conferences","comment card","farming supplies","automatically registered","Common Spider","average ability","communication technology"]},{"id":"u9","title":"第九单元 · 词组","words":["farmland field","ID code","media room","fast-food shop","ID number","media studies","feeding time","identity card","mental ability","field work","immune system","metallic grey","files in colour","in advance","mid-term test","Finance Office","incoming call","migration patterns","financial goals plan","industrial material","mild light","financial market","information desk","mineral soil","finding a job","information from internet","mission statement","fire alarms","information sectors","mobile phone","fire drill","information technology","modern language","first in history","insurance companies","Monday mornings","first section","intermediate stage","money diary","fish cakes","internal clock","money lender","fishing boats","internal website","mountain building","fishing lesson","international evening","movie clubs","fishing net","international student card","much deep research","fitness centre","internet café","music videos","fixed expenses","internet connections","name badge","flower arrangement","interview parents","national day","flower taste","interview questions","national holidays","food containers","interview skills","national newspaper","food intake","investment schemes","national parks","former worker","job opportunities","natural gas","free parking","joining fee","natural medicine","free vouchers","joint membership","negative effect","fresh food","killing whale","net workers","fresh meat","kitchen area","new car","friendly faces","kitchen table","new facts","front desk","knowledge sharing","new materials","front page","known world","new shirt","frozen food","laboratory report","New Year's Day","fruit trees","lack of time","next seminar","full text length","lakes and dams","next year","full time","land bridge","night tour","further training","language practice","no charge","game room","large scale","no fee required","garden project","larger office","no garage","garden room","last September","no index","gardening tools","last thing","no lift","general discussion","lateral line","non-smoking room","get good shoes","law firm","North America","global market","learning difficulty","north building","go upstairs","learning styles","not enough sleep","Going Green","leather jacket","note system","gold industry","leg room","notice board","gold mine","lemon tree","number of items","golden coast","less effort","object matters","golf course","less property","old library","good eyesight","life cycle","olive oil","good play","life insurance","on the street","good shoes","line manager","open gallery","good value","list of objectives","order section","government election","little known","outdoor table","green room","live music","own car","green tax","live nearby","own food","group discussion","living expenses","paddling pool","group organizer","local artists","pain killer","group size","local business","paper jams","group talks","local hospital","parental teaching","harmful insects","local museum","park avenue","head offices","local pet shop","park square","health centre","local school","parking area","health check","local shops","part-time job","Health Club","lock door","party hats","health department","long beach","pay attention to","Health International","long road","peak season","health service","long stick","personal alarm","heart rate","long strap","personal information","heavy items","lookout point","personal tutor","help desk","lost children","phone book","high temperature","lots of clubs","phone call","high user","low impact","phone interviews","high wind","low income","phone number","higher fees","low price","photo statistics","higher seats","main entrance","photocopy of article","home welcome","main hall","Photocopy Office","hot chocolate","main road","physical changes","hot house","maintain cost","piano life","hot weather","manage the time","picture framing","hotel room","marine plants","picture library","house insurance","market research","house key","Material Art Centre","ice park","media plan"]},{"id":"u10","title":"第十单元 · 词组","words":["pieces of furniture","shark nets","theory chapters","plan holidays","sheet of paper","think quickly","plan phone calls","ship bell","too expensive","plan time","shopping mall","too long","planet society","side gate","too slow","plant species","silver cloth","top right","plastic bottle","silver coins","top shelf","police helicopters","silver setting","touch table","police record","single item","towns and cities","political man","skill focus","toy factory","poor area","sleeping bag","trade journals","post letter","sleeping problems","traffic flow","postal survey","sleeping sickness","traffic noise","poster design","small rocket","train service","practical outcomes","small stones","train station","practical work","smaller areas","training course","pre-booking service","smaller one","transport home","presentation skill","smelly cages","transport museum","presenting results","smoke alarms","tree centre","printed list","smoke too much","tree climbing","private company","smooth road","tropical disease","private property","snow boarding","tropical plants","problems and needs","social matters","tube railway","professional learning","social skills","TV producer","project background","social worker","TV station","project outline","soft sediment","twin rooms","protective clothing","soil damage","two-page cover","public areas","solar power","type of rocks","public awareness","Sound International","types of jobs","pump water","South Africa","underground parking","pure and safe","south coast","unhealthy diets","quality of life","south park","unhealthy lifestyle","racing car","Southeast Asia","Union House","radio program","Southern Scotland","unlimited mileage","radio signal","space museum","upper level","railway line","space station","urban area","railway station","spare socks","vegetable burger","railway track","special buses","video cameras","Rare Lions","special computer","video recording","rare trees","special diet","videotape editor","raw materials","special items","violent crime","reading difficulty","special offers","virtual learning","Reading Habits","special route","visual aids","reception area","sport equipment","vitamin A","reception desk","sports hall","vocational courses","reception staff","spring park","volcanic dust","recycling centre","surface area","vote right","red blood cells","staff training","walking boots","red tap","stair lift","warm up","renew password","statistics analysis","wash basin","rent a line","stomach and heart","washable shoes","repair kit","storage space","watch time","report findings","story conferences","watchful parents","research system","street children","water pipes","rest area","student link","water pollution","retire house","student service","water tank","river view","students' union","wealthy people","road construction","study ability","wear formal clothes","road map","study room","weekend bus","roll over","study skills","weekly return","room service","sufficient details","well organized","rose farm","summary report","west avenue","rubber blanket","summer school","West Europe","safe and reliable","sun hat","west park","safety and insurance","sun's position","wet suit","Safety Office","support services","white board","satellite TV","survey method","white mountain","save time","swimming outdoor","whole week","school record","swimming suit","wide reading","science mechanism","switch on","wind shade","science museum","switched off","wind surfing","scientific journals","symbol of progress","window dressing","scientific research","table tennis","window glass","seat belt","take away","window view","second week","tape measure","wooden sculpture","secondary object","teaching methods","work number","secondary school","teaching staff","working hours","security code","telephone call","write music","security officer","telephone survey","young children","self-access lab","television drama","young teenagers","seminar group","test results","your doctor's name","send information","text structure","service manager","the first-year students","share ideas","the third prize"]},{"id":"u11","title":"第十一单元 · 单复数专练","words":["women","report","language","diseases","apartment","holidays","windows","relatives","lake","discount","animals","house","weight","relationships","knives","direction","airport","human","weekdays","references","kitchen","egg","agriculture","ideas","website","radio","jobs","desert","sales","income","weather","questions","interview","deposit","sample","information","water","quality","insurance","decoration","science","irrigation","volcanoes","record","insects","cultures","seafood","jeans","village","reception","image","corn","seminar","labour","videos","public","hotel","confidence","store","lectures","varies","presentation","hospital","concentration","streets","locations","tutorials","potatoes","history","computers","sugar","massage","train","population","helmet","competition","survey","mathematics","tomatoes","pool","helicopter","communication","teams","meat","transport","plant","gym","colour","tent","microscope","video","picture","groups","coffee","ticket","milk","tutor","piano","grass","coast","tools","minerals","traffic","photos","government","clubs","trees","month","theatres","photograph","goods","clothes","university","movement","tennis","phone","golf","climate","view","number","teenagers","permit","glasses","clay","weekends","office","technology","passport","furniture","cities","wheelchair","photocopy","taxes","park","fruits","cinema","pizza","supermarkets","parent","friend","chocolate","plates","studio","painting","fridge","children","action","playground","teenager","outdoors","glass","cheque","adult","police","students","oil","gift","chemicals","advertisement","post","observation","gas","cake","bacteria","problem","tax","nutrition","garden","business","bags","profit","storm","nuts","garage","bus","band","protection","stone","parents","forests","bridge","bathroom","purpose","statistic","noise","food","breakfast","brick","rain","station","newspapers","flowers","boxes","camel","risks","sport","museums","flat","cheese","cash","roof","spices","mountain","flamingos","certificate","castles","rubber","songs","money","fish","CDs","cave","rubbish","soil","mirror","film","car","coach","rules","skills","microwave","ferries","candles","college","salary","size","method","feedback","camera","conferences","sand","shower","newspaper","fear","cakes","contract","scientists","security","neighbours","farm","box","crime","shark","sea","name","flower","booklet","dances","software","schools","meal","family","book","desk","skill","material","factories","bones","diary","storage","sandglasses","market","facilities","boat","donation","taxi","salt","maps","exercise","birds","drum","teachers","manager","equipment","bikes","education","towel","salads","magazine","entertainment","bicycle","email","transportation","rock","machines","energy","behaviour","engineer","travel","road","lunch","electricity","beach","exhibition","whale","river","locker","eggs","basement","eyes","workshop","restaurant","lights","drinks","bank","face","accommodation","resource","library","downstairs","balcony","accountants","research","leaves","distance","approaches","games","activities"]},{"id":"u12","title":"第十二单元 · 单词更新","words":["reservation","synthesize","autobiography","route","answer","novelist","account","quantity","experimental","agent","rate","framework","girl","dolphin","sequence","fee","horse","mango","event","patience","stage","bad","fortune","open-minded","comics","experienced","organisational","feed","damp","surrounding","identify","formal","inconclusive","networker","sheep","unequal","smoking","volcanic","response","explanation","solid","confidential","frustration","bar","chick","full","bronze","welfare","finger","limited","harvested","showroom","administrative","opened","limestone","learn","cleaned","beat","declining","cooled","military","maintenance","symbol","achievement","self-confident","transparency","situation","progress","skyscraper","aspiration","sunflower","wooden","style","shared","format","man","harmful","flexibility","wrong","commuter","last","seagrass","active","entire","birth","donate","inconvenient","cooperation","quote","washbasin","rich","foreign"]},{"id":"u13","title":"第十三单元 · 词组更新","words":["side door","Green Street","gold coins","Park Road","meet teachers","crop plant","IT course","the lead","academic report","some trees","the sheet","nuts and fish","group organiser","business district","muscle pain","rock and jazz","play well","shark skin","legal advice","seating capacity","South Asia","recent photo","Cuban Life","East Asia","diving mask","right labels","online shopping","free repair","old airport","corporate loan","sun proof","short equipment","negative thinking","reusable bag","local heroes","long life span","socialize with people","recent reward","healthy benefit","license to drive","learning zone","nuclear power","cultural awareness","member restaurant","good facilities","running tour","gallery shop","waste disposal","fish dishes","historical photos","knife handle","travel around","cinema zone","economic depression","coffee table","meeting point","fuel shortage","cupboard or bookshelf","mixed ages","machines or robots","long road runner","natural life","they do well","family use","real life","ozone layer","at night","total block","detailed notes","beach soccer","plastic folder","sports equipment","grocery store","Avenue of flags","black bears","swimming coach","visitor centre","extra resistance","King Room","bird room","Central Street","iced coffee","a retire house","English literature","electronic product","junction six","practical skills","mountain hike","computer problems","petrol stations","boat trip","too close","The Secret Garden","by the door","gas tanks","abstract ideas","Bird Park","late afternoon","darkness to lightness","twice a week","not any coloured","human companionship","New Opera","monthly magazines","other colleagues","collect shells","oil filter","watching time","watering plants","telephone the employer","tennis courts","end of the month","by boat","early mornings","zoom lens","ride bikes","grocery shopping","museum centre","rose garden","registration office","modern play","family ticket","phone card","no nuts","this weekend","role of motivation","north island","sport articles","management of change","flower shop","less than a week","nature of volunteering","side entrance","sports shoes","recycled glass","new customer","a person","local supermarket","party wears","alarming system","other planets","Sport's Hall","river trip","future medicine","North Bay","television programme","traffic toy","white bar","eight products","baseball coach","blue gate","tuition waived","rescue diver","every second week","cleaning products","diving experience","a yellow box","an apartment","Saturday mornings","model wooden truck","project online","paying attention","basic technology","one sentence","market interview","free post","lab report","email attachment","drawing club","five minutes","sea shores","drama club","ground plan","on edge","artists club","unanswered questions","genetic structure","card number","undeveloped area","Computer as Teacher","conference room","social interactions","University of Melbourne","mixed table","unexpected noise","top floor","river lane","third year","ground floor","after school","more time","Palm Lounge","top mount","student loans","textbook allowance","silver-coloured cloth","oral exam","grain patterns","Friday evening","identify card","Cultural Centre","River Avenue","a general discussion","yellow fever","leave a message","student union","whole building","Spring Street","digestive problem","container types","variety of food","higher car taxes","material used","Central Hotel","temple walls","rubber wheels","test driving","the big toe","every other week","Summer Palace","remove out","skills and experiences","first traffic light","the ground","modules technology","first Tuesday","two million passengers","Math Department","answering the phone","huge increase","package labels","good rest","unsocial hours","pink and yellow","by train","family relationship","The origins","farm work","group relationship","club room","West Lake","more costly","make invitations","chemical contaminants","cold drinks","young people","hot buffet","second floor","paper napkins","corporation morality","Middle Street","rare glass","switch off","family expectation","next Tuesday","particular disease","client engineer","college research","share room","human activities","business area","natural subjects","goods for sale","own subject","vegetarian food","gene diversity","Park Street","written language"]},{"id":"u14","title":"第十四单元 · 单词更新2","words":["contaminant","hearing","single","developing","herd","sixth","flute","hull","smaller","journalist","husband","snowboarding","mid-afternoon","identical","specimen","poetry","irrigate","spot","related","large","stadium","restroom","leather","stare","shadow","leave","statement","twin","lizard","sticky","vitamin","long-term","suitable","wetsuit","luxury","sunglasses","addictive","magic","talking","aid","major","thunder","air-conditioning","malnutrition","tidiness","anger","mice","tradition","angry","monopoly","trivial","anniversary","odour","unemployment","architecture","paradise","varnish","assessment","passenger","visual","bee","peace","visualisation","biscuit","peak","wave","bread","pharmacy","weapon","breath","pillow","wolf","camping","pioneer","zoo","charge","practical","cement","clubroom","practice","computer-aided","consume","prevalent","deteriorate","corridor","primary","free","cricket","prisoner","frost","deck","ranger","funder","different","react","implant","dollar","recognise","orchestra","eagle","recreation","plot","electric","referee","poem","endangered","resort","prediction","ferry","row","recorder","fertility","runner","sadness","fog","safeguard","setting","fox","self-locking","skim","freezing","servant","songwriter","front","shipment","harmony","silence"]},{"id":"u15","title":"第十五单元 · 词组更新2","words":["bird watching","land erosion","displays and products","child seat","large slide","electric field","driving licence","leak water","every hour","gold coast","life science undergraduate","experienced musicians","maintenance issue","lifting heavy items","horizontally across","2 pockets","local market","hot spots","3 days ago","next week morning","lead guitar","a large office","noisy disturbances","local newspaper","applicant form","objective matters","Mobile film making","apron and sunglasses","own meal","new products","artist club","passive learners","next week","black bear","plan the time","Northern Europe","body fluids","presentation skills","on average","car numbers","radio signals","one your diploma","clear argument","rock climbing","oral history","computer programme","safe environment","physical movements","contractual issue","sea lion","plastic surgery","country living","sick pay","primary and secondary schools","course work","small rockets","profitable combination","culture context","special shuttle buses","public performances","disabled people","sports centre","rare creatures","dolphins and whales","streets transport","red footprints","egg cartons","stress levels","regularly replaced","financial loss","tape measurer","route book","first aid","textile factory","sandy soil","first-year students","TV reporter","top left-hand corner","formal clothes","twin room","Tower of London","goat skin","wild condition","types of cells","good pay","young employee","university tour","grocery stores","6-month certificate","Why study media","group trip","best location","head office","city walking tours","high car taxes","cooking method","identifying hazards","daily basis","insurance company","digging skills"]}];
+const UNIT_MAP = {};
+UNITS.forEach(u => UNIT_MAP[u.id] = u);
+
+/* ---------------- persisted data ---------------- */
+const STORE_KEY = 'dictation-data';
+let store = { 
+    wrongBank: {}, 
+    unitStats: {}, 
+    seenWords: {},   // unitId -> Set/array of words heard at least once
+    history: [], 
+    reasonTotals: { miss:0, guess:0, spell:0 },
+    settings: { accent: 'en-GB', voiceName: null, rate: 0.85, repeat: 1 } 
+};
+
+// 使用标准的 localStorage 进行同步读取
+function loadStore() {
+    try {
+        const res = localStorage.getItem(STORE_KEY);
+        if (res) {
+            const parsed = JSON.parse(res);
+            store.wrongBank = parsed.wrongBank || {};
+            store.unitStats = parsed.unitStats || {};
+            store.seenWords = parsed.seenWords || {};
+            store.history = parsed.history || [];
+            store.reasonTotals = Object.assign({ miss:0, guess:0, spell:0 }, parsed.reasonTotals || {});
+            store.settings = Object.assign({ accent: 'en-GB', voiceName: null, rate: 0.85, repeat: 1 }, parsed.settings || {});
+        }
+    } catch (e) {
+        console.error('加载存档失败，将使用默认设置', e);
+    }
+    applySettingsToUI();
+    renderHome();
+}
+
+// 使用标准的 localStorage 进行同步写入
+function saveStore() {
+    try {
+        localStorage.setItem(STORE_KEY, JSON.stringify(store));
+    } catch (e) {
+        console.error('自动保存失败 (可能是隐私模式或磁盘空间不足)', e);
+    }
+}
+
+/* ---------------- TTS ---------------- */
+let voices = [];
+function loadVoices(){
+  voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  populateVoiceSelect();
+}
+if('speechSynthesis' in window){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+function pickVoice(langPref){
+  if(!voices.length) return null;
+  if(store.settings.voiceName){
+    const exact = voices.find(v => v.name === store.settings.voiceName);
+    if(exact) return exact;
+  }
+  let v = voices.find(v => v.lang === langPref);
+  if(!v) v = voices.find(v => v.lang && v.lang.startsWith(langPref.split('-')[0]) && v.lang.toLowerCase().includes(langPref.split('-')[1].toLowerCase()));
+  if(!v) v = voices.find(v => v.lang && v.lang.startsWith('en'));
+  return v || null;
+}
+function speakWord(word, onend){
+  if(!('speechSynthesis' in window)){
+    if(onend) onend();
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(word);
+  const v = pickVoice(store.settings.accent);
+  if(v) u.voice = v;
+  u.lang = store.settings.accent;
+  u.rate = store.settings.rate;
+  u.onstart = () => setSpeaking(true);
+  u.onend = () => { setSpeaking(false); if(onend) onend(); };
+  u.onerror = () => { setSpeaking(false); if(onend) onend(); };
+  window.speechSynthesis.speak(u);
+}
+function setSpeaking(on){
+  document.getElementById('wave').classList.toggle('speaking', on);
+  document.getElementById('playIcon').className = on ? 'ti ti-volume' : 'ti ti-player-play-filled';
+}
+
+/* ---------------- grading ---------------- */
+function normalize(s){
+  return (s||'').trim().toLowerCase().replace(/\s+/g,' ');
+}
+function isCorrect(input, answer){
+  return normalize(input) === normalize(answer);
+}
+
+/* ---------------- helpers ---------------- */
+function fmtTime(sec){
+  sec = Math.max(0, Math.round(sec));
+  const m = Math.floor(sec/60), s = sec%60;
+  return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function unitCumAcc(id){
+  const s = store.unitStats[id];
+  if(!s || !s.attempted) return null;
+  return Math.round((s.correct/s.attempted)*100);
+}
+
+/* ---------------- app state ---------------- */
+const state = {
+  selectedUnits: new Set(['u1']),
+  count: 30,
+  order: 'random',
+  session: null
+};
+
+function showView(name){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+}
+
+/* ---------------- settings UI ---------------- */
+function applySettingsToUI(){
+  populateVoiceSelect();
+  document.getElementById('rateSlider').value = store.settings.rate;
+  document.getElementById('rateVal').textContent = store.settings.rate.toFixed(2) + 'x';
+  document.getElementById('repeatSlider').value = store.settings.repeat;
+  document.getElementById('repeatVal').textContent = store.settings.repeat + ' 次';
+}
+
+function populateVoiceSelect(){
+  const sel = document.getElementById('accentSelect');
+  const enVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+  if(!enVoices.length){
+    sel.innerHTML = '<option value="">正在加载发音列表…</option>';
+    return;
+  }
+  const prevValue = store.settings.voiceName || sel.value;
+  sel.innerHTML = enVoices.map(v =>
+    `<option value="${escapeHtml(v.name)}">${escapeHtml(v.name)} · ${escapeHtml(v.lang)}</option>`
+  ).join('');
+  const matched = enVoices.find(v => v.name === prevValue);
+  if(matched){
+    sel.value = matched.name;
+  } else {
+    sel.value = enVoices[0].name;
+    store.settings.voiceName = enVoices[0].name;
+    store.settings.accent = enVoices[0].lang;
+  }
+}
+
+document.getElementById('accentSelect').addEventListener('change', e=>{
+  const v = voices.find(v => v.name === e.target.value);
+  store.settings.voiceName = e.target.value;
+  if(v) store.settings.accent = v.lang;
+  saveStore();
+});
+
+document.getElementById('previewVoiceBtn').addEventListener('click', ()=>{
+  speakWord('listening');
+});
+
+document.getElementById('rateSlider').addEventListener('input', e=>{
+  store.settings.rate = parseFloat(e.target.value);
+  document.getElementById('rateVal').textContent = store.settings.rate.toFixed(2) + 'x';
+});
+document.getElementById('rateSlider').addEventListener('change', saveStore);
+document.getElementById('repeatSlider').addEventListener('input', e=>{
+  store.settings.repeat = parseInt(e.target.value);
+  document.getElementById('repeatVal').textContent = store.settings.repeat + ' 次';
+});
+document.getElementById('repeatSlider').addEventListener('change', saveStore);
+document.getElementById('settingsToggle').addEventListener('click', ()=>{
+  const p = document.getElementById('settingsPanel');
+  p.classList.toggle('open');
+  document.getElementById('settingsChevron').style.transform = p.classList.contains('open') ? 'rotate(180deg)' : '';
+});
+document.getElementById('backupToggle').addEventListener('click', ()=>{
+  const p = document.getElementById('backupPanel');
+  p.classList.toggle('open');
+  document.getElementById('backupChevron').style.transform = p.classList.contains('open') ? 'rotate(180deg)' : '';
+});
+
+/* ---------------- backup export / import ---------------- */
+function exportBackup(){
+  const payload = {
+    type: 'ielts-dictation-backup',
+    exportedAt: new Date().toISOString(),
+    data: store
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const dateStr = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `听写备份-${dateStr}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=> URL.revokeObjectURL(url), 1000);
+}
+document.getElementById('exportBackupBtn').addEventListener('click', exportBackup);
+
+document.getElementById('importBackupBtn').addEventListener('click', ()=>{
+  document.getElementById('importBackupFile').click();
+});
+document.getElementById('importBackupFile').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    let parsed;
+    try{
+      parsed = JSON.parse(ev.target.result);
+    }catch(err){
+      alert('这个文件读不出来，确认选的是之前导出的备份文件');
+      e.target.value = '';
+      return;
+    }
+    const data = parsed && parsed.type === 'ielts-dictation-backup' ? parsed.data : parsed;
+    if(!data || typeof data !== 'object' || !('wrongBank' in data) || !('unitStats' in data)){
+      alert('这个文件看起来不是有效的备份，恢复已取消');
+      e.target.value = '';
+      return;
+    }
+    const confirmMsg = '导入会覆盖当前设备上的全部进度和错词本，确定要恢复这份备份吗？';
+    if(!confirm(confirmMsg)){
+      e.target.value = '';
+      return;
+    }
+    store.wrongBank = data.wrongBank || {};
+    store.unitStats = data.unitStats || {};
+    store.seenWords = data.seenWords || {};
+    store.history = data.history || [];
+    store.reasonTotals = Object.assign({miss:0,guess:0,spell:0}, data.reasonTotals || {});
+    store.settings = Object.assign({accent:'en-GB',voiceName:null,rate:0.85,repeat:1}, data.settings || {});
+    saveStore();
+    applySettingsToUI();
+    renderHome();
+    e.target.value = '';
+    alert('恢复成功');
+  };
+  reader.onerror = ()=>{
+    alert('文件读取失败，请重试');
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+});
+
+/* ---------------- home render ---------------- */
+function wrongBankReasonCounts(){
+  const counts = {miss:0, guess:0, spell:0};
+  Object.values(store.wrongBank).forEach(info=>{
+    if(info.reason && counts[info.reason]!==undefined) counts[info.reason]++;
+  });
+  return counts;
+}
+
+function reasonClickableHtml(counts){
+  const sum = (counts.miss||0)+(counts.guess||0)+(counts.spell||0);
+  if(sum === 0) return '';
+  const defs = [
+    {key:'miss',  label:'没听出来'},
+    {key:'guess', label:'听个大概'},
+    {key:'spell', label:'拼写错误'}
+  ];
+  return `<p class="reason-hint">点一类，只练那一类的错词</p><div class="reason-summary">
+    ${defs.map(d=>{
+      const n = counts[d.key]||0;
+      const disabled = n===0;
+      return `<div class="item clickable ${disabled?'disabled':''}" data-reason="${d.key}">
+        <span class="dot ${d.key}"></span>${d.label} <b>${n}</b>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function startReasonSession(reason){
+  const words = Object.keys(store.wrongBank)
+    .filter(word => store.wrongBank[word].reason === reason)
+    .map(word => ({word, unit: store.wrongBank[word].unit}));
+  if(!words.length) return;
+  startSession(shuffle(words));
+}
+
+function renderHome(){
+  const totalAttempted = Object.values(store.unitStats).reduce((a,s)=>a+s.attempted,0);
+  const totalCorrect = Object.values(store.unitStats).reduce((a,s)=>a+s.correct,0);
+  const overallAcc = totalAttempted ? Math.round(totalCorrect/totalAttempted*100) : 0;
+  const wrongCount = Object.keys(store.wrongBank).length;
+  document.getElementById('homeStats').innerHTML = `
+    <div class="stat-box"><span class="num">${totalAttempted}</span><span class="lbl">累计听写</span></div>
+    <div class="stat-box"><span class="num">${overallAcc}%</span><span class="lbl">总正确率</span></div>
+    <div class="stat-box"><span class="num">${wrongCount}</span><span class="lbl">错词本</span></div>
+  `;
+  const reasonCounts = wrongBankReasonCounts();
+  const reasonEl = document.getElementById('homeReasonSummary');
+  reasonEl.innerHTML = reasonClickableHtml(reasonCounts);
+  reasonEl.querySelectorAll('.item.clickable').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      if(el.classList.contains('disabled')) return;
+      startReasonSession(el.dataset.reason);
+    });
+  });
+  document.getElementById('reviewWrongBtn').disabled = wrongCount === 0;
+  const guessCount = Object.values(store.wrongBank).filter(v=>v.reason==='guess').length;
+  document.getElementById('guessEntryCount').textContent = guessCount + '词';
+  document.getElementById('guessEntryBtn').style.display = guessCount > 0 ? 'flex' : 'none';
+
+  const listEl = document.getElementById('unitList');
+  listEl.innerHTML = UNITS.map(u=>{
+    const checked = state.selectedUnits.has(u.id);
+    const acc = unitCumAcc(u.id);
+    const seen = (store.seenWords[u.id] || []).length;
+    const total = u.words.length;
+    const pct = total ? Math.round((seen/total)*100) : 0;
+    return `<div class="unit-row ${checked?'checked':''}" data-id="${u.id}">
+      <div class="unit-check"><i class="ti ti-check" aria-hidden="true"></i></div>
+      <div class="unit-info">
+        <div class="name">${u.title}</div>
+        <div class="meta">${seen > 0 ? `${seen} / ${total} 词已练` : `${total} 词`}</div>
+        ${seen > 0 ? `<div class="unit-prog-bar"><div class="unit-prog-fill" style="width:${pct}%"></div></div>` : ''}
+      </div>
+      <div class="unit-acc">
+        <span class="acc-pct">${acc===null?'—':acc+'%'}</span>
+        ${seen > 0 ? `<span class="acc-prog">${pct}%</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+  listEl.querySelectorAll('.unit-row').forEach(row=>{
+    row.addEventListener('click', ()=>{
+      const id = row.dataset.id;
+      if(state.selectedUnits.has(id)) state.selectedUnits.delete(id);
+      else state.selectedUnits.add(id);
+      row.classList.toggle('checked');
+      updateCountChips();
+    });
+  });
+  updateCountChips();
+}
+
+function selectedWordPool(){
+  let pool = [];
+  state.selectedUnits.forEach(id=>{
+    UNIT_MAP[id].words.forEach(w => pool.push({word:w, unit:id}));
+  });
+  return pool;
+}
+
+function updateCountChips(){
+  const pool = selectedWordPool();
+  const max = pool.length;
+  const finalOpts = [20,30,50].filter(v=>v<max);
+  finalOpts.push(max || 1);
+  const uniqueOpts = [...new Set(finalOpts)].filter(v=>v>0);
+  if(!uniqueOpts.includes(state.count)) state.count = uniqueOpts[0] || 1;
+  const chipsEl = document.getElementById('countChips');
+  chipsEl.innerHTML = uniqueOpts.map(v=>{
+    const label = (v===max) ? '全部 '+max : String(v);
+    return `<div class="chip ${state.count===v?'active':''}" data-v="${v}">${label}</div>`;
+  }).join('');
+  chipsEl.querySelectorAll('.chip').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      state.count = parseInt(c.dataset.v);
+      chipsEl.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+      c.classList.add('active');
+    });
+  });
+  document.getElementById('startBtn').disabled = max === 0;
+}
+
+document.getElementById('orderChips').querySelectorAll('.chip').forEach(c=>{
+  c.addEventListener('click', ()=>{
+    state.order = c.dataset.order;
+    document.querySelectorAll('#orderChips .chip').forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');
+  });
+});
+
+/* ---------------- practice session ---------------- */
+let sessionTimerInterval = null;
+
+function startSession(words){
+  // words: [{word, unit}]
+  if(!words.length) return;
+  state.session = {
+    words,
+    idx: 0,
+    correctCount: 0,
+    wrongList: [],
+    answered: false,
+    startedAt: Date.now(),
+    touchedUnits: new Set(words.map(w=>w.unit))
+  };
+  showView('practice');
+  startTimer();
+  renderQuestion();
+}
+
+function startTimer(){
+  clearInterval(sessionTimerInterval);
+  sessionTimerInterval = setInterval(()=>{
+    if(!state.session) return;
+    const sec = (Date.now() - state.session.startedAt)/1000;
+    document.getElementById('timerTxt').textContent = fmtTime(sec);
+  }, 500);
+}
+
+function currentItem(){
+  return state.session.words[state.session.idx];
+}
+
+function renderQuestion(){
+  const s = state.session;
+  const total = s.words.length;
+  document.getElementById('progressTxt').textContent = `${s.idx+1} / ${total}`;
+  document.getElementById('progressFill').style.width = Math.round((s.idx/total)*100) + '%';
+
+  const input = document.getElementById('answerInput');
+  input.value = '';
+  input.classList.remove('flash-good','flash-bad');
+  input.disabled = false;
+  document.getElementById('feedback').classList.remove('show','good','bad');
+  document.getElementById('reasonPicker').classList.remove('show');
+  document.getElementById('practiceActions').style.display = '';
+  document.getElementById('submitBtn').textContent = '提交';
+  document.getElementById('submitBtn').onclick = handleSubmit;
+  s.answered = false;
+
+  const item = currentItem();
+  let plays = 0;
+  const doPlay = ()=>{
+    plays++;
+    speakWord(item.word, ()=>{
+      if(plays < store.settings.repeat){
+        setTimeout(doPlay, 350);
+      }
+    });
+  };
+  setTimeout(doPlay, 250);
+  setTimeout(()=> input.focus(), 300);
+}
+
+document.getElementById('playBtn').addEventListener('click', ()=>{
+  speakWord(currentItem().word);
+});
+document.getElementById('replayBtn').addEventListener('click', ()=>{
+  speakWord(currentItem().word);
+});
+
+document.getElementById('answerInput').addEventListener('keydown', e=>{
+  if(e.key === 'Enter'){ e.preventDefault(); handleSubmit(); }
+});
+
+function handleSubmit(){
+  const s = state.session;
+  if(s.answered){ nextQuestion(); return; }
+  const item = currentItem();
+  const input = document.getElementById('answerInput');
+  const val = input.value;
+  const ok = isCorrect(val, item.word);
+  s.answered = true;
+
+  recordAnswer(item, ok, val);
+
+  const fb = document.getElementById('feedback');
+  const fbIcon = document.getElementById('feedbackIcon');
+  const fbText = document.getElementById('feedbackText');
+  fb.classList.add('show');
+  input.disabled = true;
+
+  if(ok){
+    s.correctCount++;
+    input.classList.add('flash-good');
+    fb.classList.add('good'); fb.classList.remove('bad');
+    fbIcon.className = 'ti ti-check';
+    fbText.textContent = '正确';
+    document.getElementById('submitBtn').textContent = '下一词 →';
+    setTimeout(()=>{ if(s.answered) nextQuestion(); }, 900);
+  } else {
+    s.wrongList.push({word:item.word, unit:item.unit, you:val.trim(), reason:null});
+    input.classList.add('flash-bad');
+    fb.classList.add('bad'); fb.classList.remove('good');
+    fbIcon.className = 'ti ti-x';
+    fbText.innerHTML = `正确拼写：<span class="answer-word">${escapeHtml(item.word)}</span>`;
+    document.getElementById('practiceActions').style.display = 'none';
+    document.getElementById('reasonPicker').classList.add('show');
+  }
+}
+
+document.querySelectorAll('.reason-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    pickReason(btn.dataset.reason);
+  });
+});
+
+function pickReason(reason){
+  const s = state.session;
+  if(!s || !s.answered) return;
+  const lastWrong = s.wrongList[s.wrongList.length - 1];
+  if(lastWrong) lastWrong.reason = reason;
+
+  store.reasonTotals[reason] = (store.reasonTotals[reason]||0) + 1;
+  const item = currentItem();
+  if(store.wrongBank[item.word]){
+    store.wrongBank[item.word].reason = reason;
+  }
+  saveStore();
+
+  document.getElementById('reasonPicker').classList.remove('show');
+  document.getElementById('practiceActions').style.display = '';
+  nextQuestion();
+}
+
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function recordAnswer(item, ok, userInput){
+  if(!store.unitStats[item.unit]) store.unitStats[item.unit] = {attempted:0, correct:0};
+  store.unitStats[item.unit].attempted++;
+  if(!store.seenWords[item.unit]) store.seenWords[item.unit] = [];
+  if(!store.seenWords[item.unit].includes(item.word)) store.seenWords[item.unit].push(item.word);
+  if(ok){
+    store.unitStats[item.unit].correct++;
+    if(store.wrongBank[item.word]) delete store.wrongBank[item.word];
+  } else {
+    const existing = store.wrongBank[item.word] || {unit:item.unit, count:0};
+    existing.count++;
+    existing.unit = item.unit;
+    existing.lastWrong = new Date().toISOString();
+    existing.lastYou = userInput;
+    store.wrongBank[item.word] = existing;
+  }
+}
+
+function nextQuestion(){
+  const s = state.session;
+  if(s.idx + 1 >= s.words.length){
+    finishSession();
+  } else {
+    s.idx++;
+    renderQuestion();
+  }
+}
+
+function finishSession(){
+  clearInterval(sessionTimerInterval);
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  const s = state.session;
+  const durationSec = (Date.now() - s.startedAt)/1000;
+  const accuracy = Math.round((s.correctCount / s.words.length) * 100);
+
+  store.history.unshift({
+    date: new Date().toISOString(),
+    units: [...s.touchedUnits],
+    total: s.words.length,
+    correct: s.correctCount,
+    accuracy,
+    durationSec: Math.round(durationSec)
+  });
+  store.history = store.history.slice(0, 30);
+  saveStore();
+
+  renderResults(s, durationSec, accuracy);
+  showView('results');
+}
+
+document.getElementById('exitBtn').addEventListener('click', ()=>{
+  if(!state.session) { showView('home'); return; }
+  const answeredCount = state.session.idx + (state.session.answered?1:0);
+  clearInterval(sessionTimerInterval);
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  if(answeredCount === 0){
+    state.session = null;
+    showView('home');
+    renderHome();
+    return;
+  }
+  const s = state.session;
+  s.words = s.words.slice(0, answeredCount);
+  finishSession();
+});
+
+/* ---------------- results view ---------------- */
+const REASON_META = {
+  miss:  { label:'没听出来', cls:'miss' },
+  guess: { label:'听个大概', cls:'guess' },
+  spell: { label:'拼写错误', cls:'spell' }
+};
+function reasonTagHtml(reason){
+  const m = REASON_META[reason];
+  if(!m) return '';
+  return `<span class="reason-tag ${m.cls}">${m.label}</span>`;
+}
+function reasonSummaryHtml(totals){
+  const t = totals || {};
+  const sum = (t.miss||0)+(t.guess||0)+(t.spell||0);
+  if(sum === 0) return '';
+  return `<div class="reason-summary">
+    <span class="item"><span class="dot miss"></span>没听出来 <b>${t.miss||0}</b></span>
+    <span class="item"><span class="dot guess"></span>听个大概 <b>${t.guess||0}</b></span>
+    <span class="item"><span class="dot spell"></span>拼写错误 <b>${t.spell||0}</b></span>
+  </div>`;
+}
+
+function renderResults(s, durationSec, accuracy){
+  document.getElementById('resultAcc').innerHTML = accuracy + '<sup>%</sup>';
+  document.getElementById('resultSub').textContent =
+    `${s.correctCount} / ${s.words.length} 正确 · 用时 ${fmtTime(durationSec)}`;
+
+  const avgSec = s.words.length ? (durationSec / s.words.length) : 0;
+  document.getElementById('resultStats').innerHTML = `
+    <div class="stat-box"><span class="num">${s.words.length}</span><span class="lbl">听写词数</span></div>
+    <div class="stat-box"><span class="num">${avgSec.toFixed(1)}s</span><span class="lbl">平均每词</span></div>
+    <div class="stat-box"><span class="num">${s.wrongList.length}</span><span class="lbl">错词数</span></div>
+  `;
+
+  const sessionTotals = {miss:0, guess:0, spell:0};
+  s.wrongList.forEach(w=>{ if(w.reason && sessionTotals[w.reason]!==undefined) sessionTotals[w.reason]++; });
+  document.getElementById('resultReasonSummary').innerHTML = reasonSummaryHtml(sessionTotals);
+
+  const guessWrong = s.wrongList.filter(w=>w.reason==='guess');
+  const guessSection = document.getElementById('resultGuessSection');
+  if(guessWrong.length > 0){
+    guessSection.style.display = 'block';
+    document.getElementById('resultGuessList').innerHTML = buildAnalysisHtml(guessWrong);
+  } else {
+    guessSection.style.display = 'none';
+  }
+
+  const wrongEl = document.getElementById('resultWrongList');
+  if(s.wrongList.length === 0){
+    wrongEl.innerHTML = '<p class="empty-note">本组全部正确，太稳了</p>';
+  } else {
+    wrongEl.innerHTML = s.wrongList.map(w=>`
+      <div class="wrong-item">
+        <div class="left">
+          <span class="w">${escapeHtml(w.word)}${w.you ? `<span class="you">你写: ${escapeHtml(w.you)}</span>`:''}</span>
+          ${reasonTagHtml(w.reason)}
+        </div>
+        <button class="icon-btn" style="font-size:16px;" data-word="${escapeHtml(w.word)}" aria-label="重听"><i class="ti ti-volume" aria-hidden="true"></i></button>
+      </div>`).join('');
+    wrongEl.querySelectorAll('button[data-word]').forEach(b=>{
+      b.addEventListener('click', ()=> speakWord(b.dataset.word));
+    });
+  }
+  document.getElementById('retryWrongBtn').style.display = s.wrongList.length ? 'block' : 'none';
+  document.getElementById('retryWrongBtn').onclick = ()=>{
+    startSession(shuffle(s.wrongList.map(w=>({word:w.word, unit:w.unit}))));
+  };
+}
+
+/* -------- 听个大概 分析引擎（音节块版） -------- */
+
+/**
+ * 英语音节切分
+ * 规则：VC·CV, V·CV, VC·V, 处理常见前/后缀，以及连字符词
+ */
+function splitSyllables(word){
+  if(!word) return [];
+  const w = word.toLowerCase();
+  const vowels = 'aeiouy';
+  const isV = ch => vowels.includes(ch);
+
+  let positions = [0];
+  let i = 1;
+  while(i < w.length){
+    const prev = w[i-1], cur = w[i], next = w[i+1];
+    if(i === w.length-1){ i++; continue; }
+    // 元音 + 辅音 + 元音 → 辅音归下一音节
+    if(isV(prev) && !isV(cur) && isV(next)){
+      positions.push(i); i++; continue;
+    }
+    // 两个辅音之间：VC|CV
+    if(isV(prev) && !isV(cur) && next && !isV(next) && i+2 <= w.length){
+      const nn = w[i+2];
+      if(nn && isV(nn)){ positions.push(i+1); i+=2; continue; }
+    }
+    i++;
+  }
+
+  if(positions.length === 1) return [word];
+  const raw = [];
+  for(let k=0; k<positions.length; k++){
+    const start = positions[k];
+    const end = k+1 < positions.length ? positions[k+1] : word.length;
+    raw.push(word.slice(start, end));
+  }
+  // 合并无元音碎片到前一块
+  const merged = [];
+  for(let k=0; k<raw.length; k++){
+    const hasVowel = [...raw[k]].some(c => vowels.includes(c.toLowerCase()));
+    if(!hasVowel && merged.length > 0) merged[merged.length-1] += raw[k];
+    else merged.push(raw[k]);
+  }
+  return merged.length ? merged : [word];
+}
+
+/**
+ * 对两个音节数组做对齐（简单LCS对齐）
+ * 返回 [{you, correct, type}] type: 'match'|'sub'|'ins'|'del'
+ */
+function alignSyllables(ySyls, cSyls){
+  const Y = ySyls.length, C = cSyls.length;
+  // dp[i][j] = edit distance
+  const dp = Array.from({length:Y+1}, (_,i)=>Array.from({length:C+1},(_,j)=>i+j));
+  for(let i=1;i<=Y;i++) for(let j=1;j<=C;j++){
+    const match = ySyls[i-1].toLowerCase() === cSyls[j-1].toLowerCase();
+    dp[i][j] = match
+      ? dp[i-1][j-1]
+      : Math.min(dp[i-1][j-1]+1, dp[i-1][j]+1, dp[i][j-1]+1);
+  }
+  // traceback
+  const ops = [];
+  let i=Y, j=C;
+  while(i>0||j>0){
+    if(i>0&&j>0&&ySyls[i-1].toLowerCase()===cSyls[j-1].toLowerCase()){
+      ops.unshift({you:ySyls[i-1], correct:cSyls[j-1], type:'match'}); i--;j--;
+    } else if(i>0&&j>0&&dp[i][j]===dp[i-1][j-1]+1){
+      ops.unshift({you:ySyls[i-1], correct:cSyls[j-1], type:'sub'}); i--;j--;
+    } else if(i>0&&dp[i][j]===dp[i-1][j]+1){
+      ops.unshift({you:ySyls[i-1], correct:'', type:'del'}); i--;
+    } else {
+      ops.unshift({you:'', correct:cSyls[j-1], type:'ins'}); j--;
+    }
+  }
+  return ops;
+}
+
+function sylCompareHtml(you, correct){
+  const y = (you || '').trim();
+  const c = correct.trim();
+  if(!y){
+    // 完全没写：只显示正确音节
+    const cSyls = splitSyllables(c);
+    const blocks = cSyls.map((s,i)=>(i?'<span class="syl-sep">·</span>':'')+`<span class="syl syl-correct">${escapeHtml(s)}</span>`).join('');
+    return `<div class="syl-compare">
+      <div class="syl-row"><span class="syl-row-label">正确</span>${blocks}</div>
+    </div>`;
+  }
+
+  const ySyls = splitSyllables(y);
+  const cSyls = splitSyllables(c);
+  const ops = alignSyllables(ySyls, cSyls);
+
+  // 统计差异
+  let missCount=0, addCount=0, subCount=0, matchCount=0;
+  ops.forEach(op=>{
+    if(op.type==='match') matchCount++;
+    else if(op.type==='sub') subCount++;
+    else if(op.type==='del') addCount++;   // 你多写了
+    else if(op.type==='ins') missCount++;  // 你漏了
+  });
+
+  // 你写的行
+  let youRow='', correctRow='';
+  ops.forEach((op,idx)=>{
+    const sep = idx>0?'<span class="syl-sep">·</span>':'';
+    if(op.type==='match'){
+      youRow    += sep+`<span class="syl syl-match">${escapeHtml(op.you)}</span>`;
+      correctRow+= sep+`<span class="syl syl-match">${escapeHtml(op.correct)}</span>`;
+    } else if(op.type==='sub'){
+      youRow    += sep+`<span class="syl syl-wrong">${escapeHtml(op.you)}</span>`;
+      correctRow+= sep+`<span class="syl syl-correct">${escapeHtml(op.correct)}</span>`;
+    } else if(op.type==='del'){
+      // 你多写的音节
+      youRow    += sep+`<span class="syl syl-wrong">${escapeHtml(op.you)}</span>`;
+      correctRow+= sep+`<span class="syl syl-missing">—</span>`;
+    } else {
+      // 你漏的音节
+      youRow    += sep+`<span class="syl syl-missing">?</span>`;
+      correctRow+= sep+`<span class="syl syl-correct">${escapeHtml(op.correct)}</span>`;
+    }
+  });
+
+  // 提示标签
+  let tips='';
+  if(missCount>0) tips+=`<span class="tip-badge tb-miss">漏 ${missCount} 块</span>`;
+  if(addCount>0)  tips+=`<span class="tip-badge tb-add">多 ${addCount} 块</span>`;
+  if(subCount>0)  tips+=`<span class="tip-badge tb-miss">错 ${subCount} 块</span>`;
+  if(matchCount>0)tips+=`<span class="tip-badge tb-ok">对 ${matchCount} 块</span>`;
+
+  return `<div class="syl-compare">
+    <div class="syl-row"><span class="syl-row-label">你写</span>${youRow}</div>
+    <div class="syl-row"><span class="syl-row-label">正确</span>${correctRow}</div>
+    ${tips?`<div class="syl-tip">${tips}</div>`:''}
+  </div>`;
+}
+
+function buildAnalysisHtml(guessList){
+  if(!guessList.length) return '<p class="empty-note">暂无"听个大概"的错词记录</p>';
+  return guessList.map(w=>`
+    <div class="analysis-item">
+      <div class="ai-word">
+        <span>${escapeHtml(w.word)}</span>
+        <span class="reason-tag guess">听个大概</span>
+      </div>
+      <div class="ai-hint" style="margin-top:0;padding-top:0;border-top:none;">
+        音节对比
+        ${sylCompareHtml(w.you, w.word)}
+      </div>
+    </div>`).join('');
+}
+
+function getGuessWords(){
+  return Object.keys(store.wrongBank)
+    .filter(word => store.wrongBank[word].reason === 'guess')
+    .map(word => ({word, unit: store.wrongBank[word].unit, you: store.wrongBank[word].lastYou || ''}));
+}
+
+function showAnalysisView(){
+  const words = getGuessWords();
+  document.getElementById('analysisContent').innerHTML = buildAnalysisHtml(words);
+  document.getElementById('analysisPracticeBtn').style.display = words.length ? 'block' : 'none';
+  showView('analysis');
+}
+
+document.getElementById('guessEntryBtn').addEventListener('click', showAnalysisView);
+document.getElementById('analysisBackBtn').addEventListener('click', ()=>{ showView('home'); renderHome(); });
+document.getElementById('analysisPracticeBtn').addEventListener('click', ()=>{
+  const words = getGuessWords();
+  if(!words.length) return;
+  startSession(shuffle(words.map(w=>({word:w.word, unit:w.unit}))));
+});
+document.getElementById('resultsBackBtn').addEventListener('click', ()=>{ showView('home'); renderHome(); });
+document.getElementById('newSetBtn').addEventListener('click', ()=>{ showView('home'); renderHome(); });
+document.getElementById('homeBtn2').addEventListener('click', ()=>{ showView('home'); renderHome(); });
+
+
+/* ---------------- wrong bank view ---------------- */
+function renderBank(){
+  const entries = Object.entries(store.wrongBank);
+  const content = document.getElementById('bankContent');
+  if(entries.length === 0){
+    content.innerHTML = '<p class="empty-note">错词本是空的，去练几组吧</p>';
+    document.getElementById('bankPracticeBtn').style.display = 'none';
+    return;
+  }
+  document.getElementById('bankPracticeBtn').style.display = 'block';
+  const byUnit = {};
+  entries.forEach(([word,info])=>{
+    if(!byUnit[info.unit]) byUnit[info.unit] = [];
+    byUnit[info.unit].push({word, ...info});
+  });
+  content.innerHTML = Object.keys(byUnit).map(uid=>{
+    const items = byUnit[uid].sort((a,b)=>b.count-a.count);
+    return `<div class="bank-group">
+      <div class="gname">${UNIT_MAP[uid] ? UNIT_MAP[uid].title : uid}</div>
+      ${items.map(it=>`
+        <div class="bank-item">
+          <button class="icon-btn" style="font-size:16px;color:var(--accent);" data-play="${escapeHtml(it.word)}" aria-label="朗读"><i class="ti ti-volume" aria-hidden="true"></i></button>
+          <span class="w">${escapeHtml(it.word)}</span>
+          ${reasonTagHtml(it.reason)}
+          <span class="cnt">×${it.count}</span>
+          <button data-remove="${escapeHtml(it.word)}" aria-label="标记已掌握"><i class="ti ti-check" aria-hidden="true"></i></button>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+  content.querySelectorAll('button[data-play]').forEach(b=>{
+    b.addEventListener('click', ()=> speakWord(b.dataset.play));
+  });
+  content.querySelectorAll('button[data-remove]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      delete store.wrongBank[b.dataset.remove];
+      saveStore();
+      renderBank();
+    });
+  });
+}
+
+document.getElementById('wrongBankBtn').addEventListener('click', ()=>{
+  renderBank();
+  showView('bank');
+});
+document.getElementById('bankBackBtn').addEventListener('click', ()=>{
+  showView('home');
+  renderHome();
+});
+document.getElementById('bankPracticeBtn').addEventListener('click', ()=>{
+  const words = Object.entries(store.wrongBank).map(([word,info])=>({word, unit:info.unit}));
+  startSession(shuffle(words));
+});
+document.getElementById('reviewWrongBtn').addEventListener('click', ()=>{
+  const words = Object.entries(store.wrongBank).map(([word,info])=>({word, unit:info.unit}));
+  if(words.length) startSession(shuffle(words));
+});
+
+/* ---------------- start button ---------------- */
+document.getElementById('startBtn').addEventListener('click', ()=>{
+  let pool = selectedWordPool();
+  if(!pool.length) return;
+  pool = state.order === 'random' ? shuffle(pool) : pool;
+  pool = pool.slice(0, state.count);
+  startSession(pool);
+});
+
+/* ---------------- init ---------------- */
+loadStore();
+
+
+</script>
+</body>
+</html>
