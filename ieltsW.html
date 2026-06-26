@@ -560,6 +560,7 @@ input[type="text"], input[type="password"] {
 
 /* ── ANIMATIONS ─────────────────────────── */
 @keyframes fadeSlideUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes spin { to { transform: rotate(360deg); } }
 .fade-in { animation: fadeSlideUp .3s cubic-bezier(.34,1.2,.64,1) forwards; }
 
 /* ── RESULT: VERDICT BLOCK ──────────────── */
@@ -711,8 +712,11 @@ input[type="text"], input[type="password"] {
     <div class="sidebar-item" id="side-tools" onclick="switchTab('tools')">
       <span class="s-icon">🛠</span> 工具
     </div>
-    <div class="sidebar-item" id="side-coach" onclick="switchTab('coach')">
-      <span class="s-icon">✍️</span> 论点教练
+    <div class="sidebar-item" id="side-topics" onclick="switchTab('topics')">
+      <span class="s-icon">🎲</span> 题目库
+    </div>
+    <div class="sidebar-item" id="side-outline" onclick="switchTab('outline')">
+      <span class="s-icon">🧠</span> 构思练
     </div>
     <div class="sidebar-spacer"></div>
     <div class="sidebar-settings" onclick="openSettings()">
@@ -980,84 +984,84 @@ input[type="text"], input[type="password"] {
     </div>
   </div>
 
-  <!-- ===== COACH TAB ===== -->
-  <div class="screen" id="screen-coach" style="display:none">
+  <!-- ===== TOPICS TAB ===== -->
+  <div class="screen" id="screen-topics" style="display:none">
     <div class="nav-header">
-      <h1>论点教练</h1>
-      <div class="nav-sub">Task 2 · 一句一句写出完整论点段落</div>
+      <h1>题目库</h1>
+      <div class="nav-sub">Task 2 · 随机抽题 + 写作切入点</div>
     </div>
-    <div class="content-pad" style="max-width:860px">
+    <div class="content-pad" style="max-width:720px">
 
-      <!-- 输入区 -->
-      <div class="section" style="margin-top:16px" id="coach-input-section">
-        <div class="section-label">题目</div>
-        <textarea id="coach-topic" rows="3" placeholder="粘贴 Task 2 题目…" oninput="autoResize(this)" style="min-height:80px"></textarea>
-
-        <div style="margin-top:12px">
-          <div class="section-label">你的立场</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-            <div class="chip" id="coach-stance-agree" onclick="coachSetStance('agree',this)">支持 (Agree)</div>
-            <div class="chip" id="coach-stance-disagree" onclick="coachSetStance('disagree',this)">反对 (Disagree)</div>
-            <div class="chip" id="coach-stance-balanced" onclick="coachSetStance('balanced',this)">折中观点</div>
-          </div>
+      <!-- 题型筛选 -->
+      <div class="section" style="margin-top:16px">
+        <div class="section-label">题型</div>
+        <div class="chip-row" style="margin-top:6px" id="topic-type-chips">
+          <div class="chip active" onclick="topicSetType('random',this)">随机</div>
+          <div class="chip" onclick="topicSetType('opinion',this)">观点类</div>
+          <div class="chip" onclick="topicSetType('discuss',this)">讨论类</div>
+          <div class="chip" onclick="topicSetType('advantages',this)">利弊类</div>
+          <div class="chip" onclick="topicSetType('problem',this)">问题解决类</div>
+          <div class="chip" onclick="topicSetType('mixed',this)">混合提问类</div>
         </div>
-
-        <button class="action-btn primary" style="margin-top:14px" onclick="coachStart()">✍️ 开始逐句写</button>
       </div>
 
-      <!-- 写作区 -->
-      <div id="coach-guide" style="display:none">
+      <button class="action-btn primary" style="margin-top:14px" onclick="topicDraw()">🎲 抽一道题</button>
 
-        <!-- 步骤导航 -->
-        <div class="section" style="margin-top:16px">
-          <div class="chip-row" id="coach-step-nav"></div>
-        </div>
+      <!-- 结果卡 -->
+      <div id="topic-result" style="display:none;margin-top:20px">
 
-        <!-- 步骤卡片 -->
-        <div class="section" style="margin-top:12px">
-          <div id="coach-step-card" style="background:var(--card);border-radius:var(--radius);padding:16px"></div>
-        </div>
-
-        <!-- 用户输入 -->
-        <div class="section" style="margin-top:10px">
-          <div class="write-label">写你的句子</div>
-          <textarea id="coach-sentence-input" rows="3" placeholder="在这里写这一句…" oninput="autoResize(this)" style="min-height:72px"></textarea>
-        </div>
-
-        <!-- 按钮行 -->
-        <div class="section" style="margin-top:8px;display:flex;gap:8px">
-          <button class="action-btn" style="flex:1;background:var(--bg);color:var(--text);border:1.5px solid var(--sep);font-size:15px;font-weight:600" onclick="coachHint()">💡 提示</button>
-          <button class="action-btn primary" style="flex:2" onclick="coachNext()">下一句 →</button>
-        </div>
-
-        <!-- 提示框 -->
-        <div class="section" style="margin-top:8px">
-          <div id="coach-hint-box" style="display:none;background:#F0F7FF;border-radius:12px;padding:12px 14px;font-size:13px;color:var(--text2);line-height:1.7;border:1.5px solid #D1E8FF"></div>
-        </div>
-
-        <!-- 已写句子汇总 -->
-        <div class="section" style="margin-top:12px">
-          <div id="coach-assembled" style="display:none">
-            <div class="section-label">已完成</div>
-            <div id="coach-assembled-text" style="background:var(--card);border-radius:var(--radius);padding:14px 16px;font-size:14px;line-height:1.85"></div>
+        <!-- 题目 -->
+        <div style="background:var(--card);border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow-sm);margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+            <span id="topic-type-badge" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:.3px"></span>
+            <span style="font-size:11px;color:var(--label);font-weight:500">IELTS Writing Task 2</span>
           </div>
+          <div id="topic-text" style="font-size:15px;color:var(--text);line-height:1.75;font-weight:400;user-select:text;-webkit-user-select:text;letter-spacing:-.1px"></div>
         </div>
 
-        <!-- 完成区 -->
-        <div class="section" style="margin-top:16px">
-          <div id="coach-finish" style="display:none">
-            <div class="section-label">完整论点段落</div>
-            <div id="coach-full-para" style="background:var(--card);border-radius:var(--radius);padding:16px;font-size:15px;line-height:1.9;margin-bottom:12px;user-select:text;-webkit-user-select:text"></div>
-            <div style="display:flex;gap:8px">
-              <button class="action-btn green" style="flex:1" onclick="coachSendGrade()">✦ AI 批改这段</button>
-              <button class="action-btn" style="flex:1;background:var(--bg);color:var(--text);border:1.5px solid var(--sep);font-size:15px;font-weight:600" onclick="coachReset()">重新开始</button>
-            </div>
-          </div>
+        <!-- 切入点 -->
+        <div style="background:var(--card);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-sm);margin-bottom:12px">
+          <div style="font-size:12px;font-weight:700;color:var(--label);text-transform:uppercase;letter-spacing:.4px;margin-bottom:12px">💡 写作切入点</div>
+          <div id="topic-angles"></div>
         </div>
 
-        <div style="height:24px"></div>
+        <!-- 操作 -->
+        <div style="display:flex;gap:8px">
+          <button class="action-btn primary" style="flex:1" onclick="topicSendToWrite()">✏️ 去写这道题</button>
+          <button class="action-btn" style="flex:1;background:var(--bg);border:1.5px solid var(--sep);color:var(--text);font-weight:600;font-size:15px" onclick="topicDraw()">换一题</button>
+        </div>
       </div>
 
+      <div style="height:32px"></div>
+    </div>
+  </div>
+
+  <!-- ===== OUTLINE TAB ===== -->
+  <div class="screen" id="screen-outline" style="display:none">
+    <div class="nav-header">
+      <h1>构思练</h1>
+      <div class="nav-sub">每日 3 题 · 审题 + 列提纲</div>
+    </div>
+    <div class="content-pad" style="max-width:720px">
+
+      <!-- 进度条 -->
+      <div class="section" style="margin-top:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:13px;font-weight:600;color:var(--text)">今日进度</div>
+          <div style="font-size:13px;color:var(--label)" id="outline-progress-label">0 / 3 完成</div>
+        </div>
+        <div style="height:6px;background:var(--fill3);border-radius:100px;overflow:hidden">
+          <div id="outline-progress-bar" style="height:100%;width:0%;background:var(--blue);border-radius:100px;transition:width .4s cubic-bezier(.34,1.2,.64,1)"></div>
+        </div>
+      </div>
+
+      <!-- 题目列表 -->
+      <div id="outline-cards" style="margin-top:12px"></div>
+
+      <!-- 刷新按钮 -->
+      <button class="action-btn" id="outline-refresh-btn" style="margin-top:4px;background:var(--bg);border:1.5px solid var(--sep);color:var(--text);font-weight:600;font-size:15px;width:100%" onclick="outlineRefresh()">↺ 换一组题目</button>
+
+      <div style="height:32px"></div>
     </div>
   </div>
 
@@ -1093,9 +1097,14 @@ input[type="text"], input[type="password"] {
       <span class="tab-label">工具</span>
       <div class="tab-dot"></div>
     </div>
-    <div class="tab-item" id="tab-coach" onclick="switchTab('coach')">
-      <span class="tab-icon">✍️</span>
-      <span class="tab-label">教练</span>
+    <div class="tab-item" id="tab-topics" onclick="switchTab('topics')">
+      <span class="tab-icon">🎲</span>
+      <span class="tab-label">题目库</span>
+      <div class="tab-dot"></div>
+    </div>
+    <div class="tab-item" id="tab-outline" onclick="switchTab('outline')">
+      <span class="tab-icon">🧠</span>
+      <span class="tab-label">构思练</span>
       <div class="tab-dot"></div>
     </div>
     <div class="tab-item" id="tab-settings" onclick="openSettings()">
@@ -1967,7 +1976,7 @@ function clearData() {
 // NAV / SHEETS
 // ============================================================
 function switchTab(name) {
-  ['write','tutorial','analyze','vocab','mistakes','progress','tools','coach'].forEach(t => {
+  ['write','tutorial','analyze','vocab','mistakes','progress','tools','topics','outline'].forEach(t => {
     const sc = document.getElementById('screen-'+t);
     if (sc) sc.style.display = t===name ? 'block' : 'none';
     const tabEl = document.getElementById('tab-'+t);
@@ -2798,185 +2807,360 @@ function showToast(msg) {
 }
 
 // ============================================================
-// ARGUMENT COACH
+// TOPIC BANK
 // ============================================================
-const COACH_STEPS = [
-  {
-    id: 'topic_sentence',
-    label: '① 论点句',
-    title: '第①句：Topic Sentence（论点句）',
-    why: '开门见山说你的核心观点。考官要马上知道这段在讲什么。不用"I think"，直接客观陈述。',
-    template: '[主语] + [观点动词] + [具体主张]',
-    example: 'Public transport investment significantly reduces urban congestion and pollution.',
-    hints: ['不要写"In my opinion..."，直接陈述', '句子只讲这段的一个核心点', '用动词短语比be动词有力：reduces / enhances / undermines']
-  },
-  {
-    id: 'reason',
-    label: '② 理由',
-    title: '第②句：Reason（为什么）',
-    why: '告诉考官这个观点背后的逻辑。没有理由的论点只是主张，不是论证。',
-    template: 'This is because + [逻辑原因，讲机制/原理]',
-    example: 'This is because efficient rail and bus networks allow more people to travel without private vehicles, directly cutting traffic volume.',
-    hints: ['不要重复论点句，要解释"为什么"', '想象有人问你"why?" — 你的回答就是这句', '可用：because / since / as / given that']
-  },
-  {
-    id: 'example',
-    label: '③ 例子',
-    title: '第③句：Example（举例说明）',
-    why: '抽象论点需要具体证据。一个好例子可以把分数从6拉到7。',
-    template: 'For example, + [具体地点/人群/数据] + [发生了什么]',
-    example: "For example, Singapore's integrated MRT system has kept private car ownership among the lowest in Asia, demonstrating that investment in public transport shapes travel habits.",
-    hints: ['不需要100%准确的数据，合理估计即可', '可用虚构但合理的场景：cities that have... / countries where...', '例子要直接支持你的理由，不要跑题']
-  },
-  {
-    id: 'elaboration',
-    label: '④ 深化',
-    title: '第④句：Elaboration（深化分析）',
-    why: '把例子和论点连起来，展示分析能力。这是 Band 7+ 的关键句。',
-    template: 'This suggests that... / This demonstrates that... / Consequently...',
-    example: 'This suggests that when governments prioritise public transport, citizens adapt their behaviour accordingly, leading to systemic improvements in urban mobility.',
-    hints: ['不要只是重复例子，要分析它说明了什么', 'This shows / proves / suggests / indicates + 你的结论', '也可用 As a result, / Therefore, / Thus, 推导影响']
-  },
-  {
-    id: 'link',
-    label: '⑤ 收尾',
-    title: '第⑤句：Linking Sentence（收尾回扣）',
-    why: '把这段拉回到题目的大问题，让段落完整，也为下一段做过渡。',
-    template: 'It is therefore clear that... / For these reasons, [主题] is...',
-    example: 'It is therefore clear that directing government funding towards public transport is a more effective strategy for managing urban growth than simply expanding road networks.',
-    hints: ['要提到题目里的关键词（paraphrase一下）', '不要引入新的论点', '可用 therefore / thus / in this way / for these reasons']
-  }
+const TOPIC_BANK = [
+  // 观点类 opinion
+  { type:'opinion', text:'Some people believe that individuals should be responsible for their own health and lifestyle choices, while others argue that governments have a duty to intervene. To what extent do you agree or disagree?', angles:['角度一：政府干预破坏个人自由，且效果有限（税收、广告限制往往适得其反）','角度二：公共卫生是集体问题，个人选择造成社会成本，政府干预有正当性'] },
+  { type:'opinion', text:'The most effective way to reduce crime is to give longer prison sentences. To what extent do you agree or disagree?', angles:['角度一：长期监禁有震慑作用，尤其对暴力犯罪，但对轻罪效果有限','角度二：犯罪根源在社会经济不平等，教育和社区项目才是根本解决之道'] },
+  { type:'opinion', text:'International travel has become much more accessible in recent decades. Some people think this is a positive development, while others believe it has caused significant problems. Discuss both views and give your own opinion.', angles:['角度一：旅游促进文化理解与经济发展，尤其有助于发展中国家','角度二：大规模旅游破坏环境与当地文化，机场扩张加剧碳排放'] },
+  { type:'opinion', text:'Some people think that paid work is the most important part of a person\'s life. Others, however, believe that other aspects of life are more important. To what extent do you agree or disagree?', angles:['角度一：工作提供身份认同、社会联结与经济安全，对大多数人是核心','角度二：家庭关系、健康和个人兴趣决定长期幸福感，工作只是手段'] },
+  { type:'opinion', text:'Some people feel that manufacturers and supermarkets have the responsibility to reduce the amount of packaging of goods. Others argue that it is the individual consumer who should avoid buying over-packaged products. To what extent do you agree or disagree?', angles:['角度一：企业控制供应链，解决包装问题效率远高于分散的个人选择','角度二：消费者需求驱动市场，改变购买行为才能从根本上倒逼企业改变'] },
+
+  // 讨论类 discuss
+  { type:'discuss', text:'Some people think that it is more important to spend money on roads and motorways than on public transport. What is your view?', angles:['角度一：道路建设带动郊区经济，灵活性更高，是许多国家的现实需求','角度二：公共交通减少拥堵、碳排放和城市贫困，长远回报更大'] },
+  { type:'discuss', text:'Some people think that children should begin their formal education at a very early age. Others believe that they should not go to school until they are older. Discuss both views and give your own opinion.', angles:['角度一：早期结构化教育有助于认知和社会技能发展，缩小阶层差距','角度二：学前期应以游戏和家庭为主，过早正式教育增加焦虑并削弱创造力'] },
+  { type:'discuss', text:'Some people say that advertising encourages us to buy things we do not really need. Others say that advertisements tell us about new products that may improve our lives. Discuss both views and give your own opinion.', angles:['角度一：广告制造虚假需求，导致过度消费与债务，尤其损害儿童判断力','角度二：广告为新产品提供信息渠道，驱动竞争，最终使消费者受益'] },
+  { type:'discuss', text:'Some people think young people should follow traditional values. Others believe young people should be free to make their own choices. Discuss both views and give your own opinion.', angles:['角度一：传统价值观提供道德框架与社会凝聚力，对年轻人有保护作用','角度二：每代人面临不同挑战，限制年轻人自主探索会阻碍社会进步'] },
+
+  // 利弊类 advantages
+  { type:'advantages', text:'Some companies now offer their employees the option to work from home. What are the advantages and disadvantages of this trend?', angles:['优势：减少通勤、提高自主性、有助于育儿及残障人士就业','劣势：团队协作效率下降，家庭干扰增加，职业发展机会减少'] },
+  { type:'advantages', text:'Nowadays, many people use social media to get news and information. What are the advantages and disadvantages of this development?', angles:['优势：信息传播快速、个性化强，普通公民也可成为新闻报道者','劣势：算法导致信息茧房与假新闻扩散，削弱批判性思维'] },
+  { type:'advantages', text:'In many countries, young people are leaving rural areas to live in cities. What are the advantages and disadvantages of this development?', angles:['优势：更多就业机会和教育资源，推动城市劳动力供给与经济增长','劣势：农村劳动力短缺、老龄化加剧，城市过度拥挤与住房压力'] },
+  { type:'advantages', text:'Increasing numbers of people are choosing to live alone. What are the advantages and disadvantages of living alone?', angles:['优势：完全自主的生活方式，促进自我认知与独立能力','劣势：孤独感、心理健康风险和缺乏紧急互助网络'] },
+
+  // 问题解决类 problem
+  { type:'problem', text:'In many countries, the level of crime is increasing. What do you think are the main causes of crime? How can we deal with this problem?', angles:['原因：贫困、教育缺失与社会不平等是主要驱动因素','解决：投资教育和职业培训，同时结合社区警务和早期干预项目'] },
+  { type:'problem', text:'Many older people live alone, and this can lead to feelings of loneliness and isolation. What are the causes of this, and what problems does it lead to? How could this problem be tackled?', angles:['原因：家庭结构核化、子女移居外地、配偶去世','解决：社区老年中心、数字技能培训使老人保持社会连接，政策鼓励代际同住'] },
+  { type:'problem', text:'Traffic congestion in cities is a serious problem in many parts of the world. What are the causes of this problem? What measures could be taken to solve it?', angles:['原因：私家车依赖、城市扩张与公共交通投资不足','解决：拥堵收费（如伦敦模式）、提升公共交通密度、推广远程办公'] },
+  { type:'problem', text:'In many countries, children are becoming overweight and unhealthy. What are the causes of this trend, and what solutions would you suggest?', angles:['原因：超加工食品泛滥与久坐生活方式，加之体育课时间被削减','解决：学校营养教育、对含糖饮料征税、城市规划提供更多运动空间'] },
+
+  // 混合提问类 mixed
+  { type:'mixed', text:'Some people think that universities should provide students with more practical skills that will prepare them for the workplace. Others believe that the role of universities is to encourage independent thinking rather than career training. Discuss both views and explain which approach you think is more beneficial.', angles:['切入点一：职业导向课程让学生立即产生经济价值，减少大学生失业率','切入点二：批判思维与研究能力适应快速变化的劳动市场，长期价值更高'] },
+  { type:'mixed', text:'Many people believe that countries have a duty to accept refugees, while others think they should be more selective about who they allow in. What are the benefits and drawbacks of accepting large numbers of refugees? To what extent do you agree that countries should be selective?', angles:['利：难民带来多元文化、劳动力补充，接纳本身也是国际法义务','弊：短期资源压力与融合挑战；选择性政策可平衡人道与国家能力'] },
+  { type:'mixed', text:'Some people think that the best way to improve road safety is to increase the minimum age for driving. Others believe there are better alternatives. What is your opinion? What other measures do you think would be effective?', angles:['切入点一：提高驾龄门槛有助于降低青少年事故率，但限制了农村青年出行','切入点二：强制进阶驾照制度、危险驾驶重罚、智能监测系统更为全面'] },
+  { type:'mixed', text:'Governments spend large amounts of money on space exploration programmes. Some people think this money should be spent on solving problems on Earth instead. To what extent do you agree or disagree? What benefits do space programmes offer?', angles:['切入点一：地球问题（饥饿、气候）更紧迫，太空投入属于奢侈消费','切入点二：太空技术衍生 GPS、气象卫星、医疗创新，间接惠及全人类'] },
 ];
 
-let coachStance = '';
-let coachCurrentStep = 0;
-let coachSentences = [];
+const TYPE_LABELS = {
+  opinion:    { label:'观点类', color:'var(--blue)',   bg:'var(--blue-tint)'   },
+  discuss:    { label:'讨论类', color:'var(--purple)', bg:'var(--purple-tint)' },
+  advantages: { label:'利弊类', color:'var(--orange)', bg:'var(--orange-tint)' },
+  problem:    { label:'问题解决类', color:'var(--teal)', bg:'rgba(48,176,199,.14)' },
+  mixed:      { label:'混合提问类', color:'var(--indigo)', bg:'rgba(88,86,214,.12)' },
+};
 
-function coachSetStance(s, el) {
-  coachStance = s;
-  document.querySelectorAll('#coach-input-section .chip').forEach(c => c.classList.remove('active'));
+let currentTopicType = 'random';
+let lastDrawnTopic = null;
+
+function topicSetType(type, el) {
+  currentTopicType = type;
+  document.querySelectorAll('#topic-type-chips .chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
 }
 
-function coachStart() {
-  const topic = document.getElementById('coach-topic').value.trim();
-  if (!topic) { showToast('请先输入题目'); return; }
-  if (!coachStance) { showToast('请选择立场'); return; }
-  coachCurrentStep = 0;
-  coachSentences = [];
-  document.getElementById('coach-input-section').style.display = 'none';
-  document.getElementById('coach-guide').style.display = 'block';
-  document.getElementById('coach-finish').style.display = 'none';
-  document.getElementById('coach-assembled').style.display = 'none';
-  coachBuildNav();
-  coachRenderStep();
-}
+function topicDraw() {
+  let pool = currentTopicType === 'random' ? TOPIC_BANK : TOPIC_BANK.filter(t => t.type === currentTopicType);
+  if (!pool.length) return;
+  // avoid repeat
+  let filtered = pool.filter(t => t !== lastDrawnTopic);
+  if (!filtered.length) filtered = pool;
+  const topic = filtered[Math.floor(Math.random() * filtered.length)];
+  lastDrawnTopic = topic;
 
-function coachBuildNav() {
-  const nav = document.getElementById('coach-step-nav');
-  nav.innerHTML = COACH_STEPS.map((s, i) =>
-    `<div class="chip" id="coach-nav-${i}" onclick="coachJump(${i})">${s.label}</div>`
-  ).join('');
-  coachUpdateNav();
-}
+  const meta = TYPE_LABELS[topic.type];
+  document.getElementById('topic-type-badge').textContent = meta.label;
+  document.getElementById('topic-type-badge').style.background = meta.bg;
+  document.getElementById('topic-type-badge').style.color = meta.color;
+  document.getElementById('topic-text').textContent = topic.text;
 
-function coachUpdateNav() {
-  COACH_STEPS.forEach((_, i) => {
-    const el = document.getElementById('coach-nav-' + i);
-    if (!el) return;
-    el.classList.toggle('active', i === coachCurrentStep);
+  const anglesEl = document.getElementById('topic-angles');
+  anglesEl.innerHTML = topic.angles.map((a, i) => `
+    <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 0;${i>0?'border-top:.5px solid var(--sep)':''}">
+      <div style="width:22px;height:22px;border-radius:50%;background:${meta.bg};color:${meta.color};font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</div>
+      <div style="font-size:14px;color:var(--text2);line-height:1.6;letter-spacing:-.1px">${a}</div>
+    </div>`).join('');
+
+  const res = document.getElementById('topic-result');
+  res.style.display = 'block';
+  res.style.opacity = '0';
+  res.style.transform = 'translateY(8px)';
+  requestAnimationFrame(() => {
+    res.style.transition = 'opacity .3s ease, transform .3s cubic-bezier(.34,1.2,.64,1)';
+    res.style.opacity = '1';
+    res.style.transform = 'translateY(0)';
   });
+  res.scrollIntoView({ behavior:'smooth', block:'nearest' });
 }
 
-function coachJump(i) {
-  if (i > coachSentences.length) return;
-  coachCurrentStep = i;
-  coachRenderStep();
-}
-
-function coachRenderStep() {
-  const s = COACH_STEPS[coachCurrentStep];
-  document.getElementById('coach-hint-box').style.display = 'none';
-  document.getElementById('coach-sentence-input').value = coachSentences[coachCurrentStep] || '';
-
-  document.getElementById('coach-step-card').innerHTML = `
-    <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:12px">${s.title}</div>
-    <div class="concept-box" style="margin-bottom:10px">
-      <div class="concept-title">💡 为什么写这句</div>
-      <div class="concept-body">${s.why}</div>
-    </div>
-    <div class="template-box" style="margin-bottom:10px">
-      <div class="template-label">结构公式</div>
-      <div class="template-text">${s.template}</div>
-    </div>
-    <div class="example-box">
-      <div class="example-label">示例</div>
-      <div class="example-text">${s.example}</div>
-    </div>`;
-
-  coachUpdateNav();
-  coachUpdateAssembled();
-}
-
-function coachHint() {
-  const s = COACH_STEPS[coachCurrentStep];
-  const box = document.getElementById('coach-hint-box');
-  box.style.display = 'block';
-  box.innerHTML = '<b style="color:var(--blue)">提示：</b><br>' + s.hints.map(h => '• ' + h).join('<br>');
-}
-
-function coachNext() {
-  const val = document.getElementById('coach-sentence-input').value.trim();
-  coachSentences[coachCurrentStep] = val || '（未填写）';
-  coachUpdateAssembled();
-
-  if (coachCurrentStep < COACH_STEPS.length - 1) {
-    coachCurrentStep++;
-    coachRenderStep();
-    document.getElementById('coach-hint-box').style.display = 'none';
-    document.getElementById('coach-sentence-input').value = coachSentences[coachCurrentStep] || '';
-  } else {
-    coachShowFinish();
-  }
-}
-
-function coachUpdateAssembled() {
-  const done = coachSentences.filter(Boolean);
-  if (!done.length) { document.getElementById('coach-assembled').style.display = 'none'; return; }
-  document.getElementById('coach-assembled').style.display = 'block';
-  document.getElementById('coach-assembled-text').innerHTML = done.map((s, i) =>
-    `<div style="margin-bottom:8px"><span style="font-size:11px;font-weight:600;color:var(--label);margin-right:6px">${COACH_STEPS[i]?.label || ''}</span>${s}</div>`
-  ).join('');
-}
-
-function coachShowFinish() {
-  document.getElementById('coach-finish').style.display = 'block';
-  document.getElementById('coach-full-para').textContent = coachSentences.join(' ');
-  document.getElementById('coach-finish').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function coachSendGrade() {
-  const para = coachSentences.join(' ');
-  const topic = document.getElementById('coach-topic').value.trim();
-  const stanceLabel = { agree:'支持', disagree:'反对', balanced:'折中' }[coachStance] || coachStance;
-  // Switch to write tab and prefill
+function topicSendToWrite() {
+  if (!lastDrawnTopic) return;
   switchTab('write');
   setTask(2);
-  document.getElementById('prompt-input').value = topic;
-  autoResize(document.getElementById('prompt-input'));
-  document.getElementById('essay-input').value = para;
-  autoResize(document.getElementById('essay-input'));
-  onEssayInput(document.getElementById('essay-input'));
-  showToast('已填入写作页，点击 AI 批改');
+  const el = document.getElementById('prompt-input');
+  el.value = lastDrawnTopic.text;
+  autoResize(el);
+  showToast('题目已填入写作页 ✓');
 }
 
-function coachReset() {
-  coachCurrentStep = 0;
-  coachSentences = [];
-  coachStance = '';
-  document.getElementById('coach-guide').style.display = 'none';
-  document.getElementById('coach-input-section').style.display = 'block';
-  document.querySelectorAll('#coach-input-section .chip').forEach(c => c.classList.remove('active'));
+// ============================================================
+// OUTLINE PRACTICE
+// ============================================================
+let outlineTopics = [];
+let outlineDate = '';
+let outlineAnswers = {}; // { idx: { thesis, body1, body2, conclusion, submitted } }
+
+function outlineGetTodayKey() {
+  return new Date().toISOString().slice(0,10);
+}
+
+function outlineInit() {
+  const today = outlineGetTodayKey();
+  const saved = JSON.parse(localStorage.getItem('outline_' + today) || 'null');
+  if (saved) {
+    outlineTopics = saved.topics;
+    outlineAnswers = saved.answers || {};
+  } else {
+    // pick 3 random topics, one from each of 3 different types
+    const types = ['opinion','discuss','advantages','problem','mixed'];
+    const shuffledTypes = types.sort(() => Math.random()-.5).slice(0,3);
+    outlineTopics = shuffledTypes.map(type => {
+      const pool = TOPIC_BANK.filter(t => t.type === type);
+      return pool[Math.floor(Math.random() * pool.length)];
+    });
+    outlineAnswers = {};
+    outlineSave(today);
+  }
+  outlineDate = today;
+  outlineRender();
+}
+
+function outlineSave(day) {
+  localStorage.setItem('outline_' + (day||outlineDate), JSON.stringify({ topics: outlineTopics, answers: outlineAnswers }));
+}
+
+function outlineRender() {
+  const done = Object.values(outlineAnswers).filter(a => a.submitted).length;
+  document.getElementById('outline-progress-label').textContent = `${done} / 3 完成`;
+  document.getElementById('outline-progress-bar').style.width = `${Math.round(done/3*100)}%`;
+
+  const container = document.getElementById('outline-cards');
+  container.innerHTML = outlineTopics.map((topic, idx) => {
+    const meta = TYPE_LABELS[topic.type];
+    const ans = outlineAnswers[idx] || {};
+    const submitted = !!ans.submitted;
+    return `
+    <div style="background:var(--card);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px;box-shadow:var(--shadow-sm);${submitted?'border:.5px solid var(--green)':''}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;background:${meta.bg};color:${meta.color};letter-spacing:.3px">${meta.label}</span>
+          <span style="font-size:12px;color:var(--label);font-weight:600">题目 ${idx+1}</span>
+        </div>
+        ${submitted ? '<span style="font-size:12px;color:var(--green);font-weight:700">✓ 已完成</span>' : ''}
+      </div>
+      <div style="font-size:14px;color:var(--text);line-height:1.7;margin-bottom:14px;letter-spacing:-.1px;user-select:text;-webkit-user-select:text">${topic.text}</div>
+
+      ${submitted ? `
+        <div style="background:var(--bg);border-radius:var(--radius);padding:12px 14px">
+          <div style="font-size:11px;font-weight:700;color:var(--label);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">你的提纲</div>
+          ${[['论点/立场', ans.thesis],['主体段1', ans.body1],['主体段2', ans.body2],['结论', ans.conclusion]].map(([k,v])=>v?`
+            <div style="margin-bottom:6px">
+              <span style="font-size:11px;font-weight:700;color:var(--blue)">${k}：</span>
+              <span style="font-size:13px;color:var(--text2);line-height:1.5">${v}</span>
+            </div>`:''
+          ).join('')}
+        </div>
+
+        ${ans.aiLoading ? `
+          <div style="margin-top:12px;background:var(--bg);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:10px">
+            <div style="width:18px;height:18px;border:2.5px solid var(--blue);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0"></div>
+            <div style="font-size:13px;color:var(--label)">AI 正在分析你的提纲…</div>
+          </div>
+        ` : ans.aiFeedback ? (ans.aiFeedback.error ? `
+          <div style="margin-top:12px;background:var(--red-tint);border-radius:var(--radius);padding:12px 14px;font-size:13px;color:var(--red)">${ans.aiFeedback.error}</div>
+          <button class="action-btn" style="margin-top:8px;background:var(--bg);border:1.5px solid var(--sep);color:var(--text);font-size:14px;font-weight:600" onclick="outlineAnswers[${idx}].aiLoading=true;outlineRender();outlineAIFeedback(${idx})">重试</button>
+        ` : `
+          <div style="margin-top:12px;background:var(--card);border-radius:var(--radius-lg);overflow:hidden;border:.5px solid var(--sep)">
+
+            <!-- 逻辑评估 header -->
+            <div style="padding:12px 14px;border-bottom:.5px solid var(--sep);display:flex;align-items:center;justify-content:space-between">
+              <div style="font-size:12px;font-weight:700;color:var(--label);text-transform:uppercase;letter-spacing:.4px">✦ AI 提纲点评</div>
+              ${{
+                '强': `<span style="font-size:11px;font-weight:800;padding:3px 10px;border-radius:100px;background:var(--green-tint);color:var(--green)">逻辑：强 ✓</span>`,
+                '中': `<span style="font-size:11px;font-weight:800;padding:3px 10px;border-radius:100px;background:var(--orange-tint);color:var(--orange)">逻辑：中</span>`,
+                '弱': `<span style="font-size:11px;font-weight:800;padding:3px 10px;border-radius:100px;background:var(--red-tint);color:var(--red)">逻辑：弱 ✗</span>`,
+              }[ans.aiFeedback.logic_score] || ''}
+            </div>
+
+            <!-- 逻辑分析 -->
+            <div style="padding:12px 14px;border-bottom:.5px solid var(--sep);background:var(--bg)">
+              <div style="font-size:13px;color:var(--text2);line-height:1.65;letter-spacing:-.1px">${ans.aiFeedback.logic||''}</div>
+            </div>
+
+            <!-- 问题列表 -->
+            ${(ans.aiFeedback.issues||[]).length ? `
+            <div style="padding:12px 14px;border-bottom:.5px solid var(--sep)">
+              <div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.3px;margin-bottom:8px">需要注意</div>
+              ${(ans.aiFeedback.issues||[]).map(i=>`
+                <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px">
+                  <span style="width:16px;height:16px;border-radius:50%;background:var(--red-tint);color:var(--red);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">!</span>
+                  <span style="font-size:13px;color:var(--text2);line-height:1.55;letter-spacing:-.1px">${i}</span>
+                </div>`).join('')}
+            </div>` : ''}
+
+            <!-- 替代构思 -->
+            ${(ans.aiFeedback.alternatives||[]).length ? `
+            <div style="padding:12px 14px;border-bottom:.5px solid var(--sep)">
+              <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.3px;margin-bottom:10px">其他构思方向</div>
+              ${(ans.aiFeedback.alternatives||[]).map((a,i)=>`
+                <div style="display:flex;gap:10px;align-items:flex-start;${i>0?'margin-top:10px;padding-top:10px;border-top:.5px solid var(--sep)':''}">
+                  <div style="width:22px;height:22px;border-radius:8px;background:var(--blue-tint);color:var(--blue);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${String.fromCharCode(65+i)}</div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;letter-spacing:-.1px">${a.label}</div>
+                    <div style="font-size:13px;color:var(--text2);line-height:1.55;letter-spacing:-.1px">${a.desc}</div>
+                  </div>
+                </div>`).join('')}
+            </div>` : ''}
+
+            <!-- 核心建议 -->
+            ${ans.aiFeedback.tip ? `
+            <div style="padding:12px 14px;background:var(--blue-tint);display:flex;gap:10px;align-items:flex-start">
+              <span style="font-size:14px;flex-shrink:0">💡</span>
+              <span style="font-size:13px;font-weight:600;color:var(--blue);line-height:1.55;letter-spacing:-.1px">${ans.aiFeedback.tip}</span>
+            </div>` : ''}
+
+          </div>
+          <button class="action-btn" style="margin-top:10px;background:var(--bg);border:1.5px solid var(--sep);color:var(--label);font-size:13px;font-weight:600" onclick="outlineAnswers[${idx}].aiLoading=true;outlineAnswers[${idx}].aiFeedback=null;outlineRender();outlineAIFeedback(${idx})">↺ 重新分析</button>
+        `) : ''}
+
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="action-btn" style="flex:1;background:var(--bg);border:1.5px solid var(--sep);color:var(--text);font-size:14px;font-weight:600" onclick="outlineEdit(${idx})">编辑提纲</button>
+          <button class="action-btn primary" style="flex:1" onclick="outlineSendToWrite(${idx})">✏️ 去写作</button>
+        </div>
+      ` : `
+        <div style="display:grid;gap:8px">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--label);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px">论点 / 立场</div>
+            <textarea id="outline-thesis-${idx}" rows="2" placeholder="你的核心论点是什么？" oninput="autoResize(this)" style="min-height:56px;font-size:14px">${ans.thesis||''}</textarea>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--label);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px">主体段 1</div>
+            <textarea id="outline-body1-${idx}" rows="2" placeholder="第一个论据/观点" oninput="autoResize(this)" style="min-height:56px;font-size:14px">${ans.body1||''}</textarea>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--label);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px">主体段 2</div>
+            <textarea id="outline-body2-${idx}" rows="2" placeholder="第二个论据/观点" oninput="autoResize(this)" style="min-height:56px;font-size:14px">${ans.body2||''}</textarea>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--label);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px">结论</div>
+            <textarea id="outline-conclusion-${idx}" rows="2" placeholder="总结立场" oninput="autoResize(this)" style="min-height:48px;font-size:14px">${ans.conclusion||''}</textarea>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="action-btn primary" style="flex:2" onclick="outlineSubmit(${idx})">提交提纲</button>
+          <button class="action-btn" style="flex:1;background:var(--bg);border:1.5px solid var(--sep);color:var(--text);font-size:14px;font-weight:600" onclick="outlineSendToWrite(${idx})">去写作</button>
+        </div>
+      `}
+    </div>`;
+  }).join('');
+}
+
+function outlineSubmit(idx) {
+  const thesis     = document.getElementById(`outline-thesis-${idx}`)?.value.trim();
+  const body1      = document.getElementById(`outline-body1-${idx}`)?.value.trim();
+  const body2      = document.getElementById(`outline-body2-${idx}`)?.value.trim();
+  const conclusion = document.getElementById(`outline-conclusion-${idx}`)?.value.trim();
+  if (!thesis) { showToast('请先填写论点/立场'); return; }
+  outlineAnswers[idx] = { thesis, body1, body2, conclusion, submitted: true, aiFeedback: null, aiLoading: true };
+  outlineSave();
+  outlineRender();
+  outlineAIFeedback(idx);
+}
+
+async function outlineAIFeedback(idx) {
+  const db = getDB();
+  if (!db.settings.apiKey) {
+    outlineAnswers[idx].aiLoading = false;
+    outlineAnswers[idx].aiFeedback = { error: '请先在设置中填写 API Key' };
+    outlineSave(); outlineRender(); return;
+  }
+  const topic = outlineTopics[idx];
+  const ans   = outlineAnswers[idx];
+  const TYPE_ZH = { opinion:'观点类', discuss:'讨论类', advantages:'利弊类', problem:'问题解决类', mixed:'混合提问类' };
+
+  const prompt = `你是雅思写作 Task 2 考官级教师。学生针对以下题目写了一份提纲，请用中文给出简洁、实用的反馈。
+
+【题目】（${TYPE_ZH[topic.type]||topic.type}）
+${topic.text}
+
+【学生提纲】
+论点/立场：${ans.thesis}
+主体段1：${ans.body1||'（未填写）'}
+主体段2：${ans.body2||'（未填写）'}
+结论：${ans.conclusion||'（未填写）'}
+
+请严格按照以下 JSON 格式返回，不要输出任何其他文字：
+{
+  "logic": "逻辑评估：1-2句，指出论点与论据是否一致、是否能支撑题目要求",
+  "logic_score": "强 | 中 | 弱",
+  "issues": ["问题1（15字内）", "问题2（选填）"],
+  "alternatives": [
+    { "label": "思路A名称", "desc": "简述这个替代构思方向（30字内）" },
+    { "label": "思路B名称", "desc": "简述（30字内）" }
+  ],
+  "tip": "给学生的一句核心建议（20字内）"
+}`;
+
+  try {
+    const res = await fetch('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+db.settings.apiKey },
+      body: JSON.stringify({
+        model: db.settings.model || 'deepseek-v4-pro',
+        max_tokens: 600,
+        temperature: 0.4,
+        messages: [{ role:'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const raw = data.choices?.[0]?.message?.content || '';
+    const clean = raw.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(clean);
+    outlineAnswers[idx].aiFeedback = parsed;
+  } catch(e) {
+    outlineAnswers[idx].aiFeedback = { error: 'AI 解析失败，请重试' };
+  }
+  outlineAnswers[idx].aiLoading = false;
+  outlineSave();
+  outlineRender();
+}
+
+function outlineEdit(idx) {
+  if (outlineAnswers[idx]) outlineAnswers[idx].submitted = false;
+  outlineSave();
+  outlineRender();
+}
+
+function outlineSendToWrite(idx) {
+  switchTab('write');
+  setTask(2);
+  const el = document.getElementById('prompt-input');
+  el.value = outlineTopics[idx].text;
+  autoResize(el);
+  showToast('题目已填入写作页 ✓');
+}
+
+function outlineRefresh() {
+  const types = ['opinion','discuss','advantages','problem','mixed'];
+  const shuffledTypes = types.sort(() => Math.random()-.5).slice(0,3);
+  outlineTopics = shuffledTypes.map(type => {
+    const pool = TOPIC_BANK.filter(t => t.type === type);
+    return pool[Math.floor(Math.random() * pool.length)];
+  });
+  outlineAnswers = {};
+  outlineSave();
+  outlineRender();
+  showToast('已换一组新题目 ✓');
 }
 
 // ============================================================
@@ -3002,6 +3186,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target.closest('.sheet-body,.screen')) return;
     e.preventDefault();
   }, { passive: false });
+
+  outlineInit();
 });
 </script>
 </body>
