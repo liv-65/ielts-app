@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>雅思写作地道搭配 · 练习复习</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d2e;
+    --card: #222640;
+    --border: #2e3255;
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --accent3: #43e97b;
+    --accent4: #f7971e;
+    --text: #e8eaf6;
+    --muted: #8b8fa8;
+    --correct: #43e97b;
+    --wrong: #ff6584;
+    --yellow: #f7c948;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-size: 18px; font-weight: 700; letter-spacing: .5px; }
+  .logo span { color: var(--accent); }
+  .stats-bar { display: flex; gap: 20px; font-size: 13px; color: var(--muted); }
+  .stats-bar b { color: var(--text); }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex; gap: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    padding: 0 24px;
+  }
+  .tab {
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--muted);
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all .2s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+  /* ── MAIN ── */
+  main { max-width: 860px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ── MODE PICKER ── */
+  .mode-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    margin-bottom: 28px;
+  }
+  .mode-btn {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: all .2s;
+  }
+  .mode-btn:hover { border-color: var(--accent); background: #2a2e50; }
+  .mode-btn.active { border-color: var(--accent); background: #2a2e50; box-shadow: 0 0 0 3px #6c63ff22; }
+  .mode-btn .icon { font-size: 28px; margin-bottom: 8px; }
+  .mode-btn .name { font-size: 14px; font-weight: 600; }
+  .mode-btn .desc { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* ── BROWSE CARDS ── */
+  .browse-grid { display: grid; gap: 16px; }
+  .phrase-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px;
+    transition: border-color .2s;
+  }
+  .phrase-card:hover { border-color: var(--accent); }
+  .phrase-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .phrase-en { font-size: 17px; font-weight: 700; color: #c9c4ff; line-height: 1.4; }
+  .phrase-cn { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .star-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 20px; padding: 2px; flex-shrink: 0; line-height: 1;
+  }
+  .example-toggle {
+    margin-top: 12px;
+    font-size: 13px; color: var(--accent); cursor: pointer;
+    display: inline-flex; align-items: center; gap: 4px;
+    background: none; border: none; padding: 0;
+  }
+  .example-box {
+    margin-top: 10px;
+    background: #16192a;
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 14px;
+    display: none;
+  }
+  .example-box.open { display: block; }
+  .example-en { font-size: 14px; line-height: 1.7; color: var(--text); }
+  .example-note { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
+  .tag {
+    display: inline-block;
+    font-size: 11px; padding: 2px 8px; border-radius: 20px;
+    background: #2e3255; color: var(--accent); margin-bottom: 8px;
+  }
+
+  /* ── FLASHCARD ── */
+  .flashcard-wrap {
+    display: flex; flex-direction: column; align-items: center; gap: 20px;
+  }
+  .fc-progress { width: 100%; height: 4px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .fc-progress-bar { height: 100%; background: var(--accent); transition: width .4s; }
+  .fc-counter { font-size: 13px; color: var(--muted); align-self: flex-end; }
+  .flashcard {
+    width: 100%; min-height: 300px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 32px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform .1s;
+    user-select: none;
+  }
+  .flashcard:active { transform: scale(.98); }
+  .fc-tag { color: var(--accent); font-size: 13px; margin-bottom: 12px; }
+  .fc-front .fc-phrase { font-size: 22px; font-weight: 700; color: #c9c4ff; line-height: 1.5; }
+  .fc-front .fc-hint { font-size: 14px; color: var(--muted); margin-top: 16px; }
+  .fc-back { display: none; }
+  .fc-back.visible { display: block; }
+  .fc-cn { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
+  .fc-example { font-size: 14px; color: var(--text); line-height: 1.7; text-align: left; }
+  .fc-note { font-size: 12px; color: var(--muted); margin-top: 10px; text-align: left; line-height: 1.6; }
+  .fc-actions { display: flex; gap: 12px; width: 100%; }
+  .fc-btn {
+    flex: 1; padding: 14px; border-radius: 12px; border: none; cursor: pointer;
+    font-size: 15px; font-weight: 600; transition: filter .15s;
+  }
+  .fc-btn:hover { filter: brightness(1.1); }
+  .fc-btn.again { background: #3a1a1a; color: var(--wrong); }
+  .fc-btn.hard { background: #3a2d0a; color: var(--yellow); }
+  .fc-btn.good { background: #1a2e2a; color: var(--correct); }
+  .fc-btn.easy { background: #1a1e3a; color: var(--accent); }
+  .flip-hint { font-size: 13px; color: var(--muted); margin-top: 8px; }
+
+  /* ── QUIZ ── */
+  .quiz-wrap { display: flex; flex-direction: column; gap: 20px; }
+  .quiz-q {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 24px;
+  }
+  .quiz-label { font-size: 12px; color: var(--muted); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1px; }
+  .quiz-sentence {
+    font-size: 18px; line-height: 1.8; color: var(--text);
+    background: #16192a; border-radius: 10px; padding: 16px 18px;
+    margin-bottom: 20px;
+  }
+  .blank {
+    display: inline-block;
+    min-width: 140px; height: 28px;
+    border-bottom: 2px solid var(--accent);
+    vertical-align: bottom; text-align: center;
+    color: var(--accent); font-weight: 700;
+    position: relative;
+  }
+  .quiz-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .choice-btn {
+    padding: 13px 16px;
+    background: #16192a;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 14px;
+    cursor: pointer;
+    text-align: left;
+    transition: all .15s;
+    line-height: 1.4;
+  }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent); background: #2a2e50; }
+  .choice-btn.correct { border-color: var(--correct); background: #0d2e1e; color: var(--correct); }
+  .choice-btn.wrong { border-color: var(--wrong); background: #2e0d1a; color: var(--wrong); }
+  .choice-btn:disabled { cursor: default; }
+  .quiz-feedback {
+    margin-top: 14px; padding: 14px 16px;
+    border-radius: 10px; font-size: 14px; line-height: 1.6;
+    display: none;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: #0d2e1e; color: var(--correct); }
+  .quiz-feedback.no { background: #2e0d1a; color: var(--wrong); }
+  .next-btn {
+    padding: 14px 32px; border-radius: 12px;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    align-self: center; display: none; transition: filter .15s;
+  }
+  .next-btn:hover { filter: brightness(1.1); }
+  .next-btn.show { display: block; }
+
+  /* ── FILL BLANK ── */
+  .fill-input {
+    background: #16192a; border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 12px 16px;
+    color: var(--text); font-size: 16px; width: 100%;
+    margin-top: 14px; outline: none; transition: border-color .2s;
+  }
+  .fill-input:focus { border-color: var(--accent); }
+  .submit-btn {
+    padding: 12px 28px; border-radius: 10px;
+    background: var(--accent); color: #fff; border: none;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    margin-top: 12px; transition: filter .15s;
+  }
+  .submit-btn:hover { filter: brightness(1.1); }
+
+  /* ── RESULTS ── */
+  .results-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 40px; text-align: center;
+  }
+  .results-score { font-size: 60px; font-weight: 800; color: var(--accent); }
+  .results-pct { font-size: 20px; color: var(--muted); margin-top: 4px; }
+  .results-msg { font-size: 17px; margin-top: 16px; }
+  .retry-btn {
+    margin-top: 24px; padding: 14px 36px;
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+
+  /* ── EMPTY / UTIL ── */
+  .section-title {
+    font-size: 14px; font-weight: 600; color: var(--muted);
+    margin-bottom: 14px; text-transform: uppercase; letter-spacing: .8px;
+  }
+  .chip {
+    display: inline-block; font-size: 12px; padding: 3px 10px;
+    border-radius: 20px; border: 1px solid var(--border);
+    color: var(--muted); cursor: pointer; margin: 3px;
+    transition: all .15s;
+  }
+  .chip:hover, .chip.active { border-color: var(--accent); color: var(--accent); background: #2a2e50; }
+  .topic-filter { margin-bottom: 20px; }
+  .empty { color: var(--muted); text-align: center; padding: 60px 0; font-size: 15px; }
+  @media (max-width: 600px) {
+    .mode-grid { grid-template-columns: 1fr 1fr; }
+    .quiz-choices { grid-template-columns: 1fr; }
+    .fc-front .fc-phrase { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">雅思写作 <span>地道搭配</span></div>
+  <div class="stats-bar">
+    <div>已学 <b id="learnedCount">0</b></div>
+    <div>收藏 <b id="starCount">0</b></div>
+    <div>正确率 <b id="accuracyPct">—</b></div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-tab="browse">📖 浏览</div>
+  <div class="tab" data-tab="flash">🃏 闪卡</div>
+  <div class="tab" data-tab="quiz">✏️ 选择题</div>
+  <div class="tab" data-tab="fill">⌨️ 填空</div>
+  <div class="tab" data-tab="stars">⭐ 收藏</div>
+</div>
+
+<main>
+  <!-- BROWSE -->
+  <section id="tab-browse">
+    <div class="topic-filter" id="topicFilter"></div>
+    <div id="browseList"></div>
+  </section>
+
+  <!-- FLASH -->
+  <section id="tab-flash" style="display:none">
+    <div class="topic-filter" id="flashFilter"></div>
+    <div class="mode-grid" style="margin-bottom:20px">
+      <div class="mode-btn active" data-pool="all" id="poolAll"><div class="icon">📚</div><div class="name">全部</div><div class="desc">7 大话题</div></div>
+      <div class="mode-btn" data-pool="weak" id="poolWeak"><div class="icon">🎯</div><div class="name">薄弱</div><div class="desc">再次/困难</div></div>
+      <div class="mode-btn" data-pool="stars" id="poolStars"><div class="icon">⭐</div><div class="name">收藏</div><div class="desc">已收藏词组</div></div>
+    </div>
+    <div class="flashcard-wrap">
+      <div style="width:100%; display:flex; justify-content:space-between; align-items:center">
+        <span class="fc-counter" id="fcCounter">0 / 0</span>
+        <button onclick="shuffleFlash()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px">🔀 随机</button>
+      </div>
+      <div class="fc-progress"><div class="fc-progress-bar" id="fcBar" style="width:0%"></div></div>
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div id="fcFront">
+          <div class="fc-tag" id="fcTag"></div>
+          <div class="fc-phrase" id="fcPhrase">点击开始</div>
+          <div class="fc-hint" style="margin-top:20px; color:var(--muted); font-size:13px">👆 点击翻转查看释义与例句</div>
+        </div>
+        <div id="fcBack" class="fc-back">
+          <div class="fc-cn" id="fcCn"></div>
+          <div class="fc-example" id="fcEx"></div>
+          <div class="fc-note" id="fcNote"></div>
+        </div>
+      </div>
+      <div class="flip-hint" id="flipHint">点击卡片翻转</div>
+      <div class="fc-actions" id="fcActions" style="display:none">
+        <button class="fc-btn again" onclick="rateCard('again')">❌ 再来</button>
+        <button class="fc-btn hard" onclick="rateCard('hard')">😓 困难</button>
+        <button class="fc-btn good" onclick="rateCard('good')">✅ 掌握</button>
+        <button class="fc-btn easy" onclick="rateCard('easy')">🚀 熟练</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="tab-quiz" style="display:none">
+    <div class="topic-filter" id="quizTopicFilter"></div>
+    <div id="quizArea"></div>
+  </section>
+
+  <!-- FILL -->
+  <section id="tab-fill" style="display:none">
+    <div class="topic-filter" id="fillTopicFilter"></div>
+    <div id="fillArea"></div>
+  </section>
+
+  <!-- STARS -->
+  <section id="tab-stars" style="display:none">
+    <div class="section-title">⭐ 我的收藏</div>
+    <div id="starList"></div>
+  </section>
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════
+const DATA = [
+  // 小作文
+  {id:0,topic:"小作文",en:"see / experience / show an upward trend",cn:"呈上升趋势",ex:"The cost of insurance saw an upward trend, growing from only 2% in 1999 to 8% in 2001.",note:"同义替换：show a downward trend（呈下降趋势）；growing为现在分词作伴随状语。"},
+  {id:1,topic:"小作文",en:"There be a marked increase in the figure for ...",cn:"…的数值有显著增长",ex:"There was a marked increase in the figure for mobile calls, from 2 billion to 46 billion minutes.",note:"修饰词替换：marked / significant / dramatic；固定搭配 the figure for + 统计对象。"},
+  {id:2,topic:"小作文",en:"show a different pattern",cn:"呈现不同趋势",ex:"Sweden and Denmark showed a different pattern, with falls in banana sales from 1.8-1 and 2-0.9 million euros.",note:"fall 此处作可数名词，表示「数量减少」，图表高频名词用法。"},
+  {id:3,topic:"小作文",en:"cluster between A and B",cn:"在 A、B 数值间波动",ex:"The figure for Britain clustered between 70% and 80%.",note:"同义替换：fluctuated between 70% and 80%。"},
+  {id:4,topic:"小作文",en:"albeit to widely varying degrees",cn:"尽管增长幅度各不相同",ex:"The first table shows low-level coffee sales increasing in all five countries, albeit to widely varying degrees.",note:"albeit 连词，表「虽然」，后可接形容词、介词短语，提升句式高级度。"},
+  {id:5,topic:"小作文",en:"reach the bottom at [数值]",cn:"达到最低点",ex:"The number plummeted, reaching the bottom at 100 in 2000.",note:"plummet 表示「暴跌」；同义：reach the lowest point；at 后直接接数字。"},
+  {id:6,topic:"小作文",en:"record drops in ...",cn:"在……方面出现下降",ex:"By 2014, sales figure for both products had risen, except for Ireland and Belgium which recorded drops in apple sales.",note:"except for / apart from 除……之外；by + 年份主句使用完成时态。"},
+  {id:7,topic:"小作文",en:"fall back to",cn:"回落到……",ex:"The figure for the visits had fallen back to the 1980 figure at the end of the period in question.",note:"反向搭配 increase back to（回升到）；at the end of the period in question 可替代图表末尾时间。"},
+  {id:8,topic:"小作文",en:"double the percentage / number from ... to ...",cn:"数值翻倍",ex:"Over the past decade, nuclear power doubled its percentage from 5% to 10%.",note:"double 可作动词；也可作限定词：The figure for China was double the figure for Canada."},
+  {id:9,topic:"小作文",en:"the trend favoured ...",cn:"趋势更偏向……",ex:"Older people were generally less likely to be poor, though the trend favoured elderly couple (only 4%) rather than single elder people (6%).",note:"favour 此处表「偏向、青睐」；though/although 引导让步从句。"},
+  {id:10,topic:"小作文",en:"compared to ...",cn:"与……相比",ex:"The proportion of land degradation in American was the highest in 2005, at 80%, compared to around 56% in other countries.",note:"compared to 为过去分词作状语，图表对比万能句式。"},
+  {id:11,topic:"小作文",en:"It takes ... to do sth.",cn:"花费……时间做某事（流程图专用）",ex:"Eggs are produced by a moth, and it takes around ten days to become a silkworm lava that feeds on mulberry leaf.",note:"流程图描述时间专用句型，不可用 cost 表达耗时。"},
+  // 政府
+  {id:12,topic:"政府",en:"vulnerable displaced people",cn:"弱势群体难民",ex:"International funds can be used to provide vital assistance to a large number of vulnerable displaced people and save them from starvation and poverty.",note:"固定搭配 provide sb. with sth. / provide sth. to sb.；save sb. from sth. 使某人免于……"},
+  {id:13,topic:"政府",en:"reduce the gap",cn:"缩小差距",ex:"There are many reasons why the living standards in rural and urban areas differ so much in developing countries and the government has a range of responsibilities for reducing the gap.",note:"同义替换 narrow/bridge the gap between rich and poor；There be + 定语从句高分句型。"},
+  {id:14,topic:"政府",en:"place reasonable controls on",cn:"对……实施合理管控",ex:"The responsibility finally rests with government to place reasonable controls on the real estate market.",note:"rest with sb. to do sth. ……是某人的责任；real estate 房地产。"},
+  {id:15,topic:"政府",en:"shoulder the responsibility to do sth.",cn:"承担做某事的责任",ex:"Governments should shoulder the responsibility to plan, build and maintain city infrastructure.",note:"maintain 侧重长期维护保养；keep 仅表维持原有状态。"},
+  {id:16,topic:"政府",en:"use limited resources",cn:"利用有限资源",ex:"Every government faces a dilemma: how should it use its limited resources in the best way.",note:"face a dilemma 面临两难困境，政府话题高频短语。"},
+  {id:17,topic:"政府",en:"strike a balance between A and B",cn:"在 AB 之间达成平衡",ex:"There is no denying that each country must strike a balance between dealing with international and domestic threats.",note:"同义 achieve a balance between work and life；domestic 国内的、家庭的。"},
+  {id:18,topic:"政府",en:"impose a burden on",cn:"给……造成负担",ex:"If the government provides free access to education, this will not only impose a burden on the country, but also have a negative effect on state funding for other sectors.",note:"place a burden on 同义替换；free access to 免费获取……"},
+  {id:19,topic:"政府",en:"an important source of government revenue",cn:"政府财政收入重要来源",ex:"Taxes paid by individual citizens are an important source of government revenue.",note:"revenue 不可数，复数 revenues 表年度总收入；注意主谓一致。"},
+  {id:20,topic:"政府",en:"be profit driven",cn:"受利益驱动",ex:"Private companies are profit driven, which often makes them more motivated and goal-oriented in their projects than governments departments and agencies.",note:"复合词拓展：market-driven economy 市场导向经济；goal-oriented 目标导向。"},
+  {id:21,topic:"政府",en:"material success",cn:"物质层面的成就",ex:"I believe that art programmes should still receive government funding to keep the progress of society balanced between achieving material success and expressing itself beautifully and creatively.",note:"receive government funding 获得政府财政拨款；keep sth.+adj. 保持某物某种状态。"},
+  {id:22,topic:"政府",en:"infrastructure development",cn:"基础设施发展",ex:"Government funds for some other fields, including infrastructure development and health care, also lead to significant improvements in people's lives.",note:"fund 作动词：为……提供资金；improvement 可数表具体改善，不可数表抽象改善。"},
+  {id:23,topic:"政府",en:"long waiting lists for ...",cn:"长时间排队等候",ex:"The privately insured are entitled to special benefits such as having the choice of their own doctors, and being able to avoid long waiting lists for hospital beds.",note:"the + adj. 指代一类人 the insured 参保人群；be entitled to 有权享有……"},
+  // 教育
+  {id:24,topic:"教育",en:"increase cultural experiences",cn:"丰富文化体验",ex:"Travelling overseas allows young adults to have mind-broadening experiences and increase their cultural experiences.",note:"allow sb. to do sth. 使某人能够做某事；动名词作主语谓语用单数。"},
+  {id:25,topic:"教育",en:"cope with the challenges",cn:"应对挑战",ex:"Those who live in a boarding school environment tend to be more independent and can cope with the challenges of life better.",note:"tend to do 往往、倾向于；challenges 比 difficulty 写作更高级。"},
+  {id:26,topic:"教育",en:"without academic qualifications",cn:"无大学文凭",ex:"For those without academic qualifications, it is rather difficult to find a decent job.",note:"It is + adj. for sb. to do 万能评价句型；可数名词不能单独裸奔。"},
+  {id:27,topic:"教育",en:"academic endeavours",cn:"学业、学术钻研",ex:"Students need to be involved in certain school activities, but not to allow them to become a distraction from academic endeavors.",note:"be involved in 参与；distraction 使人分心的事物。"},
+  {id:28,topic:"教育",en:"increase one's employability",cn:"提升就业竞争力",ex:"Hands-on experience acquired through community service will not only be an asset on their CV, but also increase their employability.",note:"过去分词 acquired 作后置定语；not only...but also 前后语法成分一致。"},
+  {id:29,topic:"教育",en:"stand out from the masses of other applicants",cn:"在求职者中脱颖而出",ex:"If university students make the most of the college life and gain extra experience, they are more likely to stand out from the masses of other applicants after graduation.",note:"make the most of 充分利用；be more likely to do 很可能做某事。"},
+  {id:30,topic:"教育",en:"find oneself stand in an unemployment line",cn:"面临失业",ex:"In recent years, a considerable number of graduates find themselves stand in an unemployment line or end up working in positions unrelated to their specialty.",note:"a considerable number of 大量；end up doing 最终陷入某种状态。"},
+  {id:31,topic:"教育",en:"improve one's physical conditions",cn:"增强身体素质",ex:"Engaging in physical activities can improve students' physical conditions as well as boosting their confidence.",note:"boost one's confidence 增强自信；as well as 后接动名词。"},
+  {id:32,topic:"教育",en:"absorb concepts at one's own pace",cn:"按自身节奏吸收知识",ex:"One of the biggest advantages of distance learning is its flexibility, which enables learners to absorb concepts at their own pace.",note:"flexibility 灵活性（不可数）；enable sb. to do 使某人能够。"},
+  {id:33,topic:"教育",en:"develop into well-rounded and capable adults",cn:"成长为全面发展的成年人",ex:"College should also provide young adults with various extracurricular activities to help them develop into well-rounded and capable adults.",note:"provide sb. with sth. 提供某物给某人；develop into 成长为。"},
+  {id:34,topic:"教育",en:"reduce distractions and concentrate on studies",cn:"减少干扰、专注学习",ex:"Some educationalists argue that single-sex schools can reduce distractions and encourage students to concentrate on their studies.",note:"It is + adj. to do 标准不定式评价句式。"},
+  {id:35,topic:"教育",en:"tailor the class to suit students' needs",cn:"因材施教",ex:"Classroom-based teaching makes it possible for lecturers to tailor the class to suit students' needs, helping students make progress.",note:"make it possible for sb. to do；progress 为不可数名词。"},
+  {id:36,topic:"教育",en:"develop the culture of cooperation",cn:"培养合作意识",ex:"PE classes can develop a culture of cooperation among teenagers, as they are required to collaborate with each other in sports matches.",note:"collaborate 不及物动词，表示协作；be required to do 被动语态。"},
+  {id:37,topic:"教育",en:"adapt to an academic environment",cn:"适应校园学习环境",ex:"Young people may find it rather difficult to adapt to an academic environment again when they return to school.",note:"find it + adj. to do 高频万能句型；readapt to 重新适应。"},
+  {id:38,topic:"教育",en:"gain a clear perspective of",cn:"对……形成清晰认知",ex:"Students are able to gain a clear perspective of some important virtues such as honesty and politeness through moral education.",note:"virtue 可数表各类美德，不可数泛指高尚品德。"},
+  {id:39,topic:"教育",en:"social exposure",cn:"社会阅历、社会接触",ex:"Restricted by general knowledge and social exposure, teenagers cannot distinguish right from wrong and are likely to be led to a blind alley.",note:"distinguish right from wrong 明辨是非；be led to a blind alley 误入歧途。"},
+  {id:40,topic:"教育",en:"reach one's full potential",cn:"充分发挥个人潜力",ex:"Selective education allows hardworking, bright and dedicated pupils to reach their full potential.",note:"potential 潜力，写作中多作不可数名词。"},
+  {id:41,topic:"教育",en:"be less impressive in high school records",cn:"高中成绩平平",ex:"For those who are less impressive in high school records, the gap year experience can be a chance to demonstrate their maturity and dedication to personal growth.",note:"同义替换 with poor academic records。"},
+  {id:42,topic:"教育",en:"from low socio-economic status",cn:"出身贫寒",ex:"Governments should ensure that everyone has equal access to education, thereby helping break the cycle of poverty, a common problem found among those from low socio-economic status.",note:"thereby doing 作结果状语；break the cycle of poverty 摆脱贫困循环。"},
+  {id:43,topic:"教育",en:"enhance one's ability",cn:"提升个人能力",ex:"If students join the community work, not only will they improve their communicative skills, their ability to deal with difficult problems can also be enhanced.",note:"not only 置于句首句子倒装；被动语态丰富句式。"},
+  // 文化
+  {id:44,topic:"文化",en:"be growing in popularity",cn:"日益流行",ex:"Fast food culture of modern living is growing in popularity and an increasing number of people frequent fast food restaurants rather than enjoying home-cooked meals in the house.",note:"frequent 作动词：常光顾；rather than doing 而不是做某事。"},
+  {id:45,topic:"文化",en:"follow fashion blindly",cn:"盲目追逐潮流",ex:"Many people tend to follow fashion blindly instead of considering what suits themselves best.",note:"confuse A with B 混淆 A 与 B；同义 follow the trend。"},
+  {id:46,topic:"文化",en:"give sb. a feeling of identity",cn:"赋予归属感与认同感",ex:"Heritages that transmit from generation to generation deserve the protection, as they give communities and groups a feeling of identity.",note:"deserve the protection = deserve to be well-preserved 值得被保护。"},
+  {id:47,topic:"文化",en:"embody the profound cultural foundation",cn:"承载深厚文化底蕴",ex:"Yueju Opera is famous for intense emotion, lively performance and rich connotation and embodies the profound cultural foundation of Central China's culture.",note:"embody 可替换 reflect/mirror；be renowned for 因……闻名。"},
+  {id:48,topic:"文化",en:"be safeguarded for humanity",cn:"为人类文明留存保护",ex:"Dance, music, rituals and handicrafts all should be safeguarded for humanity.",note:"play an important role in 在……扮演重要角色；cultural dialogue 文化交流。"},
+  {id:49,topic:"文化",en:"offer generous funds to",cn:"给予大量资金扶持",ex:"With the economy in crisis, it is rather difficult to offer generous funds to arts.",note:"with 独立主格作背景铺垫；it is + adj. to do 评价句型。"},
+  {id:50,topic:"文化",en:"promote equality",cn:"促进平等",ex:"The government should strive to encourage communication and promote equality among ethnic groups.",note:"strive to do = make an effort to do 努力做某事。"},
+  {id:51,topic:"文化",en:"be more open-minded and cooperative",cn:"思想开放、乐于协作",ex:"People who live in a multicultural society tend to be more open-minded and cooperative.",note:"定语从句修饰人群，描述性格特征高频用法。"},
+  {id:52,topic:"文化",en:"increase the cultural and commercial value of",cn:"提升文化与商业双重价值",ex:"It is true that a good appearance increases the cultural and commercial values of a building.",note:"It is true that... 的确，让步开头万能句型。"},
+  {id:53,topic:"文化",en:"a form of creative artistic expression",cn:"创意艺术表达形式",ex:"Fashion designs exist as a form of creative artistic expression of the designer.",note:"exist as 以……形式存在。"},
+  {id:54,topic:"文化",en:"potential risks",cn:"潜在隐患",ex:"My conclusion is that the enormous benefits of a single international language vastly outweigh the potential risks it presents.",note:"outweigh 利大于弊；enormous 巨大的。"},
+  {id:55,topic:"文化",en:"sharpen one's sensitivity to",cn:"提升对……的感知力",ex:"There is evidence shown that the use of official languages has in fact sharpened the sensitivity of speakers to other languages.",note:"There is evidence that... 有证据表明，议论文万能句型。"},
+  {id:56,topic:"文化",en:"promote a melting pot",cn:"促成文化大熔炉",ex:"One view of multiculturalism is that it promotes a melting pot where we mix together and respect each other's beliefs and way of life.",note:"表语从句表达观点；respect each other's beliefs 尊重彼此信仰。"},
+  {id:57,topic:"文化",en:"undergo dramatic changes",cn:"经历巨大变革",ex:"With the modern era undergoing dramatic changes, some intangible cultural heritages face a dilemma.",note:"intangible cultural heritages 非物质文化遗产；同义 undergo major transformations。"},
+  {id:58,topic:"文化",en:"have little consideration for climate and ecology",cn:"忽视气候与生态",ex:"There is a growing recognition that modern buildings usually have little consideration for climate and ecology.",note:"There is a growing recognition that... 越来越多人意识到。"},
+  {id:59,topic:"文化",en:"substitute A for B",cn:"用 A 替代 B",ex:"You cannot substitute one word for another because words are concepts and some concepts are unique to a particular culture.",note:"be unique to 为……独有；替换 replace B with A。"},
+  {id:60,topic:"文化",en:"create tough guidelines",cn:"制定严格规范",ex:"Embassies can create tough guidelines for getting a visa, which seems like a reasonable compromise.",note:"in order to do 表目的；非限制性定语从句修饰整句。"},
+  {id:61,topic:"文化",en:"in an era of globalisation",cn:"在全球化时代",ex:"In an era of globalisation, our societies have become increasingly multicultural.",note:"increasingly = more and more；globalisation 英式，globalization 美式。"},
+  {id:62,topic:"文化",en:"compromise function for form",cn:"重外观、轻实用",ex:"If architects compromise function for form, buildings would cause their users inconvenience, and even health and safety problems.",note:"compromise 此处作动词，牺牲、折中；cause sb. sth. 给某人带来麻烦。"},
+  {id:63,topic:"文化",en:"home-cooked meals",cn:"家常饭菜",ex:"There is a widely held notion that fast foods tend to be less healthy than home-cooked meals.",note:"There is a widely held notion that = It is widely acknowledged that 普遍认为。"},
+  // 环保
+  {id:64,topic:"环保",en:"promote the efficient use of energy",cn:"提升能源利用效率",ex:"Promoting the efficient use of energy is one of the effective measures to cut back on energy use.",note:"同义 improve energy efficiency；cut back on = reduce 削减。"},
+  {id:65,topic:"环保",en:"be a less-than-desirable solution",cn:"不尽人意的解决方案",ex:"Increasing the price of petrol to tackle environmental problems is a less-than-desirable solution, especially unwelcome among those who rely heavily on cars.",note:"petrol 英式，gasoline 美式；rely heavily on 高度依赖。"},
+  {id:66,topic:"环保",en:"in a more environmentally responsible way",cn:"以环保负责任的方式行事",ex:"Once visitors are well informed about the negative impact of their behaviour, they would be more likely to act in a more environmentally responsible way.",note:"once 引导条件状语从句；negative impact on 对……的负面影响。"},
+  {id:67,topic:"环保",en:"take the lead in doing sth.",cn:"带头开展某事",ex:"The local authorities should take the lead in enforcing environmental laws and raising the green awareness among the public.",note:"green awareness 环保意识；enforce environmental laws 执行环保法规。"},
+  {id:68,topic:"环保",en:"consume energy, create waste and increase pollution",cn:"消耗能源、产生垃圾、加剧污染",ex:"People throw away goods without realising the dire consequences, consuming energy, creating waste and increasing pollution.",note:"现在分词作结果解释状语；dire consequences 严重后果。"},
+  {id:69,topic:"环保",en:"encourage waste recycling",cn:"倡导垃圾回收",ex:"We should reduce the volume of rubbish and encourage waste recycling.",note:"reduce the volume of rubbish = reduce the amount of waste。"},
+  {id:70,topic:"环保",en:"cut / reduce carbon emissions",cn:"减少碳排放",ex:"A wider application of cleaner fuels could be an effective strategy for cutting carbon emissions, especially in large cities.",note:"同义 greenhouse gas emissions 温室气体排放。"},
+  {id:71,topic:"环保",en:"produce a large amount of waste",cn:"产生大量废弃物",ex:"I think the large amount of waste produced is a result of our tendency to use something once and throw it away.",note:"过去分词 produced 后置修饰 waste；a result of one's tendency to do。"},
+  {id:72,topic:"环保",en:"reduce the environmental impact of",cn:"降低……对环境的负面影响",ex:"Public transport should be encouraged, as it can somewhat reduce the environmental impact of private cars.",note:"somewhat 略微，弱化绝对表述；private vehicles 私家车同义替换。"},
+  {id:73,topic:"环保",en:"combat air pollution",cn:"治理空气污染",ex:"Cooperation across national boundaries is needed to combat air pollution, as we all share the same biosphere.",note:"拓展 combat poverty 治理贫困；international cooperation 国际合作。"},
+  {id:74,topic:"环保",en:"reduction in one's carbon footprints",cn:"减少碳足迹",ex:"If higher fuel costs were imposed on car drivers, this apparently would lead to a certain degree of reduction in residents' carbon footprints and relieve traffic congestion.",note:"虚拟语气 If...were..., sb. would do 提出政策建议；traffic congestion 交通拥堵。"},
+  // 社会
+  {id:75,topic:"社会",en:"increase the risks / chances of doing sth.",cn:"增加……风险/概率",ex:"Eating junk food excessively can lead to obesity, which could increase the risks of developing cancer, diabetes and heart diseases.",note:"develop illness 患上疾病；excessively 过度地，替换 too much。"},
+  {id:76,topic:"社会",en:"give sb. a new lease of life",cn:"给某人全新人生起点",ex:"Community service and education provide offenders with opportunities to acquire transferable skills, which gives them a new lease of life as well as helping them integrate into society.",note:"transferable skills 通用技能；integrate into society 融入社会。"},
+  {id:77,topic:"社会",en:"violent means to settle conflicts",cn:"暴力方式解决矛盾",ex:"The indecent contents in the media prompt people to imitate violent solutions to settle conflicts, particularly for immature teenagers.",note:"prompt sb. to do 促使某人做；This is particularly the case for 对……尤其如此。"},
+  {id:78,topic:"社会",en:"crack under strain",cn:"在重压下崩溃",ex:"Those with a heavy workload are more likely to crack under strain, which has a damaging effect on their physical and mental health.",note:"a heavy workload 繁重工作；under great strain = under great pressure。"},
+  {id:79,topic:"社会",en:"battle to feed one's family",cn:"艰难养家糊口",ex:"The development of international tourism is particularly valuable for impoverished countries whose people battle to feed their families and earn a livelihood.",note:"create employment opportunities 创造就业；raise/support a family 同义。"},
+  {id:80,topic:"社会",en:"have a deterrent effect",cn:"具备震慑作用",ex:"Fixed punishments have a deterrent effect, as people are too fearful of getting caught to commit anti-social acts.",note:"too...to... 太……而不能；commit anti-social acts 做出反社会行为。"},
+  {id:81,topic:"社会",en:"from low socio-economic backgrounds",cn:"出身贫困家庭",ex:"Education allows people from low socio-economic backgrounds to break the cycle of poverty and find decent jobs.",note:"give top priority to 优先重视；break the cycle of poverty 摆脱贫困循环。"},
+  {id:82,topic:"社会",en:"low-waged families",cn:"低收入家庭",ex:"This practice makes it possible for low-waged families to have equal access to museums and add spice to their dull life.",note:"this practice 指代该项措施；have equal access to 平等享有。"},
+  {id:83,topic:"社会",en:"easy-to-reach sports centres",cn:"交通便利的运动场馆",ex:"Providing more easy-to-reach sports centres encourages people to make exercise a regular part of their lives.",note:"sports facilities 运动设施同义；动名词作主语谓语三单。"},
+  {id:84,topic:"社会",en:"escape from the frantic pace of daily life",cn:"逃离快节奏日常生活",ex:"Public museum is often considered as a good place where families are able to congregate and residents escape from the frantic pace of daily life.",note:"congregate = gather together 聚集；frantic pace 急促节奏。"},
+  {id:85,topic:"社会",en:"work-related stress",cn:"职场压力",ex:"Due to a highly competitive society, work-related stress has become a major concern in the country.",note:"due to + 名词；work unsocial/extra hours 加班。"},
+  {id:86,topic:"社会",en:"define oneself",cn:"自我定位、定义自我价值",ex:"Advertisements have encouraged people to define themselves more by what they buy rather than by what they can contribute to the society.",note:"rather than 而不是；contribute to society 为社会做贡献。"},
+  {id:87,topic:"社会",en:"be overloaded with work",cn:"工作超负荷",ex:"People who are overloaded with work often do not have time to communicate with their families, and growing arguments and conflicts result.",note:"result 此处作不及物动词，表示随之产生。"},
+  {id:88,topic:"社会",en:"engage in sport",cn:"参与体育运动",ex:"We should maximise the opportunities for young people to engage in sport, both during and outside the school day.",note:"maximise 最大化；take part in sport 同义替换。"},
+  {id:89,topic:"社会",en:"shine in ...",cn:"在……领域表现出众",ex:"Those who shine in areas such as music, sports or computer programming are normally considered to have talents inherited via their genes.",note:"inherit 遗传获得；via = through 通过。"},
+  {id:90,topic:"社会",en:"face a dilemma",cn:"面临两难抉择",ex:"The government is facing a dilemma when it comes to whether more public money should be invested in education or in recreational facilities.",note:"when it comes to 当谈及；invest money in 投资。"},
+  {id:91,topic:"社会",en:"put one's phones on silent",cn:"将手机调至静音",ex:"Drivers should be advised to put their phones on silent and be aware of the dangers of being tired while driving.",note:"be aware of 意识到；road/traffic accidents 交通事故。"},
+  {id:92,topic:"社会",en:"maintain social relationships",cn:"维系人际关系",ex:"An increasing number of people are overly concerned about making money rather than maintaining social relationships, and as a result, people often behave selfishly.",note:"be concerned about 关心；as a result 因此。"},
+  {id:93,topic:"社会",en:"aim for a better life",cn:"追求美好生活",ex:"As people of today are money-oriented and aim for a better life, they tend to work unsocial hours and undertake a range of difficult tasks.",note:"money-oriented 拜金的；undertake tasks 承担工作。"},
+  {id:94,topic:"社会",en:"adopt an active lifestyle",cn:"养成健康积极的生活方式",ex:"People should be encouraged not only to be more physically active, but also to adopt a more active lifestyle.",note:"be more physically active 多运动；多音节形容词比较级 more active。"},
+  // 科技
+  {id:95,topic:"科技",en:"abundant information",cn:"海量丰富信息",ex:"The abundant information on the Internet makes it possible for students to study at home, instead of going to schools as they did before.",note:"make it possible for sb. to do；instead of 而不是。"},
+  {id:96,topic:"科技",en:"reduce people's commuting time",cn:"缩短通勤时间",ex:"The application of telecommunication devices allows people to work at home, which reduces people's commuting time.",note:"非限制性定语从句谓语三单；surroundings 生活环境。"},
+  {id:97,topic:"科技",en:"enhance basic skills",cn:"提升基础技能",ex:"One key benefit of online learning is that it not only allows employees to enhance basic skills, but also leads to a substantial reduction in training costs.",note:"substantial 大量的；not only...but also 成分对称。"},
+  {id:98,topic:"科技",en:"be hostages to handheld devices",cn:"沦为手机等便携设备的奴隶",ex:"Increasing numbers of young people risk becoming 'hostages to handheld devices' and disengaged from physical activity.",note:"There is a resistance to 引出反对观点；risk doing 冒险做某事。"},
+  {id:99,topic:"科技",en:"change the way sb. work and live",cn:"改变某人工作和生活的方式",ex:"These days, the Internet and other new technologies have changed the way many of us work and live.",note:"these days = nowadays；现在完成时表持续影响。"},
+  {id:100,topic:"科技",en:"perform tasks",cn:"完成工作/任务",ex:"Robots are somewhat able to perform tasks that people find difficult or impossible to complete.",note:"replicate 完整复刻；the same way as 和……一样。"},
+  {id:101,topic:"科技",en:"make moderate use of computers",cn:"适度使用电脑",ex:"Students who make moderate use of computers at school have somewhat better learning outcomes than those who rarely use them.",note:"反义 make heavy use of computers 过度使用；rarely 几乎不。"},
+  {id:102,topic:"科技",en:"increase activity levels",cn:"增加运动量",ex:"Despite the fact that active computer games are no substitute for playing real sports, they can be a useful way of increasing activity levels.",note:"despite the fact that 后接完整让步句子；substitute for 替代品。"},
+  {id:103,topic:"科技",en:"be damaging to one's physical posture",cn:"损害体态身姿",ex:"Collapsing in front of a screen for too long can be damaging to both the eyes and the physical posture of a young child.",note:"regardless of = irrespective of 无论；have a damaging effect on 同义替换。"},
+  {id:104,topic:"科技",en:"arrive late or skip classes",cn:"迟到、逃课",ex:"Students sitting long hours in front of a monitor tend to be at risk of feeling lonely, arriving late or skipping classes.",note:"现在分词后置定语修饰主语；be at risk of doing 面临风险。"},
+  {id:105,topic:"科技",en:"watch lectures",cn:"观看线上课程",ex:"Those in some of the poorest parts of the world can watch lectures from Oxbridge or Ivy League classes on their computers.",note:"afford 负担得起（经济能力）；pay 仅强调支付动作。"},
+  {id:106,topic:"科技",en:"absorb concepts at their own pace",cn:"自主节奏吸收知识",ex:"Using the computer in the classroom is supposed to enable students to absorb concepts at their own pace and stay focused for long hours.",note:"be supposed to do sth. 理应做某事；study to your own timetable 同义拓展。"},
+];
+
+const TOPICS = ["全部","小作文","政府","教育","文化","环保","社会","科技"];
+const TOPIC_COLORS = {
+  "小作文":"#6c63ff","政府":"#f7971e","教育":"#43e97b",
+  "文化":"#ff6584","环保":"#00c9a7","社会":"#ffd166","科技":"#48b2e8"
+};
+
+// ── STATE ──
+let stars = JSON.parse(localStorage.getItem('ielts_stars') || '[]');
+let ratings = JSON.parse(localStorage.getItem('ielts_ratings') || '{}'); // id -> 'again'|'hard'|'good'|'easy'
+let quizStats = JSON.parse(localStorage.getItem('ielts_stats') || '{"correct":0,"total":0}');
+let learnedSet = JSON.parse(localStorage.getItem('ielts_learned') || '[]');
+
+let currentTab = 'browse';
+let browseTopic = '全部';
+let flashTopic = '全部';
+let flashPool = 'all';
+let flashDeck = [];
+let flashIdx = 0;
+let flashFlipped = false;
+let quizTopic = '全部';
+let quizItems = [];
+let quizCurrent = 0;
+let fillTopic = '全部';
+let fillItems = [];
+let fillCurrent = 0;
+
+// ── UTIL ──
+function save() {
+  localStorage.setItem('ielts_stars', JSON.stringify(stars));
+  localStorage.setItem('ielts_ratings', JSON.stringify(ratings));
+  localStorage.setItem('ielts_stats', JSON.stringify(quizStats));
+  localStorage.setItem('ielts_learned', JSON.stringify(learnedSet));
+  updateHeaderStats();
+}
+function updateHeaderStats() {
+  document.getElementById('learnedCount').textContent = learnedSet.length;
+  document.getElementById('starCount').textContent = stars.length;
+  const pct = quizStats.total ? Math.round(quizStats.correct/quizStats.total*100)+'%' : '—';
+  document.getElementById('accuracyPct').textContent = pct;
+}
+function getFiltered(topic) {
+  if (topic === '全部') return DATA;
+  return DATA.filter(d => d.topic === topic);
+}
+function shuffle(arr) {
+  const a = [...arr]; for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;
+}
+function highlight(text, phrase) {
+  const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\.\.\./g,'.*?');
+  return text;
+}
+
+// ── TOPIC FILTER BUILDER ──
+function buildFilter(containerId, activeVal, onChange) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = TOPICS.map(t =>
+    `<span class="chip${t===activeVal?' active':''}" onclick="(${onChange.toString()})('${t}')">${t}</span>`
+  ).join('');
+}
+
+// ══════════════════════════════
+//  BROWSE
+// ══════════════════════════════
+function renderBrowse() {
+  buildFilter('topicFilter', browseTopic, t => { browseTopic=t; renderBrowse(); });
+  const items = getFiltered(browseTopic);
+  document.getElementById('browseList').innerHTML = items.map(d => `
+    <div class="phrase-card">
+      <div class="phrase-header">
+        <div>
+          <div class="tag" style="color:${TOPIC_COLORS[d.topic]||'var(--accent)'}">● ${d.topic}</div>
+          <div class="phrase-en">${d.en}</div>
+          <div class="phrase-cn">${d.cn}</div>
+        </div>
+        <button class="star-btn" onclick="toggleStar(${d.id}, this)" title="收藏">${stars.includes(d.id)?'⭐':'☆'}</button>
+      </div>
+      <button class="example-toggle" onclick="toggleEx(this)">▶ 查看例句与讲解</button>
+      <div class="example-box">
+        <div class="example-en">${d.ex}</div>
+        <div class="example-note">💡 ${d.note}</div>
+      </div>
+    </div>
+  `).join('');
+}
+function toggleEx(btn) {
+  const box = btn.nextElementSibling;
+  const open = box.classList.toggle('open');
+  btn.textContent = open ? '▼ 收起' : '▶ 查看例句与讲解';
+}
+function toggleStar(id, btn) {
+  if (stars.includes(id)) { stars=stars.filter(s=>s!==id); btn.textContent='☆'; }
+  else { stars.push(id); btn.textContent='⭐'; }
+  save(); renderStars();
+}
+
+// ══════════════════════════════
+//  FLASHCARD
+// ══════════════════════════════
+function buildFlashDeck() {
+  let base = getFiltered(flashTopic);
+  if (flashPool === 'weak') base = base.filter(d => ratings[d.id]==='again'||ratings[d.id]==='hard');
+  else if (flashPool === 'stars') base = base.filter(d => stars.includes(d.id));
+  flashDeck = shuffle(base);
+  flashIdx = 0; flashFlipped = false;
+  renderFlashCard();
+}
+function renderFlashCard() {
+  const total = flashDeck.length;
+  document.getElementById('fcCounter').textContent = total ? `${flashIdx+1} / ${total}` : '0 / 0';
+  document.getElementById('fcBar').style.width = total ? ((flashIdx)/total*100)+'%' : '0%';
+  if (!total) {
+    document.getElementById('fcPhrase').textContent = '暂无卡片';
+    document.getElementById('fcTag').textContent = '';
+    document.getElementById('fcBack').style.display='none';
+    document.getElementById('fcFront').style.display='block';
+    document.getElementById('fcActions').style.display='none';
+    document.getElementById('flipHint').style.display='block';
+    return;
+  }
+  const d = flashDeck[flashIdx];
+  document.getElementById('fcTag').textContent = `● ${d.topic}`;
+  document.getElementById('fcTag').style.color = TOPIC_COLORS[d.topic]||'var(--accent)';
+  document.getElementById('fcPhrase').textContent = d.en;
+  document.getElementById('fcCn').textContent = d.cn;
+  document.getElementById('fcEx').textContent = d.ex;
+  document.getElementById('fcNote').textContent = '💡 '+d.note;
+  showFront();
+  if (!learnedSet.includes(d.id)) { learnedSet.push(d.id); save(); }
+}
+function showFront() {
+  flashFlipped=false;
+  document.getElementById('fcFront').style.display='block';
+  document.getElementById('fcBack').style.display='none';
+  document.getElementById('fcActions').style.display='none';
+  document.getElementById('flipHint').style.display='block';
+}
+function flipCard() {
+  if (!flashDeck.length) return;
+  if (!flashFlipped) {
+    flashFlipped=true;
+    document.getElementById('fcFront').style.display='none';
+    document.getElementById('fcBack').style.display='block';
+    document.getElementById('fcBack').classList.add('visible');
+    document.getElementById('fcActions').style.display='flex';
+    document.getElementById('flipHint').style.display='none';
+  }
+}
+function rateCard(rating) {
+  if (!flashDeck.length) return;
+  const d = flashDeck[flashIdx];
+  ratings[d.id] = rating;
+  save();
+  flashIdx++;
+  if (flashIdx >= flashDeck.length) {
+    showFlashComplete();
+  } else {
+    flashFlipped=false;
+    renderFlashCard();
+  }
+}
+function showFlashComplete() {
+  document.getElementById('flashcard').innerHTML = `
+    <div style="text-align:center; padding:20px">
+      <div style="font-size:48px;margin-bottom:16px">🎉</div>
+      <div style="font-size:22px;font-weight:700;margin-bottom:8px">本轮完成！</div>
+      <div style="color:var(--muted);margin-bottom:24px">共复习 ${flashDeck.length} 张卡片</div>
+      <button onclick="buildFlashDeck()" style="padding:12px 28px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer">再来一轮 🔄</button>
+    </div>`;
+  document.getElementById('fcActions').style.display='none';
+  document.getElementById('flipHint').style.display='none';
+}
+function shuffleFlash() { buildFlashDeck(); }
+
+// ══════════════════════════════
+//  QUIZ (multiple choice)
+// ══════════════════════════════
+function startQuiz() {
+  let base = shuffle(getFiltered(quizTopic));
+  if (base.length < 4) { document.getElementById('quizArea').innerHTML = '<div class="empty">该话题词组太少，请切换到"全部"</div>'; return; }
+  quizItems = base.slice(0, Math.min(base.length, 15));
+  quizCurrent = 0;
+  renderQuiz();
+}
+function renderQuiz() {
+  if (quizCurrent >= quizItems.length) { showQuizResults(); return; }
+  const d = quizItems[quizCurrent];
+  // pick 3 wrong answers
+  const others = shuffle(DATA.filter(x=>x.id!==d.id)).slice(0,3);
+  const choices = shuffle([d, ...others]);
+
+  document.getElementById('quizArea').innerHTML = `
+    <div class="quiz-wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span class="tag" style="color:${TOPIC_COLORS[d.topic]||'var(--accent)'}">● ${d.topic}</span>
+        <span style="font-size:13px;color:var(--muted)">${quizCurrent+1} / ${quizItems.length}</span>
+      </div>
+      <div class="fc-progress"><div class="fc-progress-bar" style="width:${(quizCurrent/quizItems.length*100)}%"></div></div>
+      <div class="quiz-q">
+        <div class="quiz-label">选出下列短语对应的中文含义</div>
+        <div class="quiz-sentence">${d.en}</div>
+        <div class="quiz-choices">
+          ${choices.map((c,i) => `<button class="choice-btn" id="choice${i}" onclick="selectChoice(${c.id},${d.id},${i})">${c.cn}</button>`).join('')}
+        </div>
+        <div class="quiz-feedback" id="qFeedback"></div>
+      </div>
+      <button class="next-btn" id="qNext" onclick="nextQuiz()">下一题 →</button>
+    </div>`;
+}
+function selectChoice(chosen, correct, idx) {
+  document.querySelectorAll('.choice-btn').forEach(b => b.disabled=true);
+  const fb = document.getElementById('qFeedback');
+  if (chosen === correct) {
+    document.getElementById('choice'+idx).classList.add('correct');
+    fb.className = 'quiz-feedback show ok';
+    fb.innerHTML = '✅ 正确！' + DATA.find(d=>d.id===correct).note;
+    quizStats.correct++; quizStats.total++;
+  } else {
+    document.getElementById('choice'+idx).classList.add('wrong');
+    // find and highlight correct
+    document.querySelectorAll('.choice-btn').forEach(b => {
+      if (b.textContent.trim() === DATA.find(d=>d.id===correct).cn) b.classList.add('correct');
+    });
+    fb.className = 'quiz-feedback show no';
+    fb.innerHTML = '❌ 答案是：<b>' + DATA.find(d=>d.id===correct).cn + '</b><br>' + DATA.find(d=>d.id===correct).note;
+    quizStats.total++;
+    ratings[correct] = 'again';
+  }
+  save();
+  document.getElementById('qNext').classList.add('show');
+}
+function nextQuiz() { quizCurrent++; renderQuiz(); }
+function showQuizResults() {
+  const score = quizStats.correct;
+  const total = quizItems.length;
+  // recount for this session
+  const msg = score/total >= .8 ? '🎉 非常棒！' : score/total >= .5 ? '👍 继续加油！' : '📚 多多复习吧！';
+  document.getElementById('quizArea').innerHTML = `
+    <div class="results-box">
+      <div class="results-score">${quizStats.correct}</div>
+      <div class="results-pct">累计答对 / 共 ${quizStats.total} 题 · 正确率 ${Math.round(quizStats.correct/quizStats.total*100)}%</div>
+      <div class="results-msg">${msg}</div>
+      <button class="retry-btn" onclick="startQuiz()">再练一组 🔄</button>
+    </div>`;
+  updateHeaderStats();
+}
+
+// ══════════════════════════════
+//  FILL IN THE BLANK
+// ══════════════════════════════
+function startFill() {
+  let base = shuffle(getFiltered(fillTopic));
+  if (!base.length) { document.getElementById('fillArea').innerHTML = '<div class="empty">暂无内容</div>'; return; }
+  fillItems = base.slice(0,12);
+  fillCurrent = 0;
+  renderFill();
+}
+function renderFill() {
+  if (fillCurrent >= fillItems.length) { showFillResults(); return; }
+  const d = fillItems[fillCurrent];
+  // blank out the phrase in example sentence
+  const blanked = d.ex.replace(d.en.split('/')[0].trim().split(' ')[0], '______');
+  document.getElementById('fillArea').innerHTML = `
+    <div class="quiz-wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span class="tag" style="color:${TOPIC_COLORS[d.topic]||'var(--accent)'}">● ${d.topic}</span>
+        <span style="font-size:13px;color:var(--muted)">${fillCurrent+1} / ${fillItems.length}</span>
+      </div>
+      <div class="fc-progress"><div class="fc-progress-bar" style="width:${(fillCurrent/fillItems.length*100)}%"></div></div>
+      <div class="quiz-q">
+        <div class="quiz-label">🇨🇳 看中文写出对应英文搭配</div>
+        <div class="quiz-sentence" style="font-size:22px;font-weight:700;color:#c9c4ff;text-align:center">${d.cn}</div>
+        <input class="fill-input" id="fillInput" placeholder="输入英文搭配..." autocomplete="off" onkeydown="if(event.key==='Enter')checkFill()">
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="submit-btn" onclick="checkFill()">提交</button>
+          <button onclick="showFillHint()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:12px 0">💡 提示</button>
+        </div>
+        <div class="quiz-feedback" id="fillFeedback"></div>
+      </div>
+      <button class="next-btn" id="fillNext" onclick="nextFill()">下一题 →</button>
+    </div>`;
+  document.getElementById('fillInput').focus();
+}
+function showFillHint() {
+  const d = fillItems[fillCurrent];
+  const hint = d.en.split(' ').map((w,i)=>i===0?w[0]+'___':w).join(' ');
+  const fb = document.getElementById('fillFeedback');
+  fb.className='quiz-feedback show';
+  fb.style.background='#1a1e3a'; fb.style.color='var(--accent)';
+  fb.innerHTML='💡 提示：<b>'+hint+'</b>';
+}
+function checkFill() {
+  const d = fillItems[fillCurrent];
+  const input = document.getElementById('fillInput').value.trim().toLowerCase();
+  const correct = d.en.toLowerCase();
+  const fb = document.getElementById('fillFeedback');
+  document.getElementById('fillInput').disabled = true;
+  document.querySelector('.submit-btn').disabled = true;
+  const isCorrect = correct.includes(input) && input.length > 3;
+  if (isCorrect) {
+    fb.className='quiz-feedback show ok';
+    fb.innerHTML='✅ 正确！<br><b>'+d.en+'</b>';
+    quizStats.correct++; quizStats.total++;
+  } else {
+    fb.className='quiz-feedback show no';
+    fb.innerHTML='❌ 正确答案：<br><b>'+d.en+'</b><br><span style="font-size:12px;margin-top:6px;display:block">例句：'+d.ex+'</span>';
+    quizStats.total++;
+    ratings[d.id]='again';
+  }
+  save();
+  document.getElementById('fillNext').classList.add('show');
+}
+function nextFill() { fillCurrent++; renderFill(); }
+function showFillResults() {
+  document.getElementById('fillArea').innerHTML = `
+    <div class="results-box">
+      <div style="font-size:48px;margin-bottom:12px">✏️</div>
+      <div class="results-score">${quizStats.correct}</div>
+      <div class="results-pct">累计得分 / ${quizStats.total} 题</div>
+      <button class="retry-btn" onclick="startFill()">再来一组 🔄</button>
+    </div>`;
+}
+
+// ══════════════════════════════
+//  STARS
+// ══════════════════════════════
+function renderStars() {
+  const items = DATA.filter(d => stars.includes(d.id));
+  if (!items.length) { document.getElementById('starList').innerHTML='<div class="empty">还没有收藏的词组<br>在浏览页面点击 ☆ 来收藏！</div>'; return; }
+  document.getElementById('starList').innerHTML = items.map(d => `
+    <div class="phrase-card">
+      <div class="phrase-header">
+        <div>
+          <div class="tag" style="color:${TOPIC_COLORS[d.topic]||'var(--accent)'}">● ${d.topic}</div>
+          <div class="phrase-en">${d.en}</div>
+          <div class="phrase-cn">${d.cn}</div>
+        </div>
+        <button class="star-btn" onclick="removeStar(${d.id})" title="取消收藏">⭐</button>
+      </div>
+      <div class="example-box open">
+        <div class="example-en">${d.ex}</div>
+        <div class="example-note">💡 ${d.note}</div>
+      </div>
+    </div>
+  `).join('');
+}
+function removeStar(id) {
+  stars = stars.filter(s=>s!==id);
+  save(); renderStars(); renderBrowse();
+}
+
+// ── TABS ──
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    currentTab = tab.dataset.tab;
+    ['browse','flash','quiz','fill','stars'].forEach(t => {
+      document.getElementById('tab-'+t).style.display = t===currentTab ? 'block' : 'none';
+    });
+    if (currentTab==='flash') {
+      buildFilter('flashFilter', flashTopic, t => { flashTopic=t; buildFlashDeck(); });
+      buildFlashDeck();
+    }
+    if (currentTab==='quiz') {
+      buildFilter('quizTopicFilter', quizTopic, t => { quizTopic=t; startQuiz(); });
+      startQuiz();
+    }
+    if (currentTab==='fill') {
+      buildFilter('fillTopicFilter', fillTopic, t => { fillTopic=t; startFill(); });
+      startFill();
+    }
+    if (currentTab==='stars') renderStars();
+  });
+});
+
+// Pool buttons
+document.querySelectorAll('[data-pool]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-pool]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    flashPool = btn.dataset.pool;
+    buildFlashDeck();
+  });
+});
+
+// ── INIT ──
+renderBrowse();
+updateHeaderStats();
+</script>
+</body>
+</html>
