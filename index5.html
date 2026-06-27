@@ -29,6 +29,9 @@
     --exercise: #FF6B35;
     --water: #30B0C7;
     --trash: #636366;
+    --ielts-writing: #5E5CE6;
+    --ielts-speaking: #FF6B6B;
+    --ielts-listening: #32ADE6;
 
     --radius: 16px;
     --tab-h: 83px;
@@ -169,6 +172,9 @@
   .quick-btn.exercise::before { background: var(--exercise); }
   .quick-btn.water::before    { background: var(--water); }
   .quick-btn.trash::before    { background: var(--trash); }
+  .quick-btn.ielts-writing::before   { background: var(--ielts-writing); }
+  .quick-btn.ielts-speaking::before  { background: var(--ielts-speaking); }
+  .quick-btn.ielts-listening::before { background: var(--ielts-listening); }
   .quick-btn .q-icon { font-size: 28px; }
   .quick-btn .q-label { font-size: 13px; font-weight: 600; color: var(--text); }
   .quick-btn .q-sub   { font-size: 11px; color: var(--label); }
@@ -188,6 +194,9 @@
   .stat-val.exercise { color: var(--exercise); }
   .stat-val.water    { color: var(--water); }
   .stat-val.trash    { color: var(--trash); }
+  .stat-val.ielts-writing   { color: var(--ielts-writing); }
+  .stat-val.ielts-speaking  { color: var(--ielts-speaking); }
+  .stat-val.ielts-listening { color: var(--ielts-listening); }
   .stat-name { font-size: 11px; color: var(--label); margin-top: 4px; }
 
   /* ===== RECENT LIST ===== */
@@ -205,6 +214,9 @@
   .record-icon.exercise { background: #FFF0EB; }
   .record-icon.water    { background: #E0F5F9; }
   .record-icon.trash    { background: #EBEBED; }
+  .record-icon.ielts-writing   { background: #EEEEFF; }
+  .record-icon.ielts-speaking  { background: #FFECEC; }
+  .record-icon.ielts-listening { background: #E5F4FF; }
   .record-info { flex: 1; min-width: 0; }
   .record-title { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .record-time  { font-size: 12px; color: var(--label); margin-top: 1px; }
@@ -356,6 +368,9 @@
   .chip.exercise-chip.active { color: #C94B18; border-color: var(--exercise); background: #FFF0EB; }
   .chip.water-chip.active    { color: #1A7A93; border-color: var(--water);    background: #E0F5F9; }
   .chip.trash-chip.active    { color: #3A3A3C; border-color: var(--trash);    background: #EBEBED; }
+  .chip.ielts-writing-chip.active   { color: #3A2FA0; border-color: var(--ielts-writing);   background: #EEEEFF; }
+  .chip.ielts-speaking-chip.active  { color: #C03030; border-color: var(--ielts-speaking);  background: #FFECEC; }
+  .chip.ielts-listening-chip.active { color: #1A6FA0; border-color: var(--ielts-listening); background: #E5F4FF; }
 
   .bristol-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 6px; }
   .bristol-btn {
@@ -619,6 +634,21 @@
           <span class="q-label">扔垃圾</span>
           <span class="q-sub">记录清理</span>
         </button>
+        <button class="quick-btn ielts-writing" onclick="openSheet('ielts-writing')">
+          <span class="q-icon">✍️</span>
+          <span class="q-label">写作</span>
+          <span class="q-sub">雅思练习</span>
+        </button>
+        <button class="quick-btn ielts-speaking" onclick="openSheet('ielts-speaking')">
+          <span class="q-icon">🗣️</span>
+          <span class="q-label">口语</span>
+          <span class="q-sub">雅思练习</span>
+        </button>
+        <button class="quick-btn ielts-listening" onclick="openSheet('ielts-listening')">
+          <span class="q-icon">🎧</span>
+          <span class="q-label">听力</span>
+          <span class="q-sub">雅思练习</span>
+        </button>
       </div>
     </div>
 
@@ -652,6 +682,18 @@
         <div class="stat-card">
           <div class="stat-val trash" id="stat-trash">0</div>
           <div class="stat-name">扔垃圾</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val ielts-writing" id="stat-ielts-writing">0</div>
+          <div class="stat-name">雅思写作</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val ielts-speaking" id="stat-ielts-speaking">0</div>
+          <div class="stat-name">雅思口语</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val ielts-listening" id="stat-ielts-listening">0</div>
+          <div class="stat-name">雅思听力</div>
         </div>
       </div>
     </div>
@@ -690,6 +732,9 @@
           <div class="legend-item"><div class="legend-dot" style="background:var(--shower)"></div><span class="legend-label">洗澡</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--clean)"></div><span class="legend-label">清洁</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--exercise)"></div><span class="legend-label">运动</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--ielts-writing)"></div><span class="legend-label">雅思写作</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--ielts-speaking)"></div><span class="legend-label">雅思口语</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--ielts-listening)"></div><span class="legend-label">雅思听力</span></div>
         </div>
       </div>
     </div>
@@ -1074,6 +1119,132 @@
   </div>
 </div>
 
+<!-- ====== IELTS WRITING SHEET ====== -->
+<div class="sheet" id="sheet-ielts-writing">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">✍️ 雅思写作练习</div>
+    <div class="sheet-close" onclick="closeSheet()">完成</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">任务类型</div>
+      <div class="chip-row" id="ielts-writing-task">
+        <div class="chip ielts-writing-chip" data-val="Task 1" onclick="toggleChipExclusive(this,'ielts-writing-task')">Task 1</div>
+        <div class="chip ielts-writing-chip" data-val="Task 2" onclick="toggleChipExclusive(this,'ielts-writing-task')">Task 2</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">练习时长（分钟）</div>
+      <div class="chip-row" id="ielts-writing-duration">
+        <div class="chip generic" data-val="20" onclick="toggleChipExclusive(this,'ielts-writing-duration')">20</div>
+        <div class="chip generic" data-val="40" onclick="toggleChipExclusive(this,'ielts-writing-duration')">40</div>
+        <div class="chip generic" data-val="60" onclick="toggleChipExclusive(this,'ielts-writing-duration')">60</div>
+      </div>
+      <input type="number" id="ielts-writing-duration-input" placeholder="或手动输入分钟数…" min="1" max="999" style="margin-top:8px">
+    </div>
+    <div class="form-section">
+      <div class="form-label">题目/备注</div>
+      <input type="text" id="ielts-writing-note" placeholder="题目或备注…">
+    </div>
+    <div class="form-section">
+      <div class="form-label">时间</div>
+      <div class="time-edit" onclick="editTime('ielts-writing-time')">
+        <span>记录时间</span>
+        <span class="time-edit-val" id="ielts-writing-time-display"></span>
+      </div>
+      <input type="datetime-local" id="ielts-writing-time" style="display:none" onchange="updateTimeDisplay('ielts-writing-time')">
+    </div>
+    <button class="save-btn" style="background:var(--ielts-writing)" onclick="saveRecord('ielts-writing')">保存记录</button>
+  </div>
+</div>
+
+<!-- ====== IELTS SPEAKING SHEET ====== -->
+<div class="sheet" id="sheet-ielts-speaking">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">🗣️ 雅思口语练习</div>
+    <div class="sheet-close" onclick="closeSheet()">完成</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">练习类型</div>
+      <div class="chip-row" id="ielts-speaking-part">
+        <div class="chip ielts-speaking-chip" data-val="Part 1" onclick="toggleChipExclusive(this,'ielts-speaking-part')">Part 1</div>
+        <div class="chip ielts-speaking-chip" data-val="Part 2" onclick="toggleChipExclusive(this,'ielts-speaking-part')">Part 2</div>
+        <div class="chip ielts-speaking-chip" data-val="Part 3" onclick="toggleChipExclusive(this,'ielts-speaking-part')">Part 3</div>
+        <div class="chip ielts-speaking-chip" data-val="全套" onclick="toggleChipExclusive(this,'ielts-speaking-part')">全套</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">练习时长（分钟）</div>
+      <div class="chip-row" id="ielts-speaking-duration">
+        <div class="chip generic" data-val="10" onclick="toggleChipExclusive(this,'ielts-speaking-duration')">10</div>
+        <div class="chip generic" data-val="20" onclick="toggleChipExclusive(this,'ielts-speaking-duration')">20</div>
+        <div class="chip generic" data-val="30" onclick="toggleChipExclusive(this,'ielts-speaking-duration')">30</div>
+      </div>
+      <input type="number" id="ielts-speaking-duration-input" placeholder="或手动输入分钟数…" min="1" max="999" style="margin-top:8px">
+    </div>
+    <div class="form-section">
+      <div class="form-label">话题/备注</div>
+      <input type="text" id="ielts-speaking-note" placeholder="话题或备注…">
+    </div>
+    <div class="form-section">
+      <div class="form-label">时间</div>
+      <div class="time-edit" onclick="editTime('ielts-speaking-time')">
+        <span>记录时间</span>
+        <span class="time-edit-val" id="ielts-speaking-time-display"></span>
+      </div>
+      <input type="datetime-local" id="ielts-speaking-time" style="display:none" onchange="updateTimeDisplay('ielts-speaking-time')">
+    </div>
+    <button class="save-btn" style="background:var(--ielts-speaking)" onclick="saveRecord('ielts-speaking')">保存记录</button>
+  </div>
+</div>
+
+<!-- ====== IELTS LISTENING SHEET ====== -->
+<div class="sheet" id="sheet-ielts-listening">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">🎧 雅思听力练习</div>
+    <div class="sheet-close" onclick="closeSheet()">完成</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">练习节数</div>
+      <div class="chip-row" id="ielts-listening-section">
+        <div class="chip ielts-listening-chip" data-val="Section 1" onclick="toggleChipExclusive(this,'ielts-listening-section')">S1</div>
+        <div class="chip ielts-listening-chip" data-val="Section 2" onclick="toggleChipExclusive(this,'ielts-listening-section')">S2</div>
+        <div class="chip ielts-listening-chip" data-val="Section 3" onclick="toggleChipExclusive(this,'ielts-listening-section')">S3</div>
+        <div class="chip ielts-listening-chip" data-val="Section 4" onclick="toggleChipExclusive(this,'ielts-listening-section')">S4</div>
+        <div class="chip ielts-listening-chip" data-val="全套" onclick="toggleChipExclusive(this,'ielts-listening-section')">全套</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">练习时长（分钟）</div>
+      <div class="chip-row" id="ielts-listening-duration">
+        <div class="chip generic" data-val="10" onclick="toggleChipExclusive(this,'ielts-listening-duration')">10</div>
+        <div class="chip generic" data-val="20" onclick="toggleChipExclusive(this,'ielts-listening-duration')">20</div>
+        <div class="chip generic" data-val="30" onclick="toggleChipExclusive(this,'ielts-listening-duration')">30</div>
+        <div class="chip generic" data-val="40" onclick="toggleChipExclusive(this,'ielts-listening-duration')">40</div>
+      </div>
+      <input type="number" id="ielts-listening-duration-input" placeholder="或手动输入分钟数…" min="1" max="999" style="margin-top:8px">
+    </div>
+    <div class="form-section">
+      <div class="form-label">得分/备注</div>
+      <input type="text" id="ielts-listening-note" placeholder="得分或备注…">
+    </div>
+    <div class="form-section">
+      <div class="form-label">时间</div>
+      <div class="time-edit" onclick="editTime('ielts-listening-time')">
+        <span>记录时间</span>
+        <span class="time-edit-val" id="ielts-listening-time-display"></span>
+      </div>
+      <input type="datetime-local" id="ielts-listening-time" style="display:none" onchange="updateTimeDisplay('ielts-listening-time')">
+    </div>
+    <button class="save-btn" style="background:var(--ielts-listening)" onclick="saveRecord('ielts-listening')">保存记录</button>
+  </div>
+</div>
+
 <!-- ====== EXPORT SHEET ====== -->
 <div class="sheet" id="sheet-export">
   <div class="sheet-handle"></div>
@@ -1313,6 +1484,9 @@ function renderSummary() {
   document.getElementById('stat-exercise').textContent = today.filter(r=>r.type==='exercise').length;
   document.getElementById('stat-water').textContent   = today.filter(r=>r.type==='water').length;
   document.getElementById('stat-trash').textContent   = today.filter(r=>r.type==='trash').length;
+  document.getElementById('stat-ielts-writing').textContent   = today.filter(r=>r.type==='ielts-writing').length;
+  document.getElementById('stat-ielts-speaking').textContent  = today.filter(r=>r.type==='ielts-speaking').length;
+  document.getElementById('stat-ielts-listening').textContent = today.filter(r=>r.type==='ielts-listening').length;
 
   // recent list
   const list = document.getElementById('recent-list');
@@ -1333,7 +1507,7 @@ function renderSummary() {
 }
 
 function typeIcon(t) {
-  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'💧':t==='trash'?'🗑️':'🧹';
+  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'💧':t==='trash'?'🗑️':t==='ielts-writing'?'✍️':t==='ielts-speaking'?'🗣️':t==='ielts-listening'?'🎧':'🧹';
 }
 
 function recordTitle(r) {
@@ -1372,6 +1546,24 @@ function recordTitle(r) {
     if (r.trashTypes && r.trashTypes.length) parts.push(r.trashTypes.join('·'));
     if (r.bags) parts.push(r.bags + ' 袋');
     return parts.join(' — ') || '扔垃圾';
+  }
+  if (r.type==='ielts-writing') {
+    const parts = [];
+    if (r.task) parts.push(r.task);
+    if (r.duration) parts.push(r.duration + ' 分钟');
+    return parts.join(' · ') || '雅思写作';
+  }
+  if (r.type==='ielts-speaking') {
+    const parts = [];
+    if (r.part) parts.push(r.part);
+    if (r.duration) parts.push(r.duration + ' 分钟');
+    return parts.join(' · ') || '雅思口语';
+  }
+  if (r.type==='ielts-listening') {
+    const parts = [];
+    if (r.section) parts.push(r.section);
+    if (r.duration) parts.push(r.duration + ' 分钟');
+    return parts.join(' · ') || '雅思听力';
   }
   return '记录';
 }
@@ -1412,6 +1604,24 @@ function openSheet(name) {
     document.getElementById('trash-note').value = '';
     setTimeNow('trash-time');
   }
+  if (name==='ielts-writing') {
+    document.querySelectorAll('#sheet-ielts-writing .chip').forEach(c=>c.classList.remove('active'));
+    document.getElementById('ielts-writing-note').value = '';
+    document.getElementById('ielts-writing-duration-input').value = '';
+    setTimeNow('ielts-writing-time');
+  }
+  if (name==='ielts-speaking') {
+    document.querySelectorAll('#sheet-ielts-speaking .chip').forEach(c=>c.classList.remove('active'));
+    document.getElementById('ielts-speaking-note').value = '';
+    document.getElementById('ielts-speaking-duration-input').value = '';
+    setTimeNow('ielts-speaking-time');
+  }
+  if (name==='ielts-listening') {
+    document.querySelectorAll('#sheet-ielts-listening .chip').forEach(c=>c.classList.remove('active'));
+    document.getElementById('ielts-listening-note').value = '';
+    document.getElementById('ielts-listening-duration-input').value = '';
+    setTimeNow('ielts-listening-time');
+  }
 
   currentSheet = name;
   document.getElementById('sheet-'+name).classList.add('visible');
@@ -1424,7 +1634,7 @@ function closeSheet() {
     document.getElementById('sheet-'+currentSheet).classList.remove('visible');
   }
   // also close detail, export, import
-  ['detail','export','import','clean','exercise','water','trash'].forEach(n => {
+  ['detail','export','import','clean','exercise','water','trash','ielts-writing','ielts-speaking','ielts-listening'].forEach(n => {
     const el = document.getElementById('sheet-'+n);
     if (el) el.classList.remove('visible');
   });
@@ -1578,10 +1788,40 @@ function saveRecord(type) {
     rec.note = document.getElementById('trash-note').value.trim();
   }
 
+  if (type==='ielts-writing') {
+    const t = document.getElementById('ielts-writing-time').value;
+    if (t) rec.timestamp = new Date(t).getTime();
+    rec.task = document.querySelector('#ielts-writing-task .chip.active')?.dataset.val || '';
+    const chipDur = document.querySelector('#ielts-writing-duration .chip.active')?.dataset.val;
+    const inputDur = document.getElementById('ielts-writing-duration-input').value;
+    rec.duration = parseInt(chipDur || inputDur) || 0;
+    rec.note = document.getElementById('ielts-writing-note').value.trim();
+  }
+
+  if (type==='ielts-speaking') {
+    const t = document.getElementById('ielts-speaking-time').value;
+    if (t) rec.timestamp = new Date(t).getTime();
+    rec.part = document.querySelector('#ielts-speaking-part .chip.active')?.dataset.val || '';
+    const chipDur = document.querySelector('#ielts-speaking-duration .chip.active')?.dataset.val;
+    const inputDur = document.getElementById('ielts-speaking-duration-input').value;
+    rec.duration = parseInt(chipDur || inputDur) || 0;
+    rec.note = document.getElementById('ielts-speaking-note').value.trim();
+  }
+
+  if (type==='ielts-listening') {
+    const t = document.getElementById('ielts-listening-time').value;
+    if (t) rec.timestamp = new Date(t).getTime();
+    rec.section = document.querySelector('#ielts-listening-section .chip.active')?.dataset.val || '';
+    const chipDur = document.querySelector('#ielts-listening-duration .chip.active')?.dataset.val;
+    const inputDur = document.getElementById('ielts-listening-duration-input').value;
+    rec.duration = parseInt(chipDur || inputDur) || 0;
+    rec.note = document.getElementById('ielts-listening-note').value.trim();
+  }
+
   addRecord(rec);
   closeSheet();
   renderSummary();
-  const toastMsg = type==='coffee'?'☕ 咖啡已记录':type==='bowel'?'💩 排便已记录':type==='exercise'?'🏃 运动已记录':type==='water'?'💧 接水已记录':type==='trash'?'🗑️ 扔垃圾已记录':'🧹 清洁已记录';
+  const toastMsg = type==='coffee'?'☕ 咖啡已记录':type==='bowel'?'💩 排便已记录':type==='exercise'?'🏃 运动已记录':type==='water'?'💧 接水已记录':type==='trash'?'🗑️ 扔垃圾已记录':type==='ielts-writing'?'✍️ 雅思写作已记录':type==='ielts-speaking'?'🗣️ 雅思口语已记录':type==='ielts-listening'?'🎧 雅思听力已记录':'🧹 清洁已记录';
   showToast(toastMsg);
   if (navigator.vibrate) navigator.vibrate(10);
 }
@@ -1892,8 +2132,8 @@ function renderChart() {
   ctx.fillRect(0,0,w,h);
 
   // count per slot per type
-  const types = ['coffee','bowel','shower','clean','exercise','water','trash'];
-  const colors = { coffee:'#A6836D', bowel:'#FFD60A', shower:'#5AC8FA', clean:'#34C759', exercise:'#FF6B35', water:'#30B0C7', trash:'#636366' };
+  const types = ['coffee','bowel','shower','clean','exercise','water','trash','ielts-writing','ielts-speaking','ielts-listening'];
+  const colors = { coffee:'#A6836D', bowel:'#FFD60A', shower:'#5AC8FA', clean:'#34C759', exercise:'#FF6B35', water:'#30B0C7', trash:'#636366', 'ielts-writing':'#5E5CE6', 'ielts-speaking':'#FF6B6B', 'ielts-listening':'#32ADE6' };
   const counts = {};
   types.forEach(t => counts[t] = Array(n).fill(0));
 
@@ -1972,9 +2212,9 @@ function renderChart() {
 
 function renderSummaryStats() {
   const records = getRecords();
-  const types = ['coffee','bowel','shower','clean','exercise'];
-  const names = { coffee:'咖啡', bowel:'排便', shower:'洗澡', clean:'清洁', exercise:'运动' };
-  const colors = { coffee:'#A6836D', bowel:'#FFD60A', shower:'#5AC8FA', clean:'#34C759', exercise:'#FF6B35' };
+  const types = ['coffee','bowel','shower','clean','exercise','ielts-writing','ielts-speaking','ielts-listening'];
+  const names = { coffee:'咖啡', bowel:'排便', shower:'洗澡', clean:'清洁', exercise:'运动', 'ielts-writing':'雅思写作', 'ielts-speaking':'雅思口语', 'ielts-listening':'雅思听力' };
+  const colors = { coffee:'#A6836D', bowel:'#FFD60A', shower:'#5AC8FA', clean:'#34C759', exercise:'#FF6B35', 'ielts-writing':'#5E5CE6', 'ielts-speaking':'#FF6B6B', 'ielts-listening':'#32ADE6' };
   const total = records.length || 1;
   const counts = {};
   types.forEach(t => counts[t]=records.filter(r=>r.type===t).length);
