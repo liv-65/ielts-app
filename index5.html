@@ -222,6 +222,51 @@
   .record-time  { font-size: 12px; color: var(--label); margin-top: 1px; }
   .record-chevron { color: var(--separator); font-size: 14px; }
 
+  /* ===== LIMITED-TIME CHECK-IN ===== */
+  :root {
+    --effort: #FF9F0A;
+    --sleep: #5E5CE6;
+  }
+  .checkin-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background .12s, transform .1s;
+    border: none;
+    width: 100%;
+    text-align: left;
+  }
+  .checkin-card:active { transform: scale(.98); background: #F2F2F7; }
+  .checkin-card + .checkin-card { margin-top: 10px; }
+  .checkin-icon {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .checkin-card.effort .checkin-icon { background: #FFF3E0; }
+  .checkin-card.sleep  .checkin-icon { background: #EEEEFF; }
+  .checkin-info { flex: 1; min-width: 0; }
+  .checkin-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .checkin-sub { font-size: 12px; color: var(--label); margin-top: 2px; }
+  .checkin-check {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid var(--separator);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+    color: transparent;
+    transition: background .12s, border-color .12s, color .12s;
+  }
+  .checkin-card.effort.done .checkin-check { background: var(--effort); border-color: var(--effort); color: #fff; }
+  .checkin-card.sleep.done  .checkin-check { background: var(--sleep);  border-color: var(--sleep);  color: #fff; }
+
   /* ===== DOT MATRIX CHART ===== */
   .chart-wrap {
     background: var(--card);
@@ -650,6 +695,11 @@
           <span class="q-sub">雅思练习</span>
         </button>
       </div>
+    </div>
+
+    <div class="section" id="checkin-section" style="margin-top:20px;display:none">
+      <div class="section-label">限时打卡</div>
+      <div id="checkin-list"></div>
     </div>
 
     <div class="section" style="margin-top:20px">
@@ -1403,6 +1453,68 @@ function saveData(data) {
 
 function getRecords() { return loadData().records; }
 
+// ============================================================
+// LIMITED-TIME CHECK-IN CAMPAIGNS
+// ============================================================
+// end 为结束日期（含当天可打卡），过后自动从列表隐藏
+const CHECKIN_CAMPAIGNS = [
+  { id: 'effort', icon: '🔥', name: '有效努力', sub: '每日打卡', end: '2026-07-21' },
+  { id: 'sleep',  icon: '😴', name: '睡眠行动', sub: '每日打卡', end: '2026-07-23' },
+];
+const CHECKIN_STORAGE_KEY = 'lifelog_checkins_v1';
+
+function loadCheckins() {
+  try {
+    const raw = localStorage.getItem(CHECKIN_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch(e) { return {}; }
+}
+function saveCheckins(data) {
+  localStorage.setItem(CHECKIN_STORAGE_KEY, JSON.stringify(data));
+}
+function todayDateStr() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+}
+function isCampaignActive(c) {
+  // 结束日当天仍可打卡，第二天起自动隐藏
+  return todayDateStr() <= c.end;
+}
+function toggleCheckin(id) {
+  const data = loadCheckins();
+  const today = todayDateStr();
+  if (!data[id]) data[id] = {};
+  data[id][today] = !data[id][today];
+  saveCheckins(data);
+  renderCheckins();
+}
+function renderCheckins() {
+  const section = document.getElementById('checkin-section');
+  const list = document.getElementById('checkin-list');
+  if (!section || !list) return;
+  const active = CHECKIN_CAMPAIGNS.filter(isCampaignActive);
+  if (!active.length) {
+    section.style.display = 'none';
+    list.innerHTML = '';
+    return;
+  }
+  section.style.display = 'block';
+  const data = loadCheckins();
+  const today = todayDateStr();
+  list.innerHTML = active.map(c => {
+    const done = !!(data[c.id] && data[c.id][today]);
+    return `
+    <button class="checkin-card ${c.id}${done ? ' done' : ''}" onclick="toggleCheckin('${c.id}')">
+      <div class="checkin-icon">${c.icon}</div>
+      <div class="checkin-info">
+        <div class="checkin-title">${c.name}</div>
+        <div class="checkin-sub">${c.sub} · 至 ${c.end.slice(5).replace('-','/')}</div>
+      </div>
+      <div class="checkin-check">✓</div>
+    </button>`;
+  }).join('');
+}
+
 // Pull all records from Supabase and merge into localStorage
 async function syncFromCloud() {
   try {
@@ -1515,6 +1627,7 @@ function switchTab(name) {
 // SUMMARY
 // ============================================================
 function renderSummary() {
+  renderCheckins();
   const now = new Date();
   const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
   document.getElementById('today-label').textContent =
