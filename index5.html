@@ -791,6 +791,23 @@
     </div>
 
     <div class="section" style="margin-top:16px">
+      <div class="section-label">接水打卡</div>
+      <div class="chart-wrap">
+        <div class="water-checkin-summary" style="display:flex;gap:12px;margin-bottom:12px;">
+          <div style="flex:1;background:#E0F5F9;border-radius:12px;padding:10px 12px;">
+            <div style="font-size:11px;color:var(--label)">累计打卡</div>
+            <div id="water-total-count" style="font-size:20px;font-weight:600;color:var(--water)">0 次</div>
+          </div>
+          <div style="flex:1;background:#E0F5F9;border-radius:12px;padding:10px 12px;">
+            <div style="font-size:11px;color:var(--label)">最近一次</div>
+            <div id="water-last-time" style="font-size:14px;font-weight:600;color:var(--water)">--</div>
+          </div>
+        </div>
+        <canvas id="waterCheckinChart" style="display:block;width:100%;"></canvas>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top:16px">
       <div class="section-label">雅思学习热力图</div>
       <div class="chart-wrap">
         <div class="heatmap-legend" id="heatmap-legend" style="display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap;">
@@ -1618,7 +1635,7 @@ function switchTab(name) {
     document.getElementById('screen-'+t).style.display = t===name ? 'block' : 'none';
     document.getElementById('tab-'+t).classList.toggle('active', t===name);
   });
-  if (name === 'chart') { renderLifeHeatmap(); renderIeltsHeatmap(); renderSummaryStats(); }
+  if (name === 'chart') { renderLifeHeatmap(); renderWaterCheckin(); renderIeltsHeatmap(); renderSummaryStats(); }
   if (name === 'manage') renderAllRecords();
   if (name === 'summary') renderSummary();
 }
@@ -2327,8 +2344,91 @@ function renderLifeHeatmap() {
   }
 }
 
+function renderWaterCheckin() {
+  const canvas = document.getElementById('waterCheckinChart');
+  if (!canvas) return;
+
+  const records = getRecords().filter(r => r.type === 'water')
+    .sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+  const totalEl = document.getElementById('water-total-count');
+  const lastEl = document.getElementById('water-last-time');
+  if (totalEl) totalEl.textContent = records.length + ' 次';
+  if (lastEl) {
+    if (records.length) {
+      const last = new Date(records[records.length - 1].timestamp);
+      lastEl.textContent = `${last.getMonth()+1}/${last.getDate()} ${String(last.getHours()).padStart(2,'0')}:${String(last.getMinutes()).padStart(2,'0')}`;
+    } else {
+      lastEl.textContent = '--';
+    }
+  }
+
+  // 周期性打卡时间线：展示最近若干次打卡的日期分布，而非按天的热力图
+  const dpr = window.devicePixelRatio || 1;
+  const containerW = canvas.parentElement.clientWidth - 32;
+  const PAD_L = 10, PAD_R = 10, TOP_PAD = 20, ROW_H = 28, BOTTOM_PAD = 6;
+  const totalH = TOP_PAD + ROW_H + BOTTOM_PAD;
+
+  canvas.width = containerW * dpr;
+  canvas.height = totalH * dpr;
+  canvas.style.width = containerW + 'px';
+  canvas.style.height = totalH + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, containerW, totalH);
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, containerW, totalH);
+
+  const RANGE_DAYS = 30;
+  const today = new Date(); today.setHours(23,59,59,999);
+  const rangeStart = new Date(today);
+  rangeStart.setDate(rangeStart.getDate() - (RANGE_DAYS - 1));
+  rangeStart.setHours(0,0,0,0);
+
+  const recent = records.filter(r => new Date(r.timestamp) >= rangeStart);
+
+  // axis labels
+  ctx.fillStyle = '#8E8E93';
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(`${rangeStart.getMonth()+1}/${rangeStart.getDate()}`, PAD_L, TOP_PAD - 6);
+  ctx.textAlign = 'right';
+  ctx.fillText(`${today.getMonth()+1}/${today.getDate()}`, containerW - PAD_R, TOP_PAD - 6);
+
+  // baseline
+  const lineY = TOP_PAD + ROW_H / 2;
+  ctx.strokeStyle = '#E5E5EA';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(PAD_L, lineY);
+  ctx.lineTo(containerW - PAD_R, lineY);
+  ctx.stroke();
+
+  const availW = containerW - PAD_L - PAD_R;
+  recent.forEach(r => {
+    const d = new Date(r.timestamp);
+    const frac = (d - rangeStart) / (today - rangeStart);
+    const x = PAD_L + Math.max(0, Math.min(1, frac)) * availW;
+    ctx.fillStyle = '#30B0C7';
+    ctx.beginPath();
+    ctx.arc(x, lineY, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  });
+
+  if (!recent.length) {
+    ctx.fillStyle = '#C7C7CC';
+    ctx.font = '12px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('近30天暂无打卡', containerW / 2, lineY + 4);
+  }
+}
+
 function renderChart() {
   renderLifeHeatmap();
+  renderWaterCheckin();
   renderIeltsHeatmap();
   renderSummaryStats();
 }
@@ -2537,6 +2637,7 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('resize', ()=>{
   if (document.getElementById('screen-chart').style.display!=='none') {
     renderLifeHeatmap();
+    renderWaterCheckin();
     renderIeltsHeatmap();
   }
 });
