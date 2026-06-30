@@ -251,6 +251,9 @@
   }
   .checkin-card.effort .checkin-icon { background: #FFF3E0; }
   .checkin-card.sleep  .checkin-icon { background: #EEEEFF; }
+  .checkin-card.ielts-writing   .checkin-icon { background: #EEEEFF; }
+  .checkin-card.ielts-speaking  .checkin-icon { background: #FFECEC; }
+  .checkin-card.ielts-listening .checkin-icon { background: #E5F4FF; }
   .checkin-info { flex: 1; min-width: 0; }
   .checkin-title { font-size: 15px; font-weight: 600; color: var(--text); }
   .checkin-sub { font-size: 12px; color: var(--label); margin-top: 2px; }
@@ -266,6 +269,9 @@
   }
   .checkin-card.effort.done .checkin-check { background: var(--effort); border-color: var(--effort); color: #fff; }
   .checkin-card.sleep.done  .checkin-check { background: var(--sleep);  border-color: var(--sleep);  color: #fff; }
+  .checkin-card.ielts-writing.done   .checkin-check { background: var(--ielts-writing);   border-color: var(--ielts-writing);   color: #fff; }
+  .checkin-card.ielts-speaking.done  .checkin-check { background: var(--ielts-speaking);  border-color: var(--ielts-speaking);  color: #fff; }
+  .checkin-card.ielts-listening.done .checkin-check { background: var(--ielts-listening); border-color: var(--ielts-listening); color: #fff; }
 
   /* ===== DOT MATRIX CHART ===== */
   .chart-wrap {
@@ -678,21 +684,6 @@
           <span class="q-icon">🗑️</span>
           <span class="q-label">扔垃圾</span>
           <span class="q-sub">记录清理</span>
-        </button>
-        <button class="quick-btn ielts-writing" onclick="openSheet('ielts-writing')">
-          <span class="q-icon">✍️</span>
-          <span class="q-label">写作</span>
-          <span class="q-sub">雅思练习</span>
-        </button>
-        <button class="quick-btn ielts-speaking" onclick="openSheet('ielts-speaking')">
-          <span class="q-icon">🗣️</span>
-          <span class="q-label">口语</span>
-          <span class="q-sub">雅思练习</span>
-        </button>
-        <button class="quick-btn ielts-listening" onclick="openSheet('ielts-listening')">
-          <span class="q-icon">🎧</span>
-          <span class="q-label">听力</span>
-          <span class="q-sub">雅思练习</span>
         </button>
       </div>
     </div>
@@ -1477,6 +1468,9 @@ function getRecords() { return loadData().records; }
 const CHECKIN_CAMPAIGNS = [
   { id: 'effort', icon: '🔥', name: '有效努力', sub: '每日打卡', end: '2026-07-21' },
   { id: 'sleep',  icon: '😴', name: '睡眠行动', sub: '每日打卡', end: '2026-07-23' },
+  { id: 'ielts-writing',   icon: '✍️', name: '雅思写作', sub: '每日打卡', end: '2026-07-27', recordType: 'ielts-writing' },
+  { id: 'ielts-speaking',  icon: '🗣️', name: '雅思口语', sub: '每日打卡', end: '2026-07-19', recordType: 'ielts-speaking' },
+  { id: 'ielts-listening', icon: '🎧', name: '雅思听力', sub: '每日打卡', end: '2026-07-12', recordType: 'ielts-listening' },
 ];
 const CHECKIN_STORAGE_KEY = 'lifelog_checkins_v1';
 
@@ -1498,10 +1492,24 @@ function isCampaignActive(c) {
   return todayDateStr() <= c.end;
 }
 function toggleCheckin(id) {
+  const campaign = CHECKIN_CAMPAIGNS.find(c => c.id === id);
+  if (campaign && campaign.recordType) {
+    // 表单型打卡：打开对应 Sheet，保存后由 saveRecord 标记今日完成
+    openSheet(campaign.recordType);
+    return;
+  }
   const data = loadCheckins();
   const today = todayDateStr();
   if (!data[id]) data[id] = {};
   data[id][today] = !data[id][today];
+  saveCheckins(data);
+  renderCheckins();
+}
+function markCheckinDone(id) {
+  const data = loadCheckins();
+  const today = todayDateStr();
+  if (!data[id]) data[id] = {};
+  data[id][today] = true;
   saveCheckins(data);
   renderCheckins();
 }
@@ -1515,13 +1523,19 @@ function renderCheckins() {
     list.innerHTML = '';
     return;
   }
-  section.style.display = 'block';
   const data = loadCheckins();
   const today = todayDateStr();
-  list.innerHTML = active.map(c => {
-    const done = !!(data[c.id] && data[c.id][today]);
+  // 今日已打卡的卡片彻底隐藏，第二天 0 点自动恢复
+  const pending = active.filter(c => !(data[c.id] && data[c.id][today]));
+  if (!pending.length) {
+    section.style.display = 'none';
+    list.innerHTML = '';
+    return;
+  }
+  section.style.display = 'block';
+  list.innerHTML = pending.map(c => {
     return `
-    <button class="checkin-card ${c.id}${done ? ' done' : ''}" onclick="toggleCheckin('${c.id}')">
+    <button class="checkin-card ${c.id}" onclick="toggleCheckin('${c.id}')">
       <div class="checkin-icon">${c.icon}</div>
       <div class="checkin-info">
         <div class="checkin-title">${c.name}</div>
@@ -2001,6 +2015,9 @@ function saveRecord(type) {
 
   addRecord(rec);
   closeSheet();
+  if (type==='ielts-writing' || type==='ielts-speaking' || type==='ielts-listening') {
+    markCheckinDone(type);
+  }
   renderSummary();
   const toastMsg = type==='coffee'?'☕ 咖啡已记录':type==='bowel'?'💩 排便已记录':type==='shower'?'🚿 洗澡已记录':type==='exercise'?'🏃 运动已记录':type==='water'?'💧 接水已记录':type==='trash'?'🗑️ 扔垃圾已记录':type==='ielts-writing'?'✍️ 雅思写作已记录':type==='ielts-speaking'?'🗣️ 雅思口语已记录':type==='ielts-listening'?'🎧 雅思听力已记录':'🧹 清洁已记录';
   showToast(toastMsg);
