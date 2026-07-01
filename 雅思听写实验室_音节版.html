@@ -211,6 +211,14 @@
   .unit-acc .acc-pct{display:block; color:var(--ink-soft);}
   .unit-acc .acc-prog{display:block; font-size:10.5px; color:var(--ink-faint); margin-top:1px;}
 
+  .word-note{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    margin-top:3px;
+    font-family:var(--font-mono);
+  }
+  .word-note b{ color:var(--accent); font-weight:600; }
+
   /* 返回按钮（结果页顶部） */
   .page-topbar{
     display:flex; align-items:center; gap:10px;
@@ -500,6 +508,19 @@
   }
   #answerInput:focus{outline:none; border-color:var(--accent);}
   #answerInput.flash-good{border-color:var(--good); background:var(--good-soft);}
+  #srsInput{
+    width:100%;
+    font-family:var(--font-mono);
+    font-size:22px;
+    text-align:center;
+    padding:16px 14px;
+    border-radius:var(--radius-m);
+    border:1.5px solid var(--border-strong);
+    background:#fff;
+    color:var(--ink);
+    letter-spacing:0.02em;
+  }
+  #srsInput:focus{outline:none; border-color:var(--accent);}
   #answerInput.flash-bad{border-color:var(--bad); background:var(--bad-soft);}
 
   .feedback{
@@ -550,6 +571,88 @@
   .reason-btn[data-reason="miss"]:hover, .reason-btn[data-reason="miss"]:active{border-color:var(--bad);}
   .reason-btn[data-reason="guess"]:hover, .reason-btn[data-reason="guess"]:active{border-color:#C18A2E;}
   .reason-btn[data-reason="spell"]:hover, .reason-btn[data-reason="spell"]:active{border-color:var(--accent);}
+
+  /* ---------------- SRS review ---------------- */
+  .srs-state-row{
+    text-align:center;
+    padding:10px 0 2px;
+  }
+  .srs-state-tag{
+    display:inline-block;
+    font-size:11.5px;
+    font-weight:600;
+    padding:4px 12px;
+    border-radius:999px;
+    background:var(--surface);
+    border:1px solid var(--border-strong);
+    color:var(--ink-soft);
+  }
+  .srs-answer{
+    text-align:center;
+    padding:6px 0 2px;
+  }
+  .srs-word{
+    font-size:30px;
+    font-weight:700;
+    font-family:var(--font-mono);
+    color:var(--ink);
+    letter-spacing:0.5px;
+  }
+  .srs-rating{
+    margin-top:auto;
+    padding-top:14px;
+  }
+  .srs-rating .ask{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    margin:0 0 10px;
+    text-align:center;
+  }
+  .srs-rate-btn{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--surface);
+    border:1px solid var(--border-strong);
+    border-radius:var(--radius-m);
+    padding:14px 16px;
+    margin-bottom:10px;
+    cursor:pointer;
+    text-align:left;
+    font-family:var(--font-body);
+  }
+  .srs-rate-btn:active{transform:scale(0.98);}
+  .srs-rate-btn i{font-size:20px; color:var(--ink-soft); flex:0 0 auto;}
+  .srs-rate-btn .rt{font-size:14.5px; font-weight:500; color:var(--ink);}
+  .srs-rate-btn .rs{font-size:12px; color:var(--ink-soft); margin-top:1px;}
+  .srs-rate-btn.forgot:hover, .srs-rate-btn.forgot:active{border-color:var(--bad);}
+  .srs-rate-btn.struggled:hover, .srs-rate-btn.struggled:active{border-color:#C18A2E;}
+  .srs-rate-btn.knewit:hover, .srs-rate-btn.knewit:active{border-color:var(--accent);}
+  .srs-rate-btn.mastered:hover, .srs-rate-btn.mastered:active{border-color:var(--good);}
+  .srs-rate-btn.srs-suggested{
+    border-color:var(--accent);
+    background:color-mix(in srgb, var(--accent) 8%, var(--surface));
+  }
+  .srs-empty{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:14px;
+    padding:60px 0;
+    text-align:center;
+    color:var(--ink-soft);
+  }
+  .srs-info-content{ padding-bottom:24px; }
+  .srs-info-list{
+    margin:0 0 22px;
+    padding-left:20px;
+    font-size:13.5px;
+    color:var(--ink-soft);
+    line-height:1.8;
+  }
+  .srs-info-list li{ margin-bottom:4px; }
+  .srs-info-list b{ color:var(--ink); }
 
   .reason-tag{
     font-family:var(--font-mono);
@@ -752,6 +855,14 @@
         </div>
         <span class="ge-count" id="guessEntryCount">0词</span>
       </div>
+      <div class="guess-entry" id="srsEntryBtn">
+        <div class="ge-icon"><i class="ti ti-brain" aria-hidden="true"></i></div>
+        <div class="ge-body">
+          <div class="ge-title">间隔重复复习 (SRS)</div>
+          <div class="ge-sub" id="srsEntrySub">科学安排复习节奏，巩固长期记忆</div>
+        </div>
+        <span class="ge-count" id="srsEntryCount">0待复习</span>
+      </div>
     </footer>
   </section>
 
@@ -861,13 +972,165 @@
     </footer>
   </section>
 
+  <!-- ============ SRS REVIEW VIEW ============ -->
+  <section id="view-srs" class="view">
+    <div class="practice-top">
+      <button class="icon-btn" id="srsExitBtn" aria-label="返回首页"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+      <span class="progress-txt" id="srsProgressTxt">1 / 10</span>
+      <button class="icon-btn" id="srsInfoBtn" aria-label="算法说明"><i class="ti ti-info-circle" aria-hidden="true"></i></button>
+    </div>
+    <div class="progress-bar"><div id="srsProgressFill" style="width:0%"></div></div>
+
+    <div class="srs-state-row">
+      <span class="srs-state-tag" id="srsStateTag">新词</span>
+    </div>
+
+    <div class="play-zone">
+      <button class="play-btn" id="srsPlayBtn" aria-label="播放单词">
+        <i class="ti ti-player-play-filled" aria-hidden="true"></i>
+      </button>
+      <div class="wave" id="srsWave">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <button class="replay-link" id="srsReplayBtn"><i class="ti ti-rotate" aria-hidden="true"></i> 重听</button>
+    </div>
+
+    <div class="feedback" id="srsFeedback" style="visibility:hidden;">
+      <i class="ti" id="srsFeedbackIcon" aria-hidden="true"></i>
+      <span id="srsFeedbackText"></span>
+    </div>
+
+    <div class="srs-answer" id="srsAnswer" style="display:none;">
+      <div class="srs-word" id="srsWordText"></div>
+      <div id="srsWordNote"></div>
+    </div>
+
+    <div class="answer-area" id="srsRevealArea">
+      <input id="srsInput" type="text" placeholder="输入听到的词" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text">
+    </div>
+
+    <div class="practice-actions" id="srsSubmitArea">
+      <button class="btn btn-primary" id="srsSubmitBtn">提交</button>
+    </div>
+
+    <div class="srs-rating" id="srsRating" style="display:none;">
+      <p class="ask">这次记得怎么样？</p>
+      <button class="srs-rate-btn forgot" data-q="0">
+        <i class="ti ti-mood-sad" aria-hidden="true"></i>
+        <div><div class="rt">忘记了</div><div class="rs">完全没想起来，拼写也错了 · 很快再考</div></div>
+      </button>
+      <button class="srs-rate-btn struggled" data-q="1">
+        <i class="ti ti-mood-confuzed" aria-hidden="true"></i>
+        <div><div class="rt">努力想起</div><div class="rs">拼写对了但很费劲 · 更频繁复习</div></div>
+      </button>
+      <button class="srs-rate-btn knewit" data-q="2">
+        <i class="ti ti-mood-smile" aria-hidden="true"></i>
+        <div><div class="rt">记得</div><div class="rs">拼写正确，稍作停顿 · 正常增长间隔</div></div>
+      </button>
+      <button class="srs-rate-btn mastered" data-q="3">
+        <i class="ti ti-mood-wink" aria-hidden="true"></i>
+        <div><div class="rt">掌握了</div><div class="rs">拼写正确且立刻确信 · 间隔加速增长</div></div>
+      </button>
+    </div>
+
+    <div class="srs-empty" id="srsEmpty" style="display:none;">
+      <i class="ti ti-circle-check" style="font-size:40px; color:var(--good);"></i>
+      <p>今天该复习的词都完成啦 🎉</p>
+      <button class="btn btn-primary" id="srsEmptyHomeBtn">返回首页</button>
+    </div>
+  </section>
+
+  <!-- ============ SRS INFO VIEW ============ -->
+  <section id="view-srsinfo" class="view">
+    <div class="page-topbar">
+      <button class="back-btn" id="srsInfoBackBtn" aria-label="返回"><i class="ti ti-arrow-left"></i></button>
+      <h2 class="page-title">SRS 间隔重复说明</h2>
+    </div>
+    <div class="srs-info-content">
+      <p class="as-head">工作原理</p>
+      <ol class="srs-info-list">
+        <li>第一次遇到一个词时，会被自动加入"学习队列"</li>
+        <li>复习时，你为自己刚才的回忆情况打分(4档)</li>
+        <li>系统根据打分安排下一次复习的时间</li>
+        <li>你容易忘的词，会更频繁地出现</li>
+        <li>你掌握得好的词，复习间隔会拉长，但仍按科学节奏偶尔出现</li>
+      </ol>
+      <p class="as-head">复习节奏</p>
+      <ul class="srs-info-list">
+        <li><b>新词 New</b>：1 天内会被安排复习</li>
+        <li><b>学习中 Learning</b>：根据表现，每 1–10 天复习一次</li>
+        <li><b>复习中 Reviewing</b>：间隔拉长到 10–30 天</li>
+        <li><b>已掌握 Mastered</b>：间隔很长，偶尔出现以维持记忆</li>
+      </ul>
+      <p class="as-head">四档评分含义</p>
+      <ul class="srs-info-list">
+        <li><b>忘记了 Forgot</b>：完全没想起来 — 很快会再次出现</li>
+        <li><b>努力想起 Struggled</b>：想对了但很费力 — 会更频繁复习</li>
+        <li><b>记得 Knew It</b>：略停顿后想起 — 间隔正常增长</li>
+        <li><b>掌握了 Mastered</b>：立刻自信想起 — 间隔加速增长</li>
+      </ul>
+    </div>
+  </section>
+
 </div>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.1.0/iconfont/tabler-icons.min.css">
 <script>
-const UNITS = [{"id":"u1","title":"第一单元 · 高频5次以上","words":["water","name","cheese","garden","photograph","cheque","insurance","piano","clay","bird","plant","clothes","transport","population","coast","glass","presentation","concentration","park","research","corn","interview","rock","cost","light","sea","deposit","station","shower","direction","city","social","discount","forest","sport","dry","school","storm","exercise","balcony","tennis","fear","family","tutor","friend","garage","weight","guide","map","age","health","museum","animal","history","river","bicycle","housing","time","camera","hunting","training","chemical","image","children","cleaning","Japanese","kitchen","coffee","job","magazine","confidence","lunch","wood","egg","meal","bone","entertainment","method","bridge","film","mirror","flower","food","negative","internet","helmet","nutrition","library","hotel","observation","parking","India","open","photo","nut","organic","supermarket","phone","painting","temperature","report","parent","website","restaurant","permit","café","sailing","pool","electricity","security","public","government","size","quality","plastic","skill","question","safety","speed","rainfall","stone","studio","record","beach","tax","relationship","fire","technology","sale","fish","traditional","sample","fishing","train","science","helicopter","video","seafood","insect","village","seminar","music","weather","silver","newspaper","behaviour","Spanish","radio","cake","standard","reference","car","store","soil","chocolate","street","wind","competition","sugar","airport","cooking","summer","bank","culture","sun","bike","decoration","survey","business","distance","team","cinema","equipment","tent","climate","flat","ticket","desert","flexible","tool","energy","fridge","tree","factory","gas","university","farm","genetic","view","feedback","gift","weekend","furniture","group","wheelchair","money","language","window","noise","locker","winter","reception","microwave","women","salt","north","action","theatre","oil","adult","boat","passport","advertisement","certificate","picture","alarm","clean","reading","bacteria","club","resource","bag","colour","road","band","communication","student","bathroom","computer","swimming","brick","disease","teenager","building","environment","traffic","camel","farming","academic","cash","golf","agriculture","castle","grass","apartment","cave","gym","back","central","hospital","basement","coach","lake","book","college","manager","booklet","commercial","market","box","conference","material","breakfast","mountain","bus"]},{"id":"u2","title":"第二单元 · 高频3-4次","words":["contract","washing","manual","crime","whale","mat","damage","workshop","math","dance","young","media","danger","accommodation","medicine","depth","accountant","meeting","desk","activity","member","diary","advertising","memory","diet","Africa","modern","donation","afternoon","monthly","drive","agency","mood","drum","aging","morning","education","air","mud","electronic","airline","natural","email","analysis","nature","engineer","application","neighbour","engineering","art","new","exhibition","Australian","night","expensive","automatic","none","eyes","beginner","note","face","blue","nurse","flooding","bright","oldest","fruit","candle","opera","game","carbon","outdoor","green","carpet","outside","heat","challenge","oxygen","holiday","change","packaging","house","chart","pain","human","chicken","paper","idea","closed","participation","income","clothing","part-time","information","comedy","party","ink","concert","password","irrigation","concrete","performance","jeans","conservation","personal","labour","cotton","pet","lecture","current","photography","legal","customer","picnic","location","dancing","plane","massage","dark","planet","mathematics","density","politics","meat","dentist","pollution","metal","discussion","poster","microscope","dishwasher","pottery","middle","display","powder","milk","diving","power","mineral","door","price","month","double","printing","movement","downhill","privacy","noisy","drama","private","number","drink","product","ocean","drug","promotion","office","economics","pump","online","economy","qualification","photocopy","emotion","race","pizza","engine","random","planning","evolution","rat","plate","example","reduction","playground","fashion","rice","police","feather","right","post","fertiliser","rope","problem","fight","salad","profit","flavour","sandwich","protection","flood","screen","purpose","foundation","seat","rain","fuel","second","risk","gender","senior","roof","global","service","rubber","gold","shell","rubbish","hair","signal","rule","heart","sleep","safe","honey","slide","salary","identification","small","sand","identity","smell","scientist","instrument","soft","shark","intermediate","sound","singing","international","south","software","jacket","southeast","song","joke","space","storage","keyboard","spring","stress","label","star","support","laundry","summary","taxi","learning","talent","teacher","license","teaching","top","link","telephone","tourism","liquid","tour","towel","lounge","toy","transportation","lower","travel","machine"]},{"id":"u3","title":"第三单元 · 高频2-3次","words":["triangle","crocodile","increase","tunnel","crop","ingredient","tutorial","crowded","intelligent","tyre","cultural","interaction","uniform","cup","journalism","visa","cycling","key","vision","data","king","waiter","date","knife","waitress","day","laboratory","walking","decline","land","wall","decorated","landlady","warning","demand","lawyer","waterfall","department","leader","wax","description","leaf","wedding","detail","lecturer","week","digestion","leg","wild","dinner","length","wildlife","diploma","letter","woman","direct","level","woodland","director","lid","word","dirt","lifestyle","yoga","distribution","lift","accept","doctor","list","accident","dog","listening","acid","donkey","loan","address","driver","local","administration","driving","lock","advanced","duration","loss","ancestor","eat","magnet","apology","elevator","mail","approach","employer","main","army","end","male","attitude","entrance","mammal","background","equal","man-made","ball","essay","marketing","barcode","estimate","medical","bargain","Europe","medication","baseball","evaporation","menu","bedroom","evening","message","bill","expectation","migration","blanket","experience","minibus","block","fabric","mistake","blood","fan","mixed","board","feet","moderate","body","field","monitor","bookshop","filmed","monkey","boot","finance","monument","brain","financial","morality","breathing","firework","motivation","bush","floor","movie","butterfly","football","multimedia","camp","footprint","mushroom","campus","fountain","native","caravan","France","nest","centre","freedom","northern","ceremony","freezer","notebook","chair","French","nursery","chairman","frequency","nylon","charity","frog","oral","cheaper","fur","orange","checklist","gap","organization","chemist","gardening","outline","Chinese","glove","oven","circle","grade","overseas","climbing","grey","paint","coastal","ground","partner","coconut","guest","people","code","guideline","perfume","coin","guitar","person","cold","habitat","personality","collect","hall","pest","common","hand","pilot","community","handle","pipe","company","harbour","plan","comparison","hard","poison","complex","harvest","potato","compulsory","hat","poverty","confusion","headache","present","construction","heater","print","context","heavy","printer","control","hill","prison","cookery","hole","processing","cool","home","professor","corner","homework","protected","cosmetic","hostel","country","hot","crack","humour","cream","hungry","critical","ice"]},{"id":"u4","title":"第四单元 · 频率2次","words":["protein","vacation","beginning","purple","variety","belt","queen","vegetarian","benefit","quiet","visit","Berlin","raining","voice","bin","range","volcano","biological","rare","walk","biology","reason","warm","birthday","recycling","waste","blind","refreshment","wealth","blues","regulation","weed","boiler","relative","weekday","bonus","reliable","whistle","booking","religion","white","bookkeeping","repair","work","bookshelf","respect","workplace","booth","retail","writer","boring","retired","writing","bottle","robot","yellow","boy","root","youth","brake","rose","ability","branch","round","accent","breathe","rural","access","breed","Russian","accountable","brightness","salesman","accuracy","British","sculpture","accurate","broken","season","acknowledgement","brush","secretary","actor","bucket","sell","administrator","budget","shade","adopt","buffet","share","ads","builder","shelf","advance","buried","shipping","adventure","butter","shoes","advertise","button","shop","advice","cabin","shopping","advisor","cabinet","shoulder","after-school","cable","side","agreement","cafeteria","signature","agricultural","calculation","silk","airplane","calculator","sing","alarming","calendar","singer","alternative","calm","slave","angle","campsite","slow","antibiotic","Canada","smoke","antifreeze","Canadian","snack","antiseptic","canteen","snake","appearance","captive","soap","apple","card","soldier","approval","cargo","soup","apron","carnival","square","area","carnivorous","stairs","Argentina","cartoon","statistics","arm","cashier","status","arrangement","casual","steel","arrow","category","stomach","artificial","catering","stored","artist","cattle","story","artistic","cause","strategy","ash","celebration","strength","Asia","celebrity","string","aspirin","chain","structure","assignment","challenging","subway","athlete","character","surface","Atlas","cheap","swim","attachment","cheapest","table","attack","chemistry","talk","attacked","chess","tank","audience","childhood","taste","august","choice","teeth","aunt","choosing","television","Australia","church","test","autumn","cigar","testing","award","circulation","timber","aware","citizen","tongue","axe","class","total","baby","classic","tourist","bakery","classical","tower","balance","classification","town","ban","claw","trash","banana","cleanest","trouser","base","clear","truck","basic","clerk","trust","basket","cliff","TV","bath","clinic","typed","battery","clock","uncomfortable","bear","clockwise","underground","bed","close","unemployed","beer","unnatural","bees"]},{"id":"u5","title":"第五单元 · 频率1次","words":["cloud","distribute","flamingo","coal","district","flashing","coat","dive","flight","collaborative","diversity","floated","collection","DJ","flooded","colony","document","flu","coloured","documentation","fluent","combination","dome","fluid","combined","downstairs","focus","comfortable","draft","folded","comic","drawer","font","commerce","dream","foot","commitment","dressing","form","committee","dried","fossil","companion","drinking","fragile","companionship","driveway","frame","compensation","drought","fresh","compete","drying","friction","composing","durable","friendly","comprehension","ear","friendship","computing","early","frozen","concentrated","earth","full-time","confident","east","fun","confirmation","eclipse","function","congratulation","ecology","funding","connected","ecosystem","further","consumer","edge","future","contact","edit","gallery","container","editor","gene","contamination","educational","general","continent","efficiency","generation","contrast","efficient","generator","contribution","elastic","geographic","convenient","electrical","germ","conversation","elephant","Germany","cook","emergency","glue","cooker","emotional","go","cooperative","emperor","golden","correction","employed","goods","costly","employee","gradual","council","employment","grain","counting","empty","grammar","couple","energy-saving","grandmother","course","English","graph","coursework","enjoyable","grassland","cousin","enlargement","gravity","cover","environmental","Greek","creative","erosion","grocery","creature","error","guard","credit","escape","guess","critic","European","guessing","crowd","evaluation","gun","crown","every","habit","Cuban","everything","half","curtain","evidence","handbook","cut","exam","handout","CV","excellent","happier","dam","excitement","hardware","damaged","existing","hardworking","dancer","expanded","harp","dangerous","expect","harvested","darkroom","experiment","hazel","database","explode","head","deadline","exploration","heading","decision","expression","headline","deep","external","healthcare","defence","extinct","healthier","definition","extinction","healthy","degree","extra","heated","democratic","facility","herbivorous","demonstration","fact","higher","departure","farmer","highway","depression","faster","hiking","deputy","fat","hive","design","fax","hockey","dessert","female","honest","development","fence","horizon","diamond","ferries","horizontal","dictation","fertilise","hormone","diesel","festival","horror","difficult","fighting","horsehair","digest","file","hospitality","digestive","filter","hour","digging","fireplace","humidity","disability","firewood","hunger","disappear","first","hurricane","discipline","fitness","hurt","disco","fixing","dismiss","flag"]},{"id":"u6","title":"第六单元 · 频率1次","words":["ID","machinery","petrol","illegal","Malaysia","philosopher","illness","management","philosophy","immigrant","manufacture","photographic","immigration","manufacturing","pirate","immune","mapping","placement","impact","marriage","planting","important","Mars","platform","imported","mask","play","impossible","maturity","pleasure","improvement","meaning","pocket","incorrect","measurement","poet","increased","meet","polish","independence","membership","polished","indoor","men","polite","industrial","mental","polluted","industry","methodology","pond","infection","Mexico","poor","informal","microbiology","popular","infrastructure","microchip","port","innovation","microfilm","portable","inscription","microphone","portrait","inspector","midmorning","position","install","midnight","postage","instinct","mid-range","postcard","instinctive","midweek","postgraduate","instruction","migrate","pot","insulation","mild","PowerPoint","integrate","mining","predator","intelligence","mixture","preparation","intense","mobile","prepared","interest","mobility","preposition","invented","model","preservation","investigation","moisture","preserved","invitation","mother","president","iron","motor","pressed","island","mould","pressure","IT","mouth","printed","Italian","myth","priority","italics","navigate","probability","Italy","navigation","procedure","Japan","navigational","process","jaw","neck","producer","jazz","nesting","production","joint","net","productive","journal","networking","productivity","judo","nitrogen","professional","juice","non-active","program","jungle","nonsmoking","project","junior","normal","projector","kidney","northeast","proof","kindness","note-taking","publication","knee","obesity","publishing","knowledge","object","pure","lab","objective","puzzle","ladder","obligation","questionnaire","lamb","occupancy","quiz","lamp","old","rabbit","landmark","opportunity","rack","lane","optional","radar","laptop","organisation","rainbow","larger","organised","rainwater","law","orientation","rationally","layer","origin","reaction","layout","originality","read","lead","outcome","real","leaflet","outstanding","realism","leak","overfill","realistic","learner","own","receiver","leisure","ozone","receptionist","lemon","package","recording","liberty","packed","recruitment","lifting","packing","recycled","lighting","painkiller","red","limitation","painter","reflective","line","palace","refund","lion","parcel","regional","literature","passive","registration","live","path","reinforced","living","pattern","reinvested","logic","pay","relaxation","logo","peer","relevant","London","peg","relocation","lonely","pen","remember","lost","pencil","replacement","loyal","perception","loyalty","permanent","lung","permission","luxurious","pesticide"]},{"id":"u7","title":"第七单元 · 频率1次","words":["reporter","sociable","tooth","reproduce","socialise","topic","reproduction","society","torn","reputation","sock","trace","researcher","solar","trade","resident","solution","trader","resistant","son","translation","responsibility","sour","translator","responsible","source","transparent","rest","southwest","travelling","result","souvenir","tray","retrained","Spain","treatment","return","spare","trend","review","speaker","trial","reward","species","tribe","riding","spice","trip","ring","spider","trumpet","rival","spine","T-shirt","Roman","spoon","tube","rumour","stand","tuna","running","starch","turn","rush","starvation","twice","Russia","state","typical","sad","statue","typing","safer","steam","U.K.","saliva","stem","umbrella","salty","stick","unanswered","same","sticker","uncle","sandglass","still","uncontrolled","sandy","stimulating","undergraduate","satellite","sting","understand","satisfactory","stopwatch","undeveloped","Saturday","storeroom","unfair","save","stream","unfurnished","scaffold","stressful","unimportant","scarce","stretching","unnecessary","scent","strict","urban","scheme","strike","use","scientific","strong","useless","score","stuck","value","scoring","subcommittee","variable","Scotland","subject","varied","sealed","subtitle","vary","seasonal","subtopic","vegetation","seasoned","success","ventilation","seating","suggestion","version","seaweed","summarise","vertical","see","suncream","vest","seed","sunlight","vetting","select","sunscreen","Vietnam","selected","sunset","violin","selection","sunshade","virus","self-centred","super","visitor","self-defence","supervision","vocabulary","self-employment","surfing","wage","self-evaluation","survival","waiting","self-locked","survive","wallet","self-motivation","sustainable","war","sensitive","swan","warming","settle","sweater","wash","shallow","Sweden","watch","shame","sweet","watering","shape","sweetener","waterproof","sharing","swimmer","way","sheet","symbolism","well-organised","shellfish","tape","whole","shelter","target","wider","ship","tea","wire","shipbuilding","teamwork","wool","shirt","tear","workforce","shoot","technician","working","shopper","technique","workload","short","temple","worksheet","showhouse","term","worm","shrimp","textbook","write","sign","textile","written","similar","theoretical","York","simple","theory","zoom","simulation","therapy","sink","threat","ski","thunderstorm","skin","Thursday","sloping","timetable","smart","title","smile","toaster","smoky","toes","smooth","toilet","smoother","tolerance","soccer","tomato"]},{"id":"u8","title":"第八单元 · 词组","words":["bus stop","back problems","computer breakdown","swimming pool","back wheel","computer programmer","credit card","background reading","computer room","student card","bad eyesight","computer science","air conditioner","Baked Earth","computer screen","back door","bank house","concert hall","central heating","bank robbery","concert room","post office","bank transfer","conference report","public transport","bathroom sink","contact number","action plan","be more decisive","cost effective","administration officer","bed sheet","country life","air pollution","behind the station","countryside living","bank statements","big five","courses from internet","bottled water","big social event","credit check","by cash","big toe","culture centre","car park","bike rack","customs office","carbon dioxide","bird's nest","cut and cover","case study","black coat","daily music","central park","black skirt","dark and light","city centre","black velvet","dark blue","club office","blood flow","data analysis","common room","blue card","date in history","conference centre","blue folder","decision making","driving license","blue skirt","deluxe standard","eye contact","blue sweater","department head","feed animals","body shape","department manager","free drink","book in advance","department stores","global warming","book loan","design research","hot meal","book talk","desk and TV","horse riding","booking form","desk lamp","ice pack","bowling alley","detail note","ice skating","branch manager","deteriorate for age","living room","bridge road","develop disease","lock all windows","British library","developing countries","long term","budget advice","digital system","Medical Centre","building material","dining room","North Africa","bunch of flowers","discussion group","North Gate","burning time","documentary film","north park","bus service","domestic smells","petrol station","business course","double bedroom","play music","business management","double grill","primary school","business plan","double lock","problem solving","business studies","double room","read aloud","cabin keys","double space","safety regulations","cable car","drink milk","save it","cable TV","drinking machines","senior advisor","call centre","drinks and snacks","small scale","calling diversion","each classroom","Sport Centre","camera man","early evening","tape recorder","car parking lot","easy to understand","Thursday morning","card catalogues","easy tune","top roof","card index","eating pattern","town hall","Career's Office","economic history","washing machine","carry post","electric card","water heater","castle hill","electronic directory","yellow box","casual clothes","email address","a clear argument","central location","email marketing","a shared room","central part","emergency contact number","a whole family","change behaviour","employee first","action movie","changing room","energy saving","action points","chat show","environmental damage","additional fee","cheapest budget","environmental issues","address card","check identities","escaping steam","advanced level","chemistry lab","essay outline","after lunch","chess club","essay writing","air filter","chewing gum","European Pass","alarm system","chief executive","evening meals","alternative energy","children's day","Evening News","animal life","city council","every year","animals' behaviour","city map","expected duration","annual report","class representative","explain the experiment","Ape Hour","classical history","express trains","Apple Day","classroom tour","extra resource","apple juice","cleaning materials","extra workload","application form","clear voice","eye drops","art gallery","climate change","face painting","articles from journals","closed down","family life","as a group","clothing sections","family members","as a whole","college coordinator","family photo","at risk","colour blind","fancy dress","attend regular conferences","comment card","farming supplies","automatically registered","Common Spider","average ability","communication technology"]},{"id":"u9","title":"第九单元 · 词组","words":["farmland field","ID code","media room","fast-food shop","ID number","media studies","feeding time","identity card","mental ability","field work","immune system","metallic grey","files in colour","in advance","mid-term test","Finance Office","incoming call","migration patterns","financial goals plan","industrial material","mild light","financial market","information desk","mineral soil","finding a job","information from internet","mission statement","fire alarms","information sectors","mobile phone","fire drill","information technology","modern language","first in history","insurance companies","Monday mornings","first section","intermediate stage","money diary","fish cakes","internal clock","money lender","fishing boats","internal website","mountain building","fishing lesson","international evening","movie clubs","fishing net","international student card","much deep research","fitness centre","internet café","music videos","fixed expenses","internet connections","name badge","flower arrangement","interview parents","national day","flower taste","interview questions","national holidays","food containers","interview skills","national newspaper","food intake","investment schemes","national parks","former worker","job opportunities","natural gas","free parking","joining fee","natural medicine","free vouchers","joint membership","negative effect","fresh food","killing whale","net workers","fresh meat","kitchen area","new car","friendly faces","kitchen table","new facts","front desk","knowledge sharing","new materials","front page","known world","new shirt","frozen food","laboratory report","New Year's Day","fruit trees","lack of time","next seminar","full text length","lakes and dams","next year","full time","land bridge","night tour","further training","language practice","no charge","game room","large scale","no fee required","garden project","larger office","no garage","garden room","last September","no index","gardening tools","last thing","no lift","general discussion","lateral line","non-smoking room","get good shoes","law firm","North America","global market","learning difficulty","north building","go upstairs","learning styles","not enough sleep","Going Green","leather jacket","note system","gold industry","leg room","notice board","gold mine","lemon tree","number of items","golden coast","less effort","object matters","golf course","less property","old library","good eyesight","life cycle","olive oil","good play","life insurance","on the street","good shoes","line manager","open gallery","good value","list of objectives","order section","government election","little known","outdoor table","green room","live music","own car","green tax","live nearby","own food","group discussion","living expenses","paddling pool","group organizer","local artists","pain killer","group size","local business","paper jams","group talks","local hospital","parental teaching","harmful insects","local museum","park avenue","head offices","local pet shop","park square","health centre","local school","parking area","health check","local shops","part-time job","Health Club","lock door","party hats","health department","long beach","pay attention to","Health International","long road","peak season","health service","long stick","personal alarm","heart rate","long strap","personal information","heavy items","lookout point","personal tutor","help desk","lost children","phone book","high temperature","lots of clubs","phone call","high user","low impact","phone interviews","high wind","low income","phone number","higher fees","low price","photo statistics","higher seats","main entrance","photocopy of article","home welcome","main hall","Photocopy Office","hot chocolate","main road","physical changes","hot house","maintain cost","piano life","hot weather","manage the time","picture framing","hotel room","marine plants","picture library","house insurance","market research","house key","Material Art Centre","ice park","media plan"]},{"id":"u10","title":"第十单元 · 词组","words":["pieces of furniture","shark nets","theory chapters","plan holidays","sheet of paper","think quickly","plan phone calls","ship bell","too expensive","plan time","shopping mall","too long","planet society","side gate","too slow","plant species","silver cloth","top right","plastic bottle","silver coins","top shelf","police helicopters","silver setting","touch table","police record","single item","towns and cities","political man","skill focus","toy factory","poor area","sleeping bag","trade journals","post letter","sleeping problems","traffic flow","postal survey","sleeping sickness","traffic noise","poster design","small rocket","train service","practical outcomes","small stones","train station","practical work","smaller areas","training course","pre-booking service","smaller one","transport home","presentation skill","smelly cages","transport museum","presenting results","smoke alarms","tree centre","printed list","smoke too much","tree climbing","private company","smooth road","tropical disease","private property","snow boarding","tropical plants","problems and needs","social matters","tube railway","professional learning","social skills","TV producer","project background","social worker","TV station","project outline","soft sediment","twin rooms","protective clothing","soil damage","two-page cover","public areas","solar power","type of rocks","public awareness","Sound International","types of jobs","pump water","South Africa","underground parking","pure and safe","south coast","unhealthy diets","quality of life","south park","unhealthy lifestyle","racing car","Southeast Asia","Union House","radio program","Southern Scotland","unlimited mileage","radio signal","space museum","upper level","railway line","space station","urban area","railway station","spare socks","vegetable burger","railway track","special buses","video cameras","Rare Lions","special computer","video recording","rare trees","special diet","videotape editor","raw materials","special items","violent crime","reading difficulty","special offers","virtual learning","Reading Habits","special route","visual aids","reception area","sport equipment","vitamin A","reception desk","sports hall","vocational courses","reception staff","spring park","volcanic dust","recycling centre","surface area","vote right","red blood cells","staff training","walking boots","red tap","stair lift","warm up","renew password","statistics analysis","wash basin","rent a line","stomach and heart","washable shoes","repair kit","storage space","watch time","report findings","story conferences","watchful parents","research system","street children","water pipes","rest area","student link","water pollution","retire house","student service","water tank","river view","students' union","wealthy people","road construction","study ability","wear formal clothes","road map","study room","weekend bus","roll over","study skills","weekly return","room service","sufficient details","well organized","rose farm","summary report","west avenue","rubber blanket","summer school","West Europe","safe and reliable","sun hat","west park","safety and insurance","sun's position","wet suit","Safety Office","support services","white board","satellite TV","survey method","white mountain","save time","swimming outdoor","whole week","school record","swimming suit","wide reading","science mechanism","switch on","wind shade","science museum","switched off","wind surfing","scientific journals","symbol of progress","window dressing","scientific research","table tennis","window glass","seat belt","take away","window view","second week","tape measure","wooden sculpture","secondary object","teaching methods","work number","secondary school","teaching staff","working hours","security code","telephone call","write music","security officer","telephone survey","young children","self-access lab","television drama","young teenagers","seminar group","test results","your doctor's name","send information","text structure","service manager","the first-year students","share ideas","the third prize"]},{"id":"u11","title":"第十一单元 · 单复数专练","words":["women","report","language","diseases","apartment","holidays","windows","relatives","lake","discount","animals","house","weight","relationships","knives","direction","airport","human","weekdays","references","kitchen","egg","agriculture","ideas","website","radio","jobs","desert","sales","income","weather","questions","interview","deposit","sample","information","water","quality","insurance","decoration","science","irrigation","volcanoes","record","insects","cultures","seafood","jeans","village","reception","image","corn","seminar","labour","videos","public","hotel","confidence","store","lectures","varies","presentation","hospital","concentration","streets","locations","tutorials","potatoes","history","computers","sugar","massage","train","population","helmet","competition","survey","mathematics","tomatoes","pool","helicopter","communication","teams","meat","transport","plant","gym","colour","tent","microscope","video","picture","groups","coffee","ticket","milk","tutor","piano","grass","coast","tools","minerals","traffic","photos","government","clubs","trees","month","theatres","photograph","goods","clothes","university","movement","tennis","phone","golf","climate","view","number","teenagers","permit","glasses","clay","weekends","office","technology","passport","furniture","cities","wheelchair","photocopy","taxes","park","fruits","cinema","pizza","supermarkets","parent","friend","chocolate","plates","studio","painting","fridge","children","action","playground","teenager","outdoors","glass","cheque","adult","police","students","oil","gift","chemicals","advertisement","post","observation","gas","cake","bacteria","problem","tax","nutrition","garden","business","bags","profit","storm","nuts","garage","bus","band","protection","stone","parents","forests","bridge","bathroom","purpose","statistic","noise","food","breakfast","brick","rain","station","newspapers","flowers","boxes","camel","risks","sport","museums","flat","cheese","cash","roof","spices","mountain","flamingos","certificate","castles","rubber","songs","money","fish","CDs","cave","rubbish","soil","mirror","film","car","coach","rules","skills","microwave","ferries","candles","college","salary","size","method","feedback","camera","conferences","sand","shower","newspaper","fear","cakes","contract","scientists","security","neighbours","farm","box","crime","shark","sea","name","flower","booklet","dances","software","schools","meal","family","book","desk","skill","material","factories","bones","diary","storage","sandglasses","market","facilities","boat","donation","taxi","salt","maps","exercise","birds","drum","teachers","manager","equipment","bikes","education","towel","salads","magazine","entertainment","bicycle","email","transportation","rock","machines","energy","behaviour","engineer","travel","road","lunch","electricity","beach","exhibition","whale","river","locker","eggs","basement","eyes","workshop","restaurant","lights","drinks","bank","face","accommodation","resource","library","downstairs","balcony","accountants","research","leaves","distance","approaches","games","activities"]},{"id":"u12","title":"第十二单元 · 单词更新","words":["reservation","synthesize","autobiography","route","answer","novelist","account","quantity","experimental","agent","rate","framework","girl","dolphin","sequence","fee","horse","mango","event","patience","stage","bad","fortune","open-minded","comics","experienced","organisational","feed","damp","surrounding","identify","formal","inconclusive","networker","sheep","unequal","smoking","volcanic","response","explanation","solid","confidential","frustration","bar","chick","full","bronze","welfare","finger","limited","harvested","showroom","administrative","opened","limestone","learn","cleaned","beat","declining","cooled","military","maintenance","symbol","achievement","self-confident","transparency","situation","progress","skyscraper","aspiration","sunflower","wooden","style","shared","format","man","harmful","flexibility","wrong","commuter","last","seagrass","active","entire","birth","donate","inconvenient","cooperation","quote","washbasin","rich","foreign"]},{"id":"u13","title":"第十三单元 · 词组更新","words":["side door","Green Street","gold coins","Park Road","meet teachers","crop plant","IT course","the lead","academic report","some trees","the sheet","nuts and fish","group organiser","business district","muscle pain","rock and jazz","play well","shark skin","legal advice","seating capacity","South Asia","recent photo","Cuban Life","East Asia","diving mask","right labels","online shopping","free repair","old airport","corporate loan","sun proof","short equipment","negative thinking","reusable bag","local heroes","long life span","socialize with people","recent reward","healthy benefit","license to drive","learning zone","nuclear power","cultural awareness","member restaurant","good facilities","running tour","gallery shop","waste disposal","fish dishes","historical photos","knife handle","travel around","cinema zone","economic depression","coffee table","meeting point","fuel shortage","cupboard or bookshelf","mixed ages","machines or robots","long road runner","natural life","they do well","family use","real life","ozone layer","at night","total block","detailed notes","beach soccer","plastic folder","sports equipment","grocery store","Avenue of flags","black bears","swimming coach","visitor centre","extra resistance","King Room","bird room","Central Street","iced coffee","a retire house","English literature","electronic product","junction six","practical skills","mountain hike","computer problems","petrol stations","boat trip","too close","The Secret Garden","by the door","gas tanks","abstract ideas","Bird Park","late afternoon","darkness to lightness","twice a week","not any coloured","human companionship","New Opera","monthly magazines","other colleagues","collect shells","oil filter","watching time","watering plants","telephone the employer","tennis courts","end of the month","by boat","early mornings","zoom lens","ride bikes","grocery shopping","museum centre","rose garden","registration office","modern play","family ticket","phone card","no nuts","this weekend","role of motivation","north island","sport articles","management of change","flower shop","less than a week","nature of volunteering","side entrance","sports shoes","recycled glass","new customer","a person","local supermarket","party wears","alarming system","other planets","Sport's Hall","river trip","future medicine","North Bay","television programme","traffic toy","white bar","eight products","baseball coach","blue gate","tuition waived","rescue diver","every second week","cleaning products","diving experience","a yellow box","an apartment","Saturday mornings","model wooden truck","project online","paying attention","basic technology","one sentence","market interview","free post","lab report","email attachment","drawing club","five minutes","sea shores","drama club","ground plan","on edge","artists club","unanswered questions","genetic structure","card number","undeveloped area","Computer as Teacher","conference room","social interactions","University of Melbourne","mixed table","unexpected noise","top floor","river lane","third year","ground floor","after school","more time","Palm Lounge","top mount","student loans","textbook allowance","silver-coloured cloth","oral exam","grain patterns","Friday evening","identify card","Cultural Centre","River Avenue","a general discussion","yellow fever","leave a message","student union","whole building","Spring Street","digestive problem","container types","variety of food","higher car taxes","material used","Central Hotel","temple walls","rubber wheels","test driving","the big toe","every other week","Summer Palace","remove out","skills and experiences","first traffic light","the ground","modules technology","first Tuesday","two million passengers","Math Department","answering the phone","huge increase","package labels","good rest","unsocial hours","pink and yellow","by train","family relationship","The origins","farm work","group relationship","club room","West Lake","more costly","make invitations","chemical contaminants","cold drinks","young people","hot buffet","second floor","paper napkins","corporation morality","Middle Street","rare glass","switch off","family expectation","next Tuesday","particular disease","client engineer","college research","share room","human activities","business area","natural subjects","goods for sale","own subject","vegetarian food","gene diversity","Park Street","written language"]},{"id":"u14","title":"第十四单元 · 单词更新2","words":["contaminant","hearing","single","developing","herd","sixth","flute","hull","smaller","journalist","husband","snowboarding","mid-afternoon","identical","specimen","poetry","irrigate","spot","related","large","stadium","restroom","leather","stare","shadow","leave","statement","twin","lizard","sticky","vitamin","long-term","suitable","wetsuit","luxury","sunglasses","addictive","magic","talking","aid","major","thunder","air-conditioning","malnutrition","tidiness","anger","mice","tradition","angry","monopoly","trivial","anniversary","odour","unemployment","architecture","paradise","varnish","assessment","passenger","visual","bee","peace","visualisation","biscuit","peak","wave","bread","pharmacy","weapon","breath","pillow","wolf","camping","pioneer","zoo","charge","practical","cement","clubroom","practice","computer-aided","consume","prevalent","deteriorate","corridor","primary","free","cricket","prisoner","frost","deck","ranger","funder","different","react","implant","dollar","recognise","orchestra","eagle","recreation","plot","electric","referee","poem","endangered","resort","prediction","ferry","row","recorder","fertility","runner","sadness","fog","safeguard","setting","fox","self-locking","skim","freezing","servant","songwriter","front","shipment","harmony","silence"]},{"id":"u15","title":"第十五单元 · 词组更新2","words":["bird watching","land erosion","displays and products","child seat","large slide","electric field","driving licence","leak water","every hour","gold coast","life science undergraduate","experienced musicians","maintenance issue","lifting heavy items","horizontally across","2 pockets","local market","hot spots","3 days ago","next week morning","lead guitar","a large office","noisy disturbances","local newspaper","applicant form","objective matters","Mobile film making","apron and sunglasses","own meal","new products","artist club","passive learners","next week","black bear","plan the time","Northern Europe","body fluids","presentation skills","on average","car numbers","radio signals","one your diploma","clear argument","rock climbing","oral history","computer programme","safe environment","physical movements","contractual issue","sea lion","plastic surgery","country living","sick pay","primary and secondary schools","course work","small rockets","profitable combination","culture context","special shuttle buses","public performances","disabled people","sports centre","rare creatures","dolphins and whales","streets transport","red footprints","egg cartons","stress levels","regularly replaced","financial loss","tape measurer","route book","first aid","textile factory","sandy soil","first-year students","TV reporter","top left-hand corner","formal clothes","twin room","Tower of London","goat skin","wild condition","types of cells","good pay","young employee","university tour","grocery stores","6-month certificate","Why study media","group trip","best location","head office","city walking tours","high car taxes","cooking method","identifying hazards","daily basis","insurance company","digging skills"]}];
+const UNITS = [{"id":"u1","title":"第一单元 · 高频5次以上","words":["water","name","cheese","garden","photograph","cheque","insurance","piano","clay","bird","plant","clothes","transport","population","coast","glass","presentation","concentration","park","research","corn","interview","rock","cost","light","sea","deposit","station","shower","direction","city","social","discount","forest","sport","dry","school","storm","exercise","balcony","tennis","fear","family","tutor","friend","garage","weight","guide","map","age","health","museum","animal","history","river","bicycle","housing","time","camera","hunting","training","chemical","image","children","cleaning","Japanese","kitchen","coffee","job","magazine","confidence","lunch","wood","egg","meal","bone","entertainment","method","bridge","film","mirror","flower","food","negative","internet","helmet","nutrition","library","hotel","observation","parking","India","open","photo","nut","organic","supermarket","phone","painting","temperature","report","parent","website","restaurant","permit","café","sailing","pool","electricity","security","public","government","size","quality","plastic","skill","question","safety","speed","rainfall","stone","studio","record","beach","tax","relationship","fire","technology","sale","fish","traditional","sample","fishing","train","science","helicopter","video","seafood","insect","village","seminar","music","weather","silver","newspaper","behaviour","Spanish","radio","cake","standard","reference","car","store","soil","chocolate","street","wind","competition","sugar","airport","cooking","summer","bank","culture","sun","bike","decoration","survey","business","distance","team","cinema","equipment","tent","climate","flat","ticket","desert","flexible","tool","energy","fridge","tree","factory","gas","university","farm","genetic","view","feedback","gift","weekend","furniture","group","wheelchair","money","language","window","noise","locker","winter","reception","microwave","women","salt","north","action","theatre","oil","adult","boat","passport","advertisement","certificate","picture","alarm","clean","reading","bacteria","club","resource","bag","colour","road","band","communication","student","bathroom","computer","swimming","brick","disease","teenager","building","environment","traffic","camel","farming","academic","cash","golf","agriculture","castle","grass","apartment","cave","gym","back","central","hospital","basement","coach","lake","book","college","manager","booklet","commercial","market","box","conference","material","breakfast","mountain","bus"]},{"id":"u2","title":"第二单元 · 高频3-4次","words":["contract","washing","manual","crime","whale","mat","damage","workshop","math","dance","young","media","danger","accommodation","medicine","depth","accountant","meeting","desk","activity","member","diary","advertising","memory","diet","Africa","modern","donation","afternoon","monthly","drive","agency","mood","drum","aging","morning","education","air","mud","electronic","airline","natural","email","analysis","nature","engineer","application","neighbour","engineering","art","new","exhibition","Australian","night","expensive","automatic","none","eyes","beginner","note","face","blue","nurse","flooding","bright","oldest","fruit","candle","opera","game","carbon","outdoor","green","carpet","outside","heat","challenge","oxygen","holiday","change","packaging","house","chart","pain","human","chicken","paper","idea","closed","participation","income","clothing","part-time","information","comedy","party","ink","concert","password","irrigation","concrete","performance","jeans","conservation","personal","labour","cotton","pet","lecture","current","photography","legal","customer","picnic","location","dancing","plane","massage","dark","planet","mathematics","density","politics","meat","dentist","pollution","metal","discussion","poster","microscope","dishwasher","pottery","middle","display","powder","milk","diving","power","mineral","door","price","month","double","printing","movement","downhill","privacy","noisy","drama","private","number","drink","product","ocean","drug","promotion","office","economics","pump","online","economy","qualification","photocopy","emotion","race","pizza","engine","random","planning","evolution","rat","plate","example","reduction","playground","fashion","rice","police","feather","right","post","fertiliser","rope","problem","fight","salad","profit","flavour","sandwich","protection","flood","screen","purpose","foundation","seat","rain","fuel","second","risk","gender","senior","roof","global","service","rubber","gold","shell","rubbish","hair","signal","rule","heart","sleep","safe","honey","slide","salary","identification","small","sand","identity","smell","scientist","instrument","soft","shark","intermediate","sound","singing","international","south","software","jacket","southeast","song","joke","space","storage","keyboard","spring","stress","label","star","support","laundry","summary","taxi","learning","talent","teacher","license","teaching","top","link","telephone","tourism","liquid","tour","towel","lounge","toy","transportation","lower","travel","machine"]},{"id":"u3","title":"第三单元 · 高频2-3次","words":["triangle","crocodile","increase","tunnel","crop","ingredient","tutorial","crowded","intelligent","tyre","cultural","interaction","uniform","cup","journalism","visa","cycling","key","vision","data","king","waiter","date","knife","waitress","day","laboratory","walking","decline","land","wall","decorated","landlady","warning","demand","lawyer","waterfall","department","leader","wax","description","leaf","wedding","detail","lecturer","week","digestion","leg","wild","dinner","length","wildlife","diploma","letter","woman","direct","level","woodland","director","lid","word","dirt","lifestyle","yoga","distribution","lift","accept","doctor","list","accident","dog","listening","acid","donkey","loan","address","driver","local","administration","driving","lock","advanced","duration","loss","ancestor","eat","magnet","apology","elevator","mail","approach","employer","main","army","end","male","attitude","entrance","mammal","background","equal","man-made","ball","essay","marketing","barcode","estimate","medical","bargain","Europe","medication","baseball","evaporation","menu","bedroom","evening","message","bill","expectation","migration","blanket","experience","minibus","block","fabric","mistake","blood","fan","mixed","board","feet","moderate","body","field","monitor","bookshop","filmed","monkey","boot","finance","monument","brain","financial","morality","breathing","firework","motivation","bush","floor","movie","butterfly","football","multimedia","camp","footprint","mushroom","campus","fountain","native","caravan","France","nest","centre","freedom","northern","ceremony","freezer","notebook","chair","French","nursery","chairman","frequency","nylon","charity","frog","oral","cheaper","fur","orange","checklist","gap","organization","chemist","gardening","outline","Chinese","glove","oven","circle","grade","overseas","climbing","grey","paint","coastal","ground","partner","coconut","guest","people","code","guideline","perfume","coin","guitar","person","cold","habitat","personality","collect","hall","pest","common","hand","pilot","community","handle","pipe","company","harbour","plan","comparison","hard","poison","complex","harvest","potato","compulsory","hat","poverty","confusion","headache","present","construction","heater","print","context","heavy","printer","control","hill","prison","cookery","hole","processing","cool","home","professor","corner","homework","protected","cosmetic","hostel","country","hot","crack","humour","cream","hungry","critical","ice"]},{"id":"u4","title":"第四单元 · 频率2次","words":["protein","vacation","beginning","purple","variety","belt","queen","vegetarian","benefit","quiet","visit","Berlin","raining","voice","bin","range","volcano","biological","rare","walk","biology","reason","warm","birthday","recycling","waste","blind","refreshment","wealth","blues","regulation","weed","boiler","relative","weekday","bonus","reliable","whistle","booking","religion","white","bookkeeping","repair","work","bookshelf","respect","workplace","booth","retail","writer","boring","retired","writing","bottle","robot","yellow","boy","root","youth","brake","rose","ability","branch","round","accent","breathe","rural","access","breed","Russian","accountable","brightness","salesman","accuracy","British","sculpture","accurate","broken","season","acknowledgement","brush","secretary","actor","bucket","sell","administrator","budget","shade","adopt","buffet","share","ads","builder","shelf","advance","buried","shipping","adventure","butter","shoes","advertise","button","shop","advice","cabin","shopping","advisor","cabinet","shoulder","after-school","cable","side","agreement","cafeteria","signature","agricultural","calculation","silk","airplane","calculator","sing","alarming","calendar","singer","alternative","calm","slave","angle","campsite","slow","antibiotic","Canada","smoke","antifreeze","Canadian","snack","antiseptic","canteen","snake","appearance","captive","soap","apple","card","soldier","approval","cargo","soup","apron","carnival","square","area","carnivorous","stairs","Argentina","cartoon","statistics","arm","cashier","status","arrangement","casual","steel","arrow","category","stomach","artificial","catering","stored","artist","cattle","story","artistic","cause","strategy","ash","celebration","strength","Asia","celebrity","string","aspirin","chain","structure","assignment","challenging","subway","athlete","character","surface","Atlas","cheap","swim","attachment","cheapest","table","attack","chemistry","talk","attacked","chess","tank","audience","childhood","taste","august","choice","teeth","aunt","choosing","television","Australia","church","test","autumn","cigar","testing","award","circulation","timber","aware","citizen","tongue","axe","class","total","baby","classic","tourist","bakery","classical","tower","balance","classification","town","ban","claw","trash","banana","cleanest","trouser","base","clear","truck","basic","clerk","trust","basket","cliff","TV","bath","clinic","typed","battery","clock","uncomfortable","bear","clockwise","underground","bed","close","unemployed","beer","unnatural","bees"]},{"id":"u5","title":"第五单元 · 频率1次","words":["cloud","distribute","flamingo","coal","district","flashing","coat","dive","flight","collaborative","diversity","floated","collection","DJ","flooded","colony","document","flu","coloured","documentation","fluent","combination","dome","fluid","combined","downstairs","focus","comfortable","draft","folded","comic","drawer","font","commerce","dream","foot","commitment","dressing","form","committee","dried","fossil","companion","drinking","fragile","companionship","driveway","frame","compensation","drought","fresh","compete","drying","friction","composing","durable","friendly","comprehension","ear","friendship","computing","early","frozen","concentrated","earth","full-time","confident","east","fun","confirmation","eclipse","function","congratulation","ecology","funding","connected","ecosystem","further","consumer","edge","future","contact","edit","gallery","container","editor","gene","contamination","educational","general","continent","efficiency","generation","contrast","efficient","generator","contribution","elastic","geographic","convenient","electrical","germ","conversation","elephant","Germany","cook","emergency","glue","cooker","emotional","go","cooperative","emperor","golden","correction","employed","goods","costly","employee","gradual","council","employment","grain","counting","empty","grammar","couple","energy-saving","grandmother","course","English","graph","coursework","enjoyable","grassland","cousin","enlargement","gravity","cover","environmental","Greek","creative","erosion","grocery","creature","error","guard","credit","escape","guess","critic","European","guessing","crowd","evaluation","gun","crown","every","habit","Cuban","everything","half","curtain","evidence","handbook","cut","exam","handout","CV","excellent","happier","dam","excitement","hardware","damaged","existing","hardworking","dancer","expanded","harp","dangerous","expect","harvested","darkroom","experiment","hazel","database","explode","head","deadline","exploration","heading","decision","expression","headline","deep","external","healthcare","defence","extinct","healthier","definition","extinction","healthy","degree","extra","heated","democratic","facility","herbivorous","demonstration","fact","higher","departure","farmer","highway","depression","faster","hiking","deputy","fat","hive","design","fax","hockey","dessert","female","honest","development","fence","horizon","diamond","ferries","horizontal","dictation","fertilise","hormone","diesel","festival","horror","difficult","fighting","horsehair","digest","file","hospitality","digestive","filter","hour","digging","fireplace","humidity","disability","firewood","hunger","disappear","first","hurricane","discipline","fitness","hurt","disco","fixing","dismiss","flag"]},{"id":"u6","title":"第六单元 · 频率1次","words":["ID","machinery","petrol","illegal","Malaysia","philosopher","illness","management","philosophy","immigrant","manufacture","photographic","immigration","manufacturing","pirate","immune","mapping","placement","impact","marriage","planting","important","Mars","platform","imported","mask","play","impossible","maturity","pleasure","improvement","meaning","pocket","incorrect","measurement","poet","increased","meet","polish","independence","membership","polished","indoor","men","polite","industrial","mental","polluted","industry","methodology","pond","infection","Mexico","poor","informal","microbiology","popular","infrastructure","microchip","port","innovation","microfilm","portable","inscription","microphone","portrait","inspector","midmorning","position","install","midnight","postage","instinct","mid-range","postcard","instinctive","midweek","postgraduate","instruction","migrate","pot","insulation","mild","PowerPoint","integrate","mining","predator","intelligence","mixture","preparation","intense","mobile","prepared","interest","mobility","preposition","invented","model","preservation","investigation","moisture","preserved","invitation","mother","president","iron","motor","pressed","island","mould","pressure","IT","mouth","printed","Italian","myth","priority","italics","navigate","probability","Italy","navigation","procedure","Japan","navigational","process","jaw","neck","producer","jazz","nesting","production","joint","net","productive","journal","networking","productivity","judo","nitrogen","professional","juice","non-active","program","jungle","nonsmoking","project","junior","normal","projector","kidney","northeast","proof","kindness","note-taking","publication","knee","obesity","publishing","knowledge","object","pure","lab","objective","puzzle","ladder","obligation","questionnaire","lamb","occupancy","quiz","lamp","old","rabbit","landmark","opportunity","rack","lane","optional","radar","laptop","organisation","rainbow","larger","organised","rainwater","law","orientation","rationally","layer","origin","reaction","layout","originality","read","lead","outcome","real","leaflet","outstanding","realism","leak","overfill","realistic","learner","own","receiver","leisure","ozone","receptionist","lemon","package","recording","liberty","packed","recruitment","lifting","packing","recycled","lighting","painkiller","red","limitation","painter","reflective","line","palace","refund","lion","parcel","regional","literature","passive","registration","live","path","reinforced","living","pattern","reinvested","logic","pay","relaxation","logo","peer","relevant","London","peg","relocation","lonely","pen","remember","lost","pencil","replacement","loyal","perception","loyalty","permanent","lung","permission","luxurious","pesticide"]},{"id":"u7","title":"第七单元 · 频率1次","words":["reporter","sociable","tooth","reproduce","socialise","topic","reproduction","society","torn","reputation","sock","trace","researcher","solar","trade","resident","solution","trader","resistant","son","translation","responsibility","sour","translator","responsible","source","transparent","rest","southwest","travelling","result","souvenir","tray","retrained","Spain","treatment","return","spare","trend","review","speaker","trial","reward","species","tribe","riding","spice","trip","ring","spider","trumpet","rival","spine","T-shirt","Roman","spoon","tube","rumour","stand","tuna","running","starch","turn","rush","starvation","twice","Russia","state","typical","sad","statue","typing","safer","steam","U.K.","saliva","stem","umbrella","salty","stick","unanswered","same","sticker","uncle","sandglass","still","uncontrolled","sandy","stimulating","undergraduate","satellite","sting","understand","satisfactory","stopwatch","undeveloped","Saturday","storeroom","unfair","save","stream","unfurnished","scaffold","stressful","unimportant","scarce","stretching","unnecessary","scent","strict","urban","scheme","strike","use","scientific","strong","useless","score","stuck","value","scoring","subcommittee","variable","Scotland","subject","varied","sealed","subtitle","vary","seasonal","subtopic","vegetation","seasoned","success","ventilation","seating","suggestion","version","seaweed","summarise","vertical","see","suncream","vest","seed","sunlight","vetting","select","sunscreen","Vietnam","selected","sunset","violin","selection","sunshade","virus","self-centred","super","visitor","self-defence","supervision","vocabulary","self-employment","surfing","wage","self-evaluation","survival","waiting","self-locked","survive","wallet","self-motivation","sustainable","war","sensitive","swan","warming","settle","sweater","wash","shallow","Sweden","watch","shame","sweet","watering","shape","sweetener","waterproof","sharing","swimmer","way","sheet","symbolism","well-organised","shellfish","tape","whole","shelter","target","wider","ship","tea","wire","shipbuilding","teamwork","wool","shirt","tear","workforce","shoot","technician","working","shopper","technique","workload","short","temple","worksheet","showhouse","term","worm","shrimp","textbook","write","sign","textile","written","similar","theoretical","York","simple","theory","zoom","simulation","therapy","sink","threat","ski","thunderstorm","skin","Thursday","sloping","timetable","smart","title","smile","toaster","smoky","toes","smooth","toilet","smoother","tolerance","soccer","tomato"]},{"id":"u8","title":"第八单元 · 词组","words":["bus stop","back problems","computer breakdown","swimming pool","back wheel","computer programmer","credit card","background reading","computer room","student card","bad eyesight","computer science","air conditioner","Baked Earth","computer screen","back door","bank house","concert hall","central heating","bank robbery","concert room","post office","bank transfer","conference report","public transport","bathroom sink","contact number","action plan","be more decisive","cost effective","administration officer","bed sheet","country life","air pollution","behind the station","countryside living","bank statements","big five","courses from internet","bottled water","big social event","credit check","by cash","big toe","culture centre","car park","bike rack","customs office","carbon dioxide","bird's nest","cut and cover","case study","black coat","daily music","central park","black skirt","dark and light","city centre","black velvet","dark blue","club office","blood flow","data analysis","common room","blue card","date in history","conference centre","blue folder","decision making","driving license","blue skirt","deluxe standard","eye contact","blue sweater","department head","feed animals","body shape","department manager","free drink","book in advance","department stores","global warming","book loan","design research","hot meal","book talk","desk and TV","horse riding","booking form","desk lamp","ice pack","bowling alley","detail note","ice skating","branch manager","deteriorate for age","living room","bridge road","develop disease","lock all windows","British library","developing countries","long term","budget advice","digital system","Medical Centre","building material","dining room","North Africa","bunch of flowers","discussion group","North Gate","burning time","documentary film","north park","bus service","domestic smells","petrol station","business course","double bedroom","play music","business management","double grill","primary school","business plan","double lock","problem solving","business studies","double room","read aloud","cabin keys","double space","safety regulations","cable car","drink milk","save it","cable TV","drinking machines","senior advisor","call centre","drinks and snacks","small scale","calling diversion","each classroom","Sport Centre","camera man","early evening","tape recorder","car parking lot","easy to understand","Thursday morning","card catalogues","easy tune","top roof","card index","eating pattern","town hall","Career's Office","economic history","washing machine","carry post","electric card","water heater","castle hill","electronic directory","yellow box","casual clothes","email address","a clear argument","central location","email marketing","a shared room","central part","emergency contact number","a whole family","change behaviour","employee first","action movie","changing room","energy saving","action points","chat show","environmental damage","additional fee","cheapest budget","environmental issues","address card","check identities","escaping steam","advanced level","chemistry lab","essay outline","after lunch","chess club","essay writing","air filter","chewing gum","European Pass","alarm system","chief executive","evening meals","alternative energy","children's day","Evening News","animal life","city council","every year","animals' behaviour","city map","expected duration","annual report","class representative","explain the experiment","Ape Hour","classical history","express trains","Apple Day","classroom tour","extra resource","apple juice","cleaning materials","extra workload","application form","clear voice","eye drops","art gallery","climate change","face painting","articles from journals","closed down","family life","as a group","clothing sections","family members","as a whole","college coordinator","family photo","at risk","colour blind","fancy dress","attend regular conferences","comment card","farming supplies","automatically registered","Common Spider","average ability","communication technology"]},{"id":"u9","title":"第九单元 · 词组","words":["farmland field","ID code","media room","fast-food shop","ID number","media studies","feeding time","identity card","mental ability","field work","immune system","metallic grey","files in colour","in advance","mid-term test","Finance Office","incoming call","migration patterns","financial goals plan","industrial material","mild light","financial market","information desk","mineral soil","finding a job","information from internet","mission statement","fire alarms","information sectors","mobile phone","fire drill","information technology","modern language","first in history","insurance companies","Monday mornings","first section","intermediate stage","money diary","fish cakes","internal clock","money lender","fishing boats","internal website","mountain building","fishing lesson","international evening","movie clubs","fishing net","international student card","much deep research","fitness centre","internet café","music videos","fixed expenses","internet connections","name badge","flower arrangement","interview parents","national day","flower taste","interview questions","national holidays","food containers","interview skills","national newspaper","food intake","investment schemes","national parks","former worker","job opportunities","natural gas","free parking","joining fee","natural medicine","free vouchers","joint membership","negative effect","fresh food","killing whale","net workers","fresh meat","kitchen area","new car","friendly faces","kitchen table","new facts","front desk","knowledge sharing","new materials","front page","known world","new shirt","frozen food","laboratory report","New Year's Day","fruit trees","lack of time","next seminar","full text length","lakes and dams","next year","full time","land bridge","night tour","further training","language practice","no charge","game room","large scale","no fee required","garden project","larger office","no garage","garden room","last September","no index","gardening tools","last thing","no lift","general discussion","lateral line","non-smoking room","get good shoes","law firm","North America","global market","learning difficulty","north building","go upstairs","learning styles","not enough sleep","Going Green","leather jacket","note system","gold industry","leg room","notice board","gold mine","lemon tree","number of items","golden coast","less effort","object matters","golf course","less property","old library","good eyesight","life cycle","olive oil","good play","life insurance","on the street","good shoes","line manager","open gallery","good value","list of objectives","order section","government election","little known","outdoor table","green room","live music","own car","green tax","live nearby","own food","group discussion","living expenses","paddling pool","group organizer","local artists","pain killer","group size","local business","paper jams","group talks","local hospital","parental teaching","harmful insects","local museum","park avenue","head offices","local pet shop","park square","health centre","local school","parking area","health check","local shops","part-time job","Health Club","lock door","party hats","health department","long beach","pay attention to","Health International","long road","peak season","health service","long stick","personal alarm","heart rate","long strap","personal information","heavy items","lookout point","personal tutor","help desk","lost children","phone book","high temperature","lots of clubs","phone call","high user","low impact","phone interviews","high wind","low income","phone number","higher fees","low price","photo statistics","higher seats","main entrance","photocopy of article","home welcome","main hall","Photocopy Office","hot chocolate","main road","physical changes","hot house","maintain cost","piano life","hot weather","manage the time","picture framing","hotel room","marine plants","picture library","house insurance","market research","house key","Material Art Centre","ice park","media plan"]},{"id":"u10","title":"第十单元 · 词组","words":["pieces of furniture","shark nets","theory chapters","plan holidays","sheet of paper","think quickly","plan phone calls","ship bell","too expensive","plan time","shopping mall","too long","planet society","side gate","too slow","plant species","silver cloth","top right","plastic bottle","silver coins","top shelf","police helicopters","silver setting","touch table","police record","single item","towns and cities","political man","skill focus","toy factory","poor area","sleeping bag","trade journals","post letter","sleeping problems","traffic flow","postal survey","sleeping sickness","traffic noise","poster design","small rocket","train service","practical outcomes","small stones","train station","practical work","smaller areas","training course","pre-booking service","smaller one","transport home","presentation skill","smelly cages","transport museum","presenting results","smoke alarms","tree centre","printed list","smoke too much","tree climbing","private company","smooth road","tropical disease","private property","snow boarding","tropical plants","problems and needs","social matters","tube railway","professional learning","social skills","TV producer","project background","social worker","TV station","project outline","soft sediment","twin rooms","protective clothing","soil damage","two-page cover","public areas","solar power","type of rocks","public awareness","Sound International","types of jobs","pump water","South Africa","underground parking","pure and safe","south coast","unhealthy diets","quality of life","south park","unhealthy lifestyle","racing car","Southeast Asia","Union House","radio program","Southern Scotland","unlimited mileage","radio signal","space museum","upper level","railway line","space station","urban area","railway station","spare socks","vegetable burger","railway track","special buses","video cameras","Rare Lions","special computer","video recording","rare trees","special diet","videotape editor","raw materials","special items","violent crime","reading difficulty","special offers","virtual learning","Reading Habits","special route","visual aids","reception area","sport equipment","vitamin A","reception desk","sports hall","vocational courses","reception staff","spring park","volcanic dust","recycling centre","surface area","vote right","red blood cells","staff training","walking boots","red tap","stair lift","warm up","renew password","statistics analysis","wash basin","rent a line","stomach and heart","washable shoes","repair kit","storage space","watch time","report findings","story conferences","watchful parents","research system","street children","water pipes","rest area","student link","water pollution","retire house","student service","water tank","river view","students' union","wealthy people","road construction","study ability","wear formal clothes","road map","study room","weekend bus","roll over","study skills","weekly return","room service","sufficient details","well organized","rose farm","summary report","west avenue","rubber blanket","summer school","West Europe","safe and reliable","sun hat","west park","safety and insurance","sun's position","wet suit","Safety Office","support services","white board","satellite TV","survey method","white mountain","save time","swimming outdoor","whole week","school record","swimming suit","wide reading","science mechanism","switch on","wind shade","science museum","switched off","wind surfing","scientific journals","symbol of progress","window dressing","scientific research","table tennis","window glass","seat belt","take away","window view","second week","tape measure","wooden sculpture","secondary object","teaching methods","work number","secondary school","teaching staff","working hours","security code","telephone call","write music","security officer","telephone survey","young children","self-access lab","television drama","young teenagers","seminar group","test results","your doctor's name","send information","text structure","service manager","the first-year students","share ideas","the third prize"]},{"id":"u11","title":"第十一单元 · 单复数专练","words":["women","report","language","diseases","apartment","holidays","windows","relatives","lake","discount","animals","house","weight","relationships","knives","direction","airport","human","weekdays","references","kitchen","egg","agriculture","ideas","website","radio","jobs","desert","sales","income","weather","questions","interview","deposit","sample","information","water","quality","insurance","decoration","science","irrigation","volcanoes","record","insects","cultures","seafood","jeans","village","reception","image","corn","seminar","labour","videos","public","hotel","confidence","store","lectures","varies","presentation","hospital","concentration","streets","locations","tutorials","potatoes","history","computers","sugar","massage","train","population","helmet","competition","survey","mathematics","tomatoes","pool","helicopter","communication","teams","meat","transport","plant","gym","colour","tent","microscope","video","picture","groups","coffee","ticket","milk","tutor","piano","grass","coast","tools","minerals","traffic","photos","government","clubs","trees","month","theatres","photograph","goods","clothes","university","movement","tennis","phone","golf","climate","view","number","teenagers","permit","glasses","clay","weekends","office","technology","passport","furniture","cities","wheelchair","photocopy","taxes","park","fruits","cinema","pizza","supermarkets","parent","friend","chocolate","plates","studio","painting","fridge","children","action","playground","teenager","outdoors","glass","cheque","adult","police","students","oil","gift","chemicals","advertisement","post","observation","gas","cake","bacteria","problem","tax","nutrition","garden","business","bags","profit","storm","nuts","garage","bus","band","protection","stone","parents","forests","bridge","bathroom","purpose","statistic","noise","food","breakfast","brick","rain","station","newspapers","flowers","boxes","camel","risks","sport","museums","flat","cheese","cash","roof","spices","mountain","flamingos","certificate","castles","rubber","songs","money","fish","CDs","cave","rubbish","soil","mirror","film","car","coach","rules","skills","microwave","ferries","candles","college","salary","size","method","feedback","camera","conferences","sand","shower","newspaper","fear","cakes","contract","scientists","security","neighbours","farm","box","crime","shark","sea","name","flower","booklet","dances","software","schools","meal","family","book","desk","skill","material","factories","bones","diary","storage","sandglasses","market","facilities","boat","donation","taxi","salt","maps","exercise","birds","drum","teachers","manager","equipment","bikes","education","towel","salads","magazine","entertainment","bicycle","email","transportation","rock","machines","energy","behaviour","engineer","travel","road","lunch","electricity","beach","exhibition","whale","river","locker","eggs","basement","eyes","workshop","restaurant","lights","drinks","bank","face","accommodation","resource","library","downstairs","balcony","accountants","research","leaves","distance","approaches","games","activities"]},{"id":"u12","title":"第十二单元 · 单词更新","words":["reservation","synthesize","autobiography","route","answer","novelist","account","quantity","experimental","agent","rate","framework","girl","dolphin","sequence","fee","horse","mango","event","patience","stage","bad","fortune","open-minded","comics","experienced","organisational","feed","damp","surrounding","identify","formal","inconclusive","networker","sheep","unequal","smoking","volcanic","response","explanation","solid","confidential","frustration","bar","chick","full","bronze","welfare","finger","limited","harvested","showroom","administrative","opened","limestone","learn","cleaned","beat","declining","cooled","military","maintenance","symbol","achievement","self-confident","transparency","situation","progress","skyscraper","aspiration","sunflower","wooden","style","shared","format","man","harmful","flexibility","wrong","commuter","last","seagrass","active","entire","birth","donate","inconvenient","cooperation","quote","washbasin","rich","foreign"]},{"id":"u13","title":"第十三单元 · 词组更新","words":["side door","Green Street","gold coins","Park Road","meet teachers","crop plant","IT course","the lead","academic report","some trees","the sheet","nuts and fish","group organiser","business district","muscle pain","rock and jazz","play well","shark skin","legal advice","seating capacity","South Asia","recent photo","Cuban Life","East Asia","diving mask","right labels","online shopping","free repair","old airport","corporate loan","sun proof","short equipment","negative thinking","reusable bag","local heroes","long life span","socialize with people","recent reward","healthy benefit","license to drive","learning zone","nuclear power","cultural awareness","member restaurant","good facilities","running tour","gallery shop","waste disposal","fish dishes","historical photos","knife handle","travel around","cinema zone","economic depression","coffee table","meeting point","fuel shortage","cupboard or bookshelf","mixed ages","machines or robots","long road runner","natural life","they do well","family use","real life","ozone layer","at night","total block","detailed notes","beach soccer","plastic folder","sports equipment","grocery store","Avenue of flags","black bears","swimming coach","visitor centre","extra resistance","King Room","bird room","Central Street","iced coffee","a retire house","English literature","electronic product","junction six","practical skills","mountain hike","computer problems","petrol stations","boat trip","too close","The Secret Garden","by the door","gas tanks","abstract ideas","Bird Park","late afternoon","darkness to lightness","twice a week","not any coloured","human companionship","New Opera","monthly magazines","other colleagues","collect shells","oil filter","watching time","watering plants","telephone the employer","tennis courts","end of the month","by boat","early mornings","zoom lens","ride bikes","grocery shopping","museum centre","rose garden","registration office","modern play","family ticket","phone card","no nuts","this weekend","role of motivation","north island","sport articles","management of change","flower shop","less than a week","nature of volunteering","side entrance","sports shoes","recycled glass","new customer","a person","local supermarket","party wears","alarming system","other planets","Sport's Hall","river trip","future medicine","North Bay","television programme","traffic toy","white bar","eight products","baseball coach","blue gate","tuition waived","rescue diver","every second week","cleaning products","diving experience","a yellow box","an apartment","Saturday mornings","model wooden truck","project online","paying attention","basic technology","one sentence","market interview","free post","lab report","email attachment","drawing club","five minutes","sea shores","drama club","ground plan","on edge","artists club","unanswered questions","genetic structure","card number","undeveloped area","Computer as Teacher","conference room","social interactions","University of Melbourne","mixed table","unexpected noise","top floor","river lane","third year","ground floor","after school","more time","Palm Lounge","top mount","student loans","textbook allowance","silver-coloured cloth","oral exam","grain patterns","Friday evening","identify card","Cultural Centre","River Avenue","a general discussion","yellow fever","leave a message","student union","whole building","Spring Street","digestive problem","container types","variety of food","higher car taxes","material used","Central Hotel","temple walls","rubber wheels","test driving","the big toe","every other week","Summer Palace","remove out","skills and experiences","first traffic light","the ground","modules technology","first Tuesday","two million passengers","Math Department","answering the phone","huge increase","package labels","good rest","unsocial hours","pink and yellow","by train","family relationship","The origins","farm work","group relationship","club room","West Lake","more costly","make invitations","chemical contaminants","cold drinks","young people","hot buffet","second floor","paper napkins","corporation morality","Middle Street","rare glass","switch off","family expectation","next Tuesday","particular disease","client engineer","college research","share room","human activities","business area","natural subjects","goods for sale","own subject","vegetarian food","gene diversity","Park Street","written language"]},{"id":"u14","title":"第十四单元 · 单词更新2","words":["contaminant","hearing","single","developing","herd","sixth","flute","hull","smaller","journalist","husband","snowboarding","mid-afternoon","identical","specimen","poetry","irrigate","spot","related","large","stadium","restroom","leather","stare","shadow","leave","statement","twin","lizard","sticky","vitamin","long-term","suitable","wetsuit","luxury","sunglasses","addictive","magic","talking","aid","major","thunder","air-conditioning","malnutrition","tidiness","anger","mice","tradition","angry","monopoly","trivial","anniversary","odour","unemployment","architecture","paradise","varnish","assessment","passenger","visual","bee","peace","visualisation","biscuit","peak","wave","bread","pharmacy","weapon","breath","pillow","wolf","camping","pioneer","zoo","charge","practical","cement","clubroom","practice","computer-aided","consume","prevalent","deteriorate","corridor","primary","free","cricket","prisoner","frost","deck","ranger","funder","different","react","implant","dollar","recognise","orchestra","eagle","recreation","plot","electric","referee","poem","endangered","resort","prediction","ferry","row","recorder","fertility","runner","sadness","fog","safeguard","setting","fox","self-locking","skim","freezing","servant","songwriter","front","shipment","harmony","silence"]},{"id":"u15","title":"第十五单元 · 词组更新2","words":["bird watching","land erosion","displays and products","child seat","large slide","electric field","driving licence","leak water","every hour","gold coast","life science undergraduate","experienced musicians","maintenance issue","lifting heavy items","horizontally across","2 pockets","local market","hot spots","3 days ago","next week morning","lead guitar","a large office","noisy disturbances","local newspaper","applicant form","objective matters","Mobile film making","apron and sunglasses","own meal","new products","artist club","passive learners","next week","black bear","plan the time","Northern Europe","body fluids","presentation skills","on average","car numbers","radio signals","one your diploma","clear argument","rock climbing","oral history","computer programme","safe environment","physical movements","contractual issue","sea lion","plastic surgery","country living","sick pay","primary and secondary schools","course work","small rockets","profitable combination","culture context","special shuttle buses","public performances","disabled people","sports centre","rare creatures","dolphins and whales","streets transport","red footprints","egg cartons","stress levels","regularly replaced","financial loss","tape measurer","route book","first aid","textile factory","sandy soil","first-year students","TV reporter","top left-hand corner","formal clothes","twin room","Tower of London","goat skin","wild condition","types of cells","good pay","young employee","university tour","grocery stores","6-month certificate","Why study media","group trip","best location","head office","city walking tours","high car taxes","cooking method","identifying hazards","daily basis","insurance company","digging skills"]},{"id":"u16","title":"第十六单元 · 流程类动词","words":["transport","transform","grind","grade","roast","mix","pour","put","set","cool","freeze","seal","label","pack","extract","purify","filter","heat","store","distribute"]}];
 const UNIT_MAP = {};
 UNITS.forEach(u => UNIT_MAP[u.id] = u);
+
+/* 词义/过去分词速查表：目前覆盖"流程类动词"单元，用于听写结果页/错词本展示 */
+const WORD_NOTES = {
+  "transport": {pp:"transported", meaning:"运输"},
+  "transform": {pp:"transformed", meaning:"(性质)转变、改造"},
+  "grind":     {pp:"ground",      meaning:"研磨"},
+  "grade":     {pp:"graded",      meaning:"分级、评级"},
+  "roast":     {pp:"roasted",     meaning:"烘烤"},
+  "mix":       {pp:"mixed",       meaning:"混合"},
+  "pour":      {pp:"poured",      meaning:"倾倒"},
+  "put":       {pp:"put",         meaning:"放置(过去分词不变)"},
+  "set":       {pp:"set",         meaning:"定型、凝固(过去分词不变)"},
+  "cool":      {pp:"cooled",      meaning:"冷却"},
+  "freeze":    {pp:"frozen",      meaning:"冷冻(比cool程度更深)"},
+  "seal":      {pp:"sealed",      meaning:"密封"},
+  "label":     {pp:"labelled",    meaning:"贴标签"},
+  "pack":      {pp:"packed",      meaning:"包装"},
+  "extract":   {pp:"extracted",   meaning:"提取"},
+  "purify":    {pp:"purified",    meaning:"净化、提纯"},
+  "filter":    {pp:"filtered",    meaning:"过滤"},
+  "heat":      {pp:"heated",      meaning:"加热"},
+  "store":     {pp:"stored",      meaning:"储存"},
+  "distribute":{pp:"distributed", meaning:"分发、配送"},
+
+  /* 过去分词(被动态)词形 → 标注原词 + 含义 */
+  "transported": {origin:"transport",  meaning:"运输"},
+  "transformed": {origin:"transform",  meaning:"(性质)转变、改造"},
+  "ground":      {origin:"grind",      meaning:"研磨"},
+  "graded":      {origin:"grade",      meaning:"分级、评级"},
+  "roasted":     {origin:"roast",      meaning:"烘烤"},
+  "mixed":       {origin:"mix",        meaning:"混合"},
+  "poured":      {origin:"pour",       meaning:"倾倒"},
+  "cooled":      {origin:"cool",       meaning:"冷却"},
+  "frozen":      {origin:"freeze",     meaning:"冷冻(比cool程度更深)"},
+  "sealed":      {origin:"seal",       meaning:"密封"},
+  "labelled":    {origin:"label",      meaning:"贴标签"},
+  "packed":      {origin:"pack",       meaning:"包装"},
+  "extracted":   {origin:"extract",    meaning:"提取"},
+  "purified":    {origin:"purify",     meaning:"净化、提纯"},
+  "filtered":    {origin:"filter",     meaning:"过滤"},
+  "heated":      {origin:"heat",       meaning:"加热"},
+  "stored":      {origin:"store",      meaning:"储存"},
+  "distributed": {origin:"distribute", meaning:"分发、配送"}
+};
+function wordNoteHtml(word){
+  const n = WORD_NOTES[(word||'').toLowerCase()];
+  if(!n) return '';
+  if(n.origin){
+    return `<div class="word-note">原词 <b>${escapeHtml(n.origin)}</b> · ${escapeHtml(n.meaning)}</div>`;
+  }
+  return `<div class="word-note">过去分词 <b>${escapeHtml(n.pp)}</b> · ${escapeHtml(n.meaning)}</div>`;
+}
 
 /* ---------------- persisted data ---------------- */
 const STORE_KEY = 'dictation-data';
@@ -877,7 +1140,8 @@ let store = {
     seenWords: {},   // unitId -> Set/array of words heard at least once
     history: [], 
     reasonTotals: { miss:0, guess:0, spell:0 },
-    settings: { accent: 'en-GB', voiceName: null, rate: 0.85, repeat: 1 } 
+    settings: { accent: 'en-GB', voiceName: null, rate: 0.85, repeat: 1 },
+    srs: {}           // word -> {state, interval, reps, ease, due, unit, lastReview}
 };
 
 // 使用标准的 localStorage 进行同步读取
@@ -892,6 +1156,7 @@ function loadStore() {
             store.history = parsed.history || [];
             store.reasonTotals = Object.assign({ miss:0, guess:0, spell:0 }, parsed.reasonTotals || {});
             store.settings = Object.assign({ accent: 'en-GB', voiceName: null, rate: 0.85, repeat: 1 }, parsed.settings || {});
+            store.srs = parsed.srs || {};
         }
     } catch (e) {
         console.error('加载存档失败，将使用默认设置', e);
@@ -907,6 +1172,98 @@ function saveStore() {
     } catch (e) {
         console.error('自动保存失败 (可能是隐私模式或磁盘空间不足)', e);
     }
+}
+
+/* ===================== SRS 间隔重复系统 =====================
+   状态机: new(新词) -> learning(学习中, 1-10天) -> review(复习中, 10-30天) -> mastered(已掌握, 偶尔复习)
+   评分: 0=Forgot 1=Struggled 2=Knew It 3=Mastered
+   ============================================================ */
+const SRS_DAY = 86400000;
+
+function ensureSrsEntry(word, unitId){
+  if(!store.srs[word]){
+    store.srs[word] = {
+      state: 'new',      // new | learning | review | mastered
+      interval: 0,        // 天数
+      reps: 0,             // 已复习次数
+      ease: 2.3,            // 难度系数, 越高增长越快
+      due: Date.now(),       // 下次到期时间戳
+      unit: unitId,
+      lastReview: null
+    };
+  }
+}
+
+function srsDueWords(){
+  const now = Date.now();
+  return Object.keys(store.srs).filter(w => store.srs[w].due <= now);
+}
+
+function srsCounts(){
+  const c = {new:0, learning:0, review:0, mastered:0, due:0};
+  const now = Date.now();
+  Object.values(store.srs).forEach(e=>{
+    c[e.state] = (c[e.state]||0) + 1;
+    if(e.due <= now) c.due++;
+  });
+  return c;
+}
+
+// quality: 0 Forgot / 1 Struggled / 2 Knew It / 3 Mastered
+function scheduleSrs(word, quality){
+  const e = store.srs[word];
+  if(!e) return;
+  e.reps++;
+  e.lastReview = Date.now();
+
+  if(quality === 0){ // Forgot — 完全不记得, 退回学习阶段, 很快重新出现
+    e.state = 'learning';
+    e.interval = 1;
+    e.ease = Math.max(1.3, e.ease - 0.2);
+  } else if(quality === 1){ // Struggled — 想了很久才对, 间隔小幅增长或回落到学习区间
+    e.ease = Math.max(1.3, e.ease - 0.05);
+    if(e.state === 'new' || e.state === 'learning'){
+      e.state = 'learning';
+      e.interval = Math.min(10, Math.max(1, Math.round((e.interval || 1) * 1.3)));
+    } else { // review / mastered 答的吃力 -> 降级回 review 区间下沿
+      e.state = 'review';
+      e.interval = Math.min(30, Math.max(10, Math.round(e.interval * 0.5)));
+    }
+  } else if(quality === 2){ // Knew It — 短暂停顿后想起, 正常增长
+    e.ease = Math.min(3.0, e.ease + 0.05);
+    if(e.state === 'new'){
+      e.state = 'learning'; e.interval = 2;
+    } else if(e.state === 'learning'){
+      e.interval = Math.max(2, Math.round(e.interval * e.ease * 0.85));
+      if(e.interval >= 10){ e.state = 'review'; e.interval = Math.min(30, Math.max(10, e.interval)); }
+    } else if(e.state === 'review'){
+      e.interval = Math.min(30, Math.max(10, Math.round(e.interval * 1.7)));
+      if(e.reps >= 5 && e.interval >= 28){ e.state = 'mastered'; e.interval = 45; }
+    } else { // mastered
+      e.interval = Math.round(e.interval * 1.3);
+    }
+  } else if(quality === 3){ // Mastered — 立刻自信答出, 加速增长
+    e.ease = Math.min(3.3, e.ease + 0.15);
+    if(e.state === 'new'){
+      e.state = 'learning'; e.interval = 3;
+    } else if(e.state === 'learning'){
+      e.interval = Math.max(4, Math.round(e.interval * 2.4));
+      if(e.interval >= 8){ e.state = 'review'; e.interval = Math.max(10, e.interval); }
+    } else if(e.state === 'review'){
+      e.interval = Math.max(10, Math.round(e.interval * 2.1));
+      if(e.interval >= 25 || e.reps >= 4){ e.state = 'mastered'; e.interval = Math.max(60, e.interval); }
+    } else { // mastered
+      e.interval = Math.max(60, Math.round(e.interval * 1.5));
+    }
+  }
+
+  e.due = Date.now() + e.interval * SRS_DAY;
+  store.srs[word] = e;
+  saveStore();
+}
+
+function srsStateLabel(state){
+  return {new:'新词', learning:'学习中', review:'复习中', mastered:'已掌握'}[state] || state;
 }
 
 /* ---------------- TTS ---------------- */
@@ -948,7 +1305,10 @@ function speakWord(word, onend){
 }
 function setSpeaking(on){
   document.getElementById('wave').classList.toggle('speaking', on);
-  document.getElementById('playIcon').className = on ? 'ti ti-volume' : 'ti ti-player-play-filled';
+  const srsWave = document.getElementById('srsWave');
+  if(srsWave) srsWave.classList.toggle('speaking', on);
+  const playIcon = document.getElementById('playIcon');
+  if(playIcon) playIcon.className = on ? 'ti ti-volume' : 'ti ti-player-play-filled';
 }
 
 /* ---------------- grading ---------------- */
@@ -1180,6 +1540,12 @@ function renderHome(){
   document.getElementById('guessEntryCount').textContent = guessCount + '词';
   document.getElementById('guessEntryBtn').style.display = guessCount > 0 ? 'flex' : 'none';
 
+  const srsC = srsCounts();
+  document.getElementById('srsEntryCount').textContent = srsC.due + '待复习';
+  document.getElementById('srsEntrySub').textContent =
+    `新词${srsC.new} · 学习中${srsC.learning} · 复习中${srsC.review} · 已掌握${srsC.mastered}`;
+  document.getElementById('srsEntryBtn').style.display = Object.keys(store.srs).length > 0 ? 'flex' : 'none';
+
   const listEl = document.getElementById('unitList');
   listEl.innerHTML = UNITS.map(u=>{
     const checked = state.selectedUnits.has(u.id);
@@ -1394,6 +1760,7 @@ function recordAnswer(item, ok, userInput){
   store.unitStats[item.unit].attempted++;
   if(!store.seenWords[item.unit]) store.seenWords[item.unit] = [];
   if(!store.seenWords[item.unit].includes(item.word)) store.seenWords[item.unit].push(item.word);
+  ensureSrsEntry(item.word, item.unit);
   if(ok){
     store.unitStats[item.unit].correct++;
     if(store.wrongBank[item.word]) delete store.wrongBank[item.word];
@@ -1405,6 +1772,7 @@ function recordAnswer(item, ok, userInput){
     existing.lastYou = userInput;
     store.wrongBank[item.word] = existing;
   }
+  saveStore();
 }
 
 function nextQuestion(){
@@ -1511,6 +1879,7 @@ function renderResults(s, durationSec, accuracy){
         <div class="left">
           <span class="w">${escapeHtml(w.word)}${w.you ? `<span class="you">你写: ${escapeHtml(w.you)}</span>`:''}</span>
           ${reasonTagHtml(w.reason)}
+          ${wordNoteHtml(w.word)}
         </div>
         <button class="icon-btn" style="font-size:16px;" data-word="${escapeHtml(w.word)}" aria-label="重听"><i class="ti ti-volume" aria-hidden="true"></i></button>
       </div>`).join('');
@@ -1701,6 +2070,148 @@ document.getElementById('newSetBtn').addEventListener('click', ()=>{ showView('h
 document.getElementById('homeBtn2').addEventListener('click', ()=>{ showView('home'); renderHome(); });
 
 
+/* ---------------- SRS review session ---------------- */
+const srsState = { words: [], idx: 0 };
+
+function startSrsSession(){
+  const due = shuffle(srsDueWords());
+  srsState.words = due;
+  srsState.idx = 0;
+  showView('srs');
+  if(!due.length){
+    document.getElementById('srsRevealArea').style.display = 'none';
+    document.getElementById('srsSubmitArea').style.display = 'none';
+    document.getElementById('srsRating').style.display = 'none';
+    document.getElementById('srsAnswer').style.display = 'none';
+    document.getElementById('srsProgressTxt').textContent = '0 / 0';
+    document.getElementById('srsProgressFill').style.width = '0%';
+    document.getElementById('srsEmpty').style.display = 'flex';
+    return;
+  }
+  document.getElementById('srsEmpty').style.display = 'none';
+  renderSrsCard();
+}
+
+function srsCurrentWord(){
+  return srsState.words[srsState.idx];
+}
+
+function renderSrsCard(){
+  const word = srsCurrentWord();
+  const entry = store.srs[word];
+  document.getElementById('srsProgressTxt').textContent = `${srsState.idx + 1} / ${srsState.words.length}`;
+  document.getElementById('srsProgressFill').style.width = Math.round((srsState.idx) / srsState.words.length * 100) + '%';
+  document.getElementById('srsStateTag').textContent = srsStateLabel(entry ? entry.state : 'new');
+
+  // 重置各区域
+  document.getElementById('srsAnswer').style.display = 'none';
+  document.getElementById('srsRevealArea').style.display = 'block';
+  document.getElementById('srsSubmitArea').style.display = 'block';
+  document.getElementById('srsRating').style.display = 'none';
+
+  const fb = document.getElementById('srsFeedback');
+  fb.style.visibility = 'hidden';
+  fb.className = 'feedback';
+
+  document.getElementById('srsWordText').textContent = word;
+  document.getElementById('srsWordNote').innerHTML = wordNoteHtml(word);
+
+  const inp = document.getElementById('srsInput');
+  inp.value = '';
+  inp.disabled = false;
+  inp.focus();
+
+  document.querySelectorAll('.srs-rate-btn').forEach(b => b.classList.remove('srs-suggested'));
+
+  speakWord(word);
+}
+
+document.getElementById('srsPlayBtn').addEventListener('click', ()=>{
+  speakWord(srsCurrentWord());
+});
+
+document.getElementById('srsReplayBtn').addEventListener('click', ()=>{
+  speakWord(srsCurrentWord());
+});
+
+document.getElementById('srsInput').addEventListener('keydown', e=>{
+  if(e.key === 'Enter'){ e.preventDefault(); submitSrsAnswer(); }
+});
+
+document.getElementById('srsSubmitBtn').addEventListener('click', submitSrsAnswer);
+
+function submitSrsAnswer(){
+  const inp = document.getElementById('srsInput');
+  const val = inp.value.trim();
+  if(!val) return;
+  inp.disabled = true;
+
+  const word = srsCurrentWord();
+  const ok = isCorrect(val, word);
+
+  // 用和 practice 页一样的 feedback 样式显示对错
+  const fb = document.getElementById('srsFeedback');
+  const fbIcon = document.getElementById('srsFeedbackIcon');
+  const fbText = document.getElementById('srsFeedbackText');
+  if(ok){
+    fb.className = 'feedback correct';
+    fbIcon.className = 'ti ti-circle-check';
+    fbText.textContent = '正确';
+  } else {
+    fb.className = 'feedback incorrect';
+    fbIcon.className = 'ti ti-circle-x';
+    fbText.textContent = `你写的：${val}`;
+  }
+  fb.style.visibility = 'visible';
+
+  // 显示正确答案和词注
+  document.getElementById('srsAnswer').style.display = 'block';
+  document.getElementById('srsRevealArea').style.display = 'none';
+  document.getElementById('srsSubmitArea').style.display = 'none';
+  document.getElementById('srsRating').style.display = 'block';
+
+  const suggested = ok ? '2' : '0';
+  document.querySelectorAll('.srs-rate-btn').forEach(b=>{
+    b.classList.toggle('srs-suggested', b.dataset.q === suggested);
+  });
+}
+
+document.querySelectorAll('.srs-rate-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const q = parseInt(btn.dataset.q, 10);
+    const word = srsCurrentWord();
+    scheduleSrs(word, q);
+    if(srsState.idx + 1 >= srsState.words.length){
+      showView('home');
+      renderHome();
+    } else {
+      srsState.idx++;
+      renderSrsCard();
+    }
+  });
+});
+
+document.getElementById('srsExitBtn').addEventListener('click', ()=>{
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  showView('home');
+  renderHome();
+});
+
+document.getElementById('srsEmptyHomeBtn').addEventListener('click', ()=>{
+  showView('home');
+  renderHome();
+});
+
+document.getElementById('srsInfoBtn').addEventListener('click', ()=>{
+  showView('srsinfo');
+});
+document.getElementById('srsInfoBackBtn').addEventListener('click', ()=>{
+  showView('srs');
+});
+
+document.getElementById('srsEntryBtn').addEventListener('click', startSrsSession);
+
+
 /* ---------------- wrong bank view ---------------- */
 function renderBank(){
   const entries = Object.entries(store.wrongBank);
@@ -1723,7 +2234,7 @@ function renderBank(){
       ${items.map(it=>`
         <div class="bank-item">
           <button class="icon-btn" style="font-size:16px;color:var(--accent);" data-play="${escapeHtml(it.word)}" aria-label="朗读"><i class="ti ti-volume" aria-hidden="true"></i></button>
-          <span class="w">${escapeHtml(it.word)}</span>
+          <span class="w">${escapeHtml(it.word)}${wordNoteHtml(it.word)}</span>
           ${reasonTagHtml(it.reason)}
           <span class="cnt">×${it.count}</span>
           <button data-remove="${escapeHtml(it.word)}" aria-label="标记已掌握"><i class="ti ti-check" aria-hidden="true"></i></button>
