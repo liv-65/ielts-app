@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>有效努力 · 正念 & 阅读书写</title>
+<style>
+  :root {
+    --teal-50: #E1F5EE;
+    --teal-100: #9FE1CB;
+    --teal-200: #5DCAA5;
+    --teal-400: #1D9E75;
+    --teal-600: #0F6E56;
+    --teal-800: #085041;
+    --purple-50: #EEEDFE;
+    --purple-200: #AFA9EC;
+    --purple-400: #7F77DD;
+    --purple-600: #534AB7;
+    --amber-50: #FFF8E8;
+    --amber-200: #F6CC6E;
+    --amber-400: #E6A817;
+    --amber-600: #B07C0A;
+    --gray-50: #F7F6F3;
+    --gray-100: #EDECEA;
+    --gray-200: #D3D1C7;
+    --gray-400: #888780;
+    --gray-600: #5F5E5A;
+    --gray-900: #1A1A18;
+    --text-primary: #1A1A18;
+    --text-secondary: #5F5E5A;
+    --text-muted: #888780;
+    --surface-0: #F7F6F3;
+    --surface-1: #EDECEA;
+    --surface-2: #ffffff;
+    --border: rgba(0,0,0,0.09);
+    --border-strong: rgba(0,0,0,0.16);
+    --radius: 8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --teal-50: #04342C;
+      --teal-100: #085041;
+      --teal-200: #0F6E56;
+      --teal-400: #1D9E75;
+      --teal-600: #5DCAA5;
+      --teal-800: #9FE1CB;
+      --purple-50: #26215C;
+      --purple-200: #534AB7;
+      --purple-400: #7F77DD;
+      --purple-600: #AFA9EC;
+      --amber-50: #2E2200;
+      --amber-200: #7A5000;
+      --amber-400: #E6A817;
+      --amber-600: #F6CC6E;
+      --gray-50: #1A1A18;
+      --gray-100: #2C2C2A;
+      --gray-200: #444441;
+      --gray-400: #888780;
+      --gray-600: #B4B2A9;
+      --gray-900: #F7F6F3;
+      --text-primary: #F2F0EB;
+      --text-secondary: #B4B2A9;
+      --text-muted: #888780;
+      --surface-0: #141413;
+      --surface-1: #1F1F1D;
+      --surface-2: #2C2C2A;
+      --border: rgba(255,255,255,0.08);
+      --border-strong: rgba(255,255,255,0.15);
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+    background: var(--surface-0);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  .header {
+    background: var(--surface-2);
+    border-bottom: 0.5px solid var(--border);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 0.75rem; }
+
+  .logo-mark {
+    width: 32px; height: 32px;
+    background: var(--teal-400);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .header-titles { display: flex; flex-direction: column; }
+  .header-title { font-size: 15px; font-weight: 500; color: var(--text-primary); letter-spacing: -0.01em; }
+  .header-subtitle { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+  .header-right { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+
+  .progress-bar-wrap { display: flex; align-items: center; gap: 0.5rem; }
+  .progress-label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+  .progress-track { width: 100px; height: 4px; background: var(--surface-1); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--teal-400); border-radius: 2px; transition: width 0.4s ease; }
+
+  .io-btns { display: flex; gap: 0.4rem; }
+  .io-btn {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: var(--radius);
+    font-size: 12px; font-weight: 500;
+    cursor: pointer; border: 0.5px solid var(--border-strong);
+    background: transparent; color: var(--text-secondary);
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .io-btn:hover { background: var(--surface-1); color: var(--text-primary); }
+  .io-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .io-btn.export { border-color: var(--teal-400); color: var(--teal-600); }
+  .io-btn.export:hover { background: var(--teal-50); }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 272px 1fr;
+    min-height: calc(100vh - 61px);
+  }
+
+  .sidebar {
+    background: var(--surface-2);
+    border-right: 0.5px solid var(--border);
+    overflow-y: auto;
+    position: sticky;
+    top: 61px;
+    height: calc(100vh - 61px);
+    padding: 0.75rem 0;
+  }
+
+  .sidebar-section-title {
+    font-size: 10px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-muted);
+    padding: 0.75rem 1.25rem 0.375rem;
+  }
+
+  .day-item {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.45rem 1.25rem;
+    cursor: pointer; transition: background 0.15s;
+    border-left: 2px solid transparent;
+  }
+  .day-item:hover { background: var(--surface-0); }
+  .day-item.active { background: var(--teal-50); border-left-color: var(--teal-400); }
+  .day-item.completed .day-num { background: var(--teal-400); color: white; border-color: var(--teal-400); }
+
+  .day-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 0.5px solid var(--border-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 500;
+    color: var(--text-secondary);
+    flex-shrink: 0; transition: all 0.15s;
+  }
+  .day-item.active .day-num { background: var(--teal-400); color: white; border-color: var(--teal-400); }
+
+  .day-text { flex: 1; min-width: 0; }
+  .day-title {
+    font-size: 12px; color: var(--text-primary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .day-item.active .day-title { color: var(--teal-600); font-weight: 500; }
+  .day-tag { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+  .day-badges { display: flex; gap: 3px; flex-shrink: 0; }
+  .day-badge-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--gray-200);
+  }
+  .day-badge-dot.has-read { background: var(--amber-400); }
+  .day-badge-dot.has-write { background: var(--purple-400); }
+
+  .main { padding: 2rem 2.5rem; max-width: 780px; }
+
+  /* Tab navigation */
+  .tabs {
+    display: flex; gap: 0; margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab-btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.6rem 1.25rem;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; border: none; background: transparent;
+    color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+  .tab-btn:hover { color: var(--text-primary); }
+  .tab-btn.active { color: var(--teal-400); border-bottom-color: var(--teal-400); }
+  .tab-btn svg { width: 14px; height: 14px; }
+
+  /* Day header */
+  .day-header { margin-bottom: 1.5rem; }
+  .day-badge-pill {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: var(--teal-50); color: var(--teal-600);
+    font-size: 11px; font-weight: 500;
+    padding: 0.2rem 0.65rem; border-radius: 100px;
+    margin-bottom: 0.6rem;
+    border: 0.5px solid rgba(29,158,117,0.2);
+  }
+  .day-header h2 {
+    font-size: 22px; font-weight: 500;
+    letter-spacing: -0.02em; color: var(--text-primary);
+    line-height: 1.3; margin-bottom: 0.4rem;
+  }
+  .day-meta { font-size: 13px; color: var(--text-muted); }
+
+  /* Cards */
+  .card {
+    background: var(--surface-2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .card-label {
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--teal-400); margin-bottom: 0.75rem;
+  }
+  .card-label.amber { color: var(--amber-600); }
+  .card-label.purple { color: var(--purple-400); }
+
+  /* Audio player */
+  .player-top { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+  .player-icon {
+    width: 44px; height: 44px;
+    background: var(--teal-50); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .player-icon svg { width: 22px; height: 22px; color: var(--teal-400); }
+  .player-info { flex: 1; }
+  .player-title { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 2px; }
+  .player-hint { font-size: 12px; color: var(--text-muted); }
+  audio { width: 100%; height: 38px; border-radius: var(--radius); outline: none; }
+  audio::-webkit-media-controls-panel { background: var(--surface-1); border-radius: var(--radius); }
+
+  .action-row { display: flex; gap: 0.6rem; margin-top: 1rem; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radius); font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s;
+    border: 0.5px solid var(--border-strong);
+    background: transparent; color: var(--text-secondary);
+    text-decoration: none;
+  }
+  .btn:hover { background: var(--surface-1); color: var(--text-primary); }
+  .btn svg { width: 13px; height: 13px; }
+
+  /* Guidance text */
+  .guidance-text { font-size: 14px; color: var(--text-primary); line-height: 1.85; }
+  .guidance-text p { margin-bottom: 0.8rem; }
+  .guidance-text p:last-child { margin-bottom: 0; }
+
+  .tips-box {
+    background: var(--purple-50);
+    border: 0.5px solid rgba(127,119,221,0.2);
+    border-radius: var(--radius);
+    padding: 0.875rem 1.1rem; margin-top: 1rem;
+  }
+  .tips-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--purple-400); margin-bottom: 0.35rem; }
+  .tips-text { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+
+  /* Reading content */
+  .read-section { margin-bottom: 1.5rem; }
+  .read-section h3 {
+    font-size: 16px; font-weight: 500; color: var(--text-primary);
+    margin-bottom: 0.75rem; padding-bottom: 0.5rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .read-section h4 { font-size: 13px; font-weight: 600; color: var(--text-primary); margin: 1rem 0 0.4rem; }
+  .read-section h5 { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin: 0.75rem 0 0.3rem; }
+  .read-section p { font-size: 14px; color: var(--text-primary); line-height: 1.85; margin-bottom: 0.6rem; }
+  .read-section ol, .read-section ul { font-size: 14px; color: var(--text-primary); line-height: 1.8; padding-left: 1.4rem; margin-bottom: 0.6rem; }
+  .read-section li { margin-bottom: 0.2rem; }
+  .read-section strong { color: var(--text-primary); }
+
+  .read-overview {
+    background: var(--amber-50);
+    border: 0.5px solid rgba(230,168,23,0.25);
+    border-radius: var(--radius);
+    padding: 0.875rem 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .read-overview-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--amber-600); margin-bottom: 0.4rem; }
+  .read-overview ol { font-size: 13px; color: var(--text-secondary); padding-left: 1.2rem; }
+
+  /* Writing area */
+  .write-section { margin-bottom: 1.25rem; }
+  .write-section h3 {
+    font-size: 15px; font-weight: 500; color: var(--text-primary);
+    margin-bottom: 0.75rem;
+  }
+
+  .write-guide {
+    background: var(--amber-50);
+    border: 0.5px solid rgba(230,168,23,0.25);
+    border-radius: var(--radius);
+    padding: 0.875rem 1.1rem; margin-bottom: 1rem;
+    font-size: 13px; color: var(--text-secondary); line-height: 1.75;
+  }
+  .write-guide strong { color: var(--amber-600); }
+
+  .write-field { margin-bottom: 1rem; }
+  .write-field label {
+    display: block; font-size: 12px; font-weight: 500;
+    color: var(--text-secondary); margin-bottom: 0.35rem;
+  }
+  .write-field textarea {
+    width: 100%; min-height: 72px;
+    background: var(--surface-0);
+    border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: 0.65rem 0.875rem;
+    font-size: 14px; color: var(--text-primary);
+    font-family: inherit; line-height: 1.7;
+    resize: vertical; transition: border-color 0.15s;
+  }
+  .write-field textarea:focus { outline: none; border-color: var(--teal-400); }
+  .write-field textarea::placeholder { color: var(--text-muted); }
+
+  .write-subsection {
+    background: var(--purple-50);
+    border: 0.5px solid rgba(127,119,221,0.2);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem; margin-bottom: 1rem;
+  }
+  .write-subsection-title {
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--purple-400); margin-bottom: 0.75rem;
+  }
+
+  .save-indicator {
+    font-size: 11px; color: var(--teal-400);
+    opacity: 0; transition: opacity 0.3s;
+    display: inline-flex; align-items: center; gap: 0.3rem;
+  }
+  .save-indicator.show { opacity: 1; }
+
+  /* Calendar & nav */
+  .calendar-strip { display: flex; gap: 3px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .cal-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--surface-1); border: 0.5px solid var(--border-strong);
+    cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+  }
+  .cal-dot.done { background: var(--teal-400); border-color: var(--teal-400); }
+  .cal-dot.current { background: var(--purple-400); border-color: var(--purple-400); }
+  .cal-dot:hover { transform: scale(1.35); }
+
+  .nav-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 2rem; padding-top: 1.25rem;
+    border-top: 0.5px solid var(--border);
+  }
+  .nav-btn {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.55rem 1.1rem; border-radius: var(--radius);
+    font-size: 13px; cursor: pointer;
+    border: 0.5px solid var(--border-strong);
+    background: transparent; color: var(--text-primary);
+    transition: all 0.15s;
+  }
+  .nav-btn:hover { background: var(--surface-1); }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .nav-btn svg { width: 15px; height: 15px; }
+
+  .complete-btn { background: var(--teal-400); color: white; border-color: var(--teal-400); }
+  .complete-btn:hover { background: var(--teal-600); border-color: var(--teal-600); }
+  .complete-btn.done { background: var(--gray-200); color: var(--text-muted); border-color: var(--gray-200); }
+  .complete-btn.done:hover { background: var(--gray-200); }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(10px);
+    background: var(--gray-900); color: white;
+    padding: 0.6rem 1.25rem; border-radius: 100px;
+    font-size: 13px; opacity: 0; transition: all 0.25s;
+    pointer-events: none; z-index: 999; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    z-index: 500; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .modal-overlay.show { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--surface-2); border-radius: 16px;
+    padding: 2rem; max-width: 420px; width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    transform: translateY(12px); transition: transform 0.2s;
+  }
+  .modal-overlay.show .modal { transform: translateY(0); }
+  .modal h3 { font-size: 17px; font-weight: 500; margin-bottom: 0.5rem; }
+  .modal p { font-size: 13px; color: var(--text-secondary); line-height: 1.65; margin-bottom: 1.25rem; }
+  .modal-btns { display: flex; gap: 0.75rem; justify-content: flex-end; }
+  .modal-btn {
+    padding: 0.5rem 1.1rem; border-radius: var(--radius);
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    border: 0.5px solid var(--border-strong);
+    background: transparent; color: var(--text-primary); transition: all 0.15s;
+  }
+  .modal-btn:hover { background: var(--surface-1); }
+  .modal-btn.primary { background: var(--teal-400); color: white; border-color: var(--teal-400); }
+  .modal-btn.primary:hover { background: var(--teal-600); border-color: var(--teal-600); }
+
+  @media (max-width: 700px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 1rem 1.25rem; max-width: 100%; }
+    .header { padding: 0.875rem 1.25rem; }
+    .progress-bar-wrap { display: none; }
+    .io-btns { gap: 0.3rem; }
+    .io-btn span { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="logo-mark">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+        <path d="M12 8v4l3 3"/>
+      </svg>
+    </div>
+    <div class="header-titles">
+      <div class="header-title">有效努力 · 正念 &amp; 阅读书写</div>
+      <div class="header-subtitle">25天正念 · 21天阅读书写练习</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="progress-bar-wrap">
+      <span class="progress-label" id="progress-label">0 / 25 天</span>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <div class="io-btns">
+      <button class="io-btn export" onclick="exportData()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>导出数据</span>
+      </button>
+      <button class="io-btn" onclick="triggerImport()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span>导入数据</span>
+      </button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main" id="main-content"></main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="import-modal">
+  <div class="modal">
+    <h3>导入数据</h3>
+    <p>导入将覆盖当前所有进度和书写内容。建议先导出备份当前数据，再进行导入。</p>
+    <div class="modal-btns">
+      <button class="modal-btn" onclick="closeModal()">取消</button>
+      <button class="modal-btn primary" id="confirm-import-btn">确认导入</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
+const DAYS = [
+  { title: "正念：连接自身资源", tag: "专注力入门" },
+  { title: "正念：和身体反应连接", tag: "身体觉察" },
+  { title: "正念：着陆", tag: "情绪稳定" },
+  { title: "正念：与想法解套", tag: "认知灵活" },
+  { title: "正念：呼吸空间", tag: "综合技术" },
+  { title: "正念：呼吸空间（解套与着陆）", tag: "巩固练习" },
+  { title: "正念：自我友善的身体扫描", tag: "身心连接" },
+  { title: "正念：用身体感受自然", tag: "存在模式" },
+  { title: "正念：专注进食，一举两得", tag: "日常正念" },
+  { title: "正念：运动中的存在模式", tag: "正念行走" },
+  { title: "正念：巩固与身体的连接", tag: "深化练习" },
+  { title: "正念：专注呼吸的价值", tag: "注意调控" },
+  { title: "正念：朝向目标行动", tag: "目标导向" },
+  { title: "正念：有意识地转移注意", tag: "弹性注意" },
+  { title: "正念：在过程中积累进步", tag: "耐心培养" },
+  { title: "正念：打开注意，看到资源", tag: "开放觉察" },
+  { title: "正念：带上好奇心，拥抱新经验", tag: "创造性思维" },
+  { title: "正念：在失误中成长", tag: "成长型思维" },
+  { title: "正念：呼吸空间（解套与扩展）", tag: "综合进阶" },
+  { title: "正念：呼吸空间（解套与着陆）", tag: "结业练习" },
+  { title: "正念：呼吸空间（解套与扩展）", tag: "彩蛋练习" },
+  { title: "正念：朝向目标行动", tag: "彩蛋练习" },
+  { title: "正念：用身体感受自然", tag: "彩蛋练习" },
+  { title: "正念：呼吸空间（解套与着陆）", tag: "彩蛋练习" },
+  { title: "正念：呼吸空间（解套与扩展）", tag: "最终练习" },
+];
+
+const GUIDANCE = [
+  { text: "欢迎来到有效努力正念练习的第 1 天。\n\n在今天的阅读中你已经了解到，在努力行动的过程中，使用科学工具，不但可以帮你获得实现目标的有效方法和新经验，也会让自己的大脑变得更强大。正念就是支持你实现这个过程的科学工具之一。\n\n正念训练的核心，是提升有意识地、主动调控注意的能力。这种能力，不仅能让你更专注地投入学习和工作，还能让你：在压力反应中快速稳定心态，启动理性反应；在日常及时觉察疲惫信号，并做出有效调整；拥有更开阔的视野，发现解决问题的丰富资源。\n\n这种主动调控注意的能力就在你自己的身上，并且随着练习的进行，它会变得越来越强大。今天，就让我们从专注呼吸开启正念之旅，来激发蕴含在你大脑中的丰富潜力吧～", tips: null },
+  { text: "欢迎来到有效努力正念练习的第 2 天。\n\n面对压力时，我们的身心会自然出现各种应激反应。尽管这些体验有时让我们感到不适，但它们也为我们提供了应对压力的力量。如果我们愿意如实地了解这些本能反应，学会与它们合作，便可以将其转化为帮自己实现目标的助力。\n\n呼吸是一个了解此刻身心反应的理想线索。首先，像体温的升高、心跳的加速、肌肉的紧张等一样，呼吸的深浅快慢，也能为我们提供有关身心反应的信息。其次，呼吸的变化不会像心跳加速那样过于激烈，这就让我们在了解应激反应的同时，也能获得一定的稳定感。\n\n接下来，就让我们继续在呼吸中，提升觉察身心状态，同时保持稳定专注的能力吧～", tips: null },
+  { text: "欢迎来到有效努力正念练习的第 3 天。\n\n在接下来的正念练习中，我们会更直接地体验「着陆」的力量。在这个练习中，你需要有意识地调动自己的身体感官，让注意力与周围环境，充分连接。\n\n如果过去，你的注意力总是被自己头脑中的想法吸引，那在这个练习中，我邀请你带上你的好奇心，让你的注意力「摄像头」，有意识地投向你正在身处的外部世界。\n\n未来，当你再次被压力应激反应裹挟，记得你还可以回到这里，重温「着陆」技术。", tips: "练习中我们会邀请你跟随引导语，简单地描述自己的体验。如果你正好处在强烈的情绪中，大声说出来的效果会更好。但如果你比较平静，在心里默念就可以了。" },
+  { text: "欢迎来到有效努力正念练习的第 4 天。\n\n今天你将要在感受呼吸的过程中，留意头脑中出现的各种想法。通过给想法命名，提醒自己：想法只是过去的回忆或对未来的想象。它既不是当下正在发生的事实，也不是必须遵从的命令。\n\n这个练习的重点，不是要捕捉哪种特殊的想法，而是锻炼快速识别各种想法的底层通用能力。你可能因为平时很少锻炼这个能力，在练习中常常是走神很久后，才意识到自己刚刚沉浸在想法里了。\n\n这时不必自责，只要你给这个想法命名了，对它的熟悉程度就会增加，那么以后等它再次出现时，识别它的速度就会越来越快。最后，在给想法命名后，记得让注意力再次回到呼吸上来，继续巩固自己掌控注意方向的能力。", tips: null },
+  { text: "欢迎来到有效努力正念练习的第 5 天。\n\n今天我们要做的练习叫做呼吸空间。这个名字中「空间」的意象，来源于心理学家维克多・弗兰克尔的名言：\n\n「在刺激和反应之间，有一片空间。在那片空间里，我们有能力选择自己的反应。在选择反应中，我们获得成长与自由。」\n\n呼吸空间技术，就是用「觉察 — 专注 — 着陆」三个步骤，为压力下的应激反应按下暂停键，并通过有意识地调控注意力，创造出一个可以自由反应的理性空间。", tips: null },
+  { text: "欢迎来到有效努力正念练习的第 6 天。\n\n在过去这几天，你可能已经能在练习中做到与想法解套、着陆当下，或者让注意力按照自己的意愿稳定地集中在呼吸上。但在重压之下，或者生活异常忙碌时，却常常要么忘记使用这些技术，要么发现旧习惯的力量太强大。\n\n这并不代表你学得不好，或者正念不适合你。事实上，这些不顺和挫折，是所有人掌握新技术、提升新能力的必经过程。只要你坚持练习，这些技术就会逐渐变成新的习惯，在你的大脑中形成稳定的通路。", tips: null },
+  { text: "欢迎来到有效努力正念练习的第 7 天。\n\n今天的身体扫描练习，会引导你系统地关注身体的每个部位，帮你与自己的身体建立一种亲密、友好的连结。与身体连结，能让你更准确、更及时地觉察精力变化的线索；亲密、友好的态度，则提醒你觉察的目的，是为了更好地照顾自己。\n\n所以，这个练习的重点，首先是聆听真实的身体感觉，无论它是放松、僵硬或其它任何感觉。如果某个部位不舒服的感觉很明显，你也可以试着放松那个部位的肌肉，或调整一下身体姿势。", tips: null },
+  { text: "欢迎来到有效努力正念练习的第 8 天。\n\n今天你将学习如何通过用身体感受自然，进入存在模式。存在模式和行动模式最大的不同，就是存在模式需要放下目标，包括放下「我要进入存在模式」这个目标。\n\n所以，如果想要进入存在模式，我们需要为大脑把「放下目标」翻译成：拥抱练习过程中的各种身体感受。此外，如果头脑中出现了任何走神的想法，记得提醒自己带着自我友善的态度，通过解套技术，让注意力重新回到此刻的身体感受上来。", tips: "请尽量选择在开阔的户外进行练习。如果实在不方便，也可以在窗边练习。" },
+  { text: "欢迎来到有效努力正念练习的第 9 天。\n\n让生活变得更好有两种方式：以思考与努力为主的行动模式，和以觉察与感受为主的存在模式。存在模式，看似是一种「无为」的状态，但实际上它能让你通过与身体直接连接，获得身心状态变化的第一手信息。\n\n今天要练习的正念进食，可以让你更清晰、更细致地觉察进食过程中的体验，为你选择更适合自己的食物和恰到好处的进食分量，提供重要的信息。同时，当你专注感受食物的色、香、形、味时，也就自然地放下了思考，让大脑得到了休息。", tips: "练习正念进食之前，请准备好自己喜欢的小零食放在一边备用。" },
+  { text: "欢迎来到有效努力正念练习的第 10 天。\n\n今天你将要练习一种进入存在模式的新方法：正念行走。与前几天的身体扫描、感受自然、正念进食等相对静态的方式不同，正念行走锻炼的，是如何将注意力投入运动过程中的身体感觉，拓展存在模式的丰富度。\n\n在熟练掌握了这个能力后，你可以试着用同样的思路，尝试正念伸展、正念慢跑、正念遛狗、正念整理房间…… 让任何你想尝试的活动，变成补充精力、滋养身心的好方法。", tips: "请尽量选择在开阔的户外进行练习。如果实在不方便，也可以在室内练习。" },
+  { text: "欢迎来到有效努力正念练习的第 11 天。\n\n这几天，你已经体验了身体扫描、看风景、进食、行走等各种活动。每一次练习，都是在存在模式中的一次高效休息。\n\n对身体信号的觉察，是行为实验的基础。它可以帮助你设置休息线索，评估休息效果，调整休息计划。每一次练习，你都不需要因为「走神」而责怪自己。因为这也是锻炼注意力的好机会。这种看待走神的视角，就是在培养自己的「成长型思维」。", tips: null },
+  { text: "欢迎来到有效努力正念练习的第 12 天。\n\n现在你已经知道，正念练习可以提升注意调控能力。然而正念练习能为你带来的好处，不止于此。实际上，它还能全面提升大脑指挥中心的能力，为向着目标行动的各个环节，提供重要保障。\n\n今天将再次练习的正念呼吸，就是一个看似简单，实则全面的有效训练：敏锐发现偏离，做出更好选择，激活驱动系统，培养耐心与毅力。", tips: null },
+  { text: "欢迎来到有效努力正念练习的第 13 天。\n\n在日常工作和学习过程中，你是否会不知不觉地偏离行动的目标？这些时刻，就像在正念呼吸时，注意力被漫无目的的联想、充满诱惑的念头、各种自动冒出来的担忧带走了。\n\n坚持正念呼吸练习，能让你不断积累从各种各样的走神中，重回呼吸的能力。如果你在练习中，能从各种走神中，坚定地回到呼吸上来，那在生活中，你就可以用同样的能力，从各种偏离目标的事情中，坚定地回到正确的方向上来。", tips: null },
+  { text: "欢迎来到有效努力正念练习的第 14 天。\n\n一个好的计划，并不是一个「完美」的计划，而是恰恰相反，是一个允许模糊，允许意外，允许走神，允许做不完，允许偏离的计划。只有当你允许各种事情发生时，才可以见招拆招，有效应对，做出一个可以实现的计划。\n\n今天的身体扫描，将带着你更细腻地感受各个部位。你可能会遇到喜欢的、讨厌的、或者其它预料之外的各种体验。这个时候，记得允许它们出现，不去否认、消除或过度留恋它们。", tips: null },
+  { text: "欢迎来到有效努力正念练习的第 15 天。\n\n「持续做对的事情，直到把事做成。」这就是实现目标、取得成功的秘诀。\n\n书写练习，可以帮你明确自己做对的事情。正念练习，则可以培养你的耐心，让你持续地重复那些做对的事情。耐心就是：既能对行动的结果，抱有积极的期待；又能投入过程，肯定每一小步带来的变化。\n\n今天，你将在正念行走中，体验关注每一步的感受，同时在自己选择的方向上，不断向前。", tips: "请尽量选择在开阔的户外进行练习。如果实在不方便，也可以在室内练习。" },
+  { text: "欢迎来到有效努力正念练习的第 16 天。\n\n从今天开始，你将要学习一种新的正念技术：开放式觉察。它既不是要让你专注在某个目标上，也不是要让你坚定地执行某项计划。开放式觉察，锻炼的是打开注意空间，看到更多信息的能力。\n\n这项能力，让你即使面对压力时，依然能看到那些能支持你解决难题的丰富资源。这样你就可以不再做「事后诸葛亮」，而是在面对问题的当下，就可以打开思路、理性评估、灵活选择、突破卡点。", tips: "这个练习的目的，不是让你当下就找到更有价值的资源，而是作为一项日常练习，锻炼你在任何状态下，都可以打开注意空间的底层能力。" },
+  { text: "欢迎来到有效努力正念练习的第 17 天。\n\n今天，你将继续练习开放式觉察技术。不过与昨天相比，今天的练习更高阶。你需要让自己的注意力，像一个可以不断扩大的光圈，从聚焦呼吸，扩展到觉察全身，最后再扩展到与周围环境连接。\n\n保持开放的态度，可以让你更容易地做到这些：无选择地，拥抱任何发现，而不是忽略或回避，那些自己不喜欢的信息；带着好奇心，探索下一刻的体验，而不是遇到困难，就立即放弃尝试，停下积累新经验的脚步。", tips: null },
+  { text: "欢迎来到有效努力正念练习的第 18 天。\n\n学习的本质就是一次次「偏差 - 校准 - 平衡」的循环。复盘书写，能让你使用理性，挖掘和发挥「偏差」的价值。正念练习，则能让你直接体验，大脑本就有矫正偏差，不断学习的能力。\n\n今天你将会用正念的方法，玩一个小游戏，在真实体验中，提升对自己的信心。同时，这个游戏也是一个开放式觉察练习，让你能有意识地觉察到一件事情发展的完整过程，以及整个过程中，自己的成长和变化。", tips: null },
+  { text: "欢迎来到有效努力正念练习的第 19 天。\n\n今天是第三阶段的最后一天。在这个阶段，你练习了两种形式的正念：专注式正念和开放式正念。\n\n专注式正念：如正念呼吸和身体扫描，锻炼的是如何让注意力持续稳定地，聚焦目标的能力。开放式正念：如正念地看、开放觉察、正念游戏，锻炼的是拓展注意范围，看到更多信息，激发创造力的能力。\n\n今天你将要练习的呼吸空间，就是一个包括了这两种形式的综合正念技术。", tips: null },
+  { text: "欢迎来到有效努力正念练习的第 20 天。恭喜你！到今天为止，你已经完成了这个计划中，所有正念技术的学习和训练了！\n\n经过 19 天的练习，现在你已经知道，正念的本质，就是对注意调控能力的训练。在训练计划的尾声，你将通过两个版本的呼吸空间练习，巩固自己的注意调控的能力。\n\n今天你要练习的，是呼吸空间（解套与着陆）。通过「觉察 — 专注 — 着陆」三个步骤，让你的注意力，从想法和情绪中解放出来，通过专注呼吸和身体五感，与当下建立稳定的连接。", tips: null },
+  { text: "欢迎来到有效努力的正念彩蛋练习。\n\n今天，你将要复习呼吸空间（解套与扩展），通过「觉察 — 专注 — 扩展」三个步骤，同时提升注意的稳定性与开放性。\n\n除了锻炼注意调控能力，你在正念练习中培养的，自我友善、耐心、开放等态度，也弥足珍贵。它们能帮你保持「成长型思维」。自我友善意味着你知道，觉察和复盘，是为了更好地照顾自己。耐心意味着你既能对行动的结果，抱有积极的期待，又能投入过程。开放意味着你愿意无选择地，拥抱任何发现。", tips: null },
+  { text: "欢迎来到有效努力的正念彩蛋练习。\n\n被誉为「现代心理学之父」的威廉・詹姆斯曾说：能将溃散的注意力，一次又一次收回来的能力，是形成判断力、品格和意志的根本基础。如果一个人没有这种能力，它就不是自己的主人。\n\n在正念呼吸中，每一次觉察到走神，并把注意力重新带回到呼吸上来，都是一次对注意力的有效提升。当觉察到自己陷入情绪，或者被想法绊住时，试着把注意力重新带回当下，让自己重获注意的掌控权，在正确的方向上行动。", tips: null },
+  { text: "欢迎来到有效努力的正念彩蛋练习。\n\n今天你要练习的是用身体感受自然。关注身体感受，可以让大脑进入「存在模式」，停下思考，获得休息和放松。而当人们置身于大自然，专注于当下的目之所见、耳之所闻、身之所感时，还能带来愉快的体验，促进创造性思维出现。\n\n你既可以将今天的练习，直接加入自己的休息清单中，也可以根据这个练习的设计思路，创造一个属于自己的高效休息活动。此外，在投入休息活动的过程中，记得带上「自我友善」的态度。", tips: "请尽量选择在开阔的户外进行练习。如果实在不方便，也可以在窗边练习。" },
+  { text: "欢迎来到有效努力的正念彩蛋练习～\n\n接下来这三天的练习，可以配合当天的书写一起使用，帮你在应当对挑战时，停下内耗、投入行动、补充精力、持续进步。\n\n面对压力事件时，出现紧张、害怕、头脑空白等「应激反应」很正常。这时我们要做的，不是去消除这些「应激反应」，而是通过解套、着陆等技术，让注意回到当下，然后选择更有效的「第二反应」「第三反应」……", tips: null },
+  { text: "欢迎来到有效努力正念练习的最后一天。\n\n今天，你将要复习呼吸空间（解套与扩展），通过「觉察 — 专注 — 扩展」三个步骤，同时提升注意的稳定性与开放性。\n\n作为一个综合实战训练，这个计划带你体验了完整的正念体系，帮你了解了正念练习，可以培养哪些能力和态度，以及它们在有效行动中，可以发挥怎样的作用。感谢你坚持完成了这 25 天的旅程。如果你想更深入地锻炼这些能力和态度，欢迎参加我们的正念能力专项训练计划。", tips: null },
+];
+
+// Reading & Writing content per day (index 0–20 = days 1–21, rest null)
+const READ_WRITE = [
+  // Day 1
+  {
+    readTitle: "第01天上｜阅读：努力的底层科学",
+    author: "郭婷婷",
+    overview: ["认可努力的价值", "努力总比不努力更难", "有效努力，从大脑行为规律入手", "核心理论：神经可塑性", "三大基础工具：正念、书写、行为实验", "高效练习方法"],
+    readContent: `<h4>1 认可努力的价值</h4><p>心理学定义<strong>努力</strong>：主动、有意识、有目的的投入行为，和无意识自动化行为对立。相信付出与结果相关的人，身心更健康、幸福感、成就上限更高，改变自我的前提就是认同努力。</p><h4>2 努力天然有四大卡点（违背动物本能）</h4><ol><li>克服内心恐惧难：怕失败、在意他人评价，内心负面声音阻碍行动</li><li>长期稳定投入难：持续耗能，极易中途倦怠躺平</li><li>守住目标不偏移难：突发干扰、信息杂乱容易遗忘初心</li><li>受挫重启难：一次失败就判定事情无解，直接停止尝试</li></ol><h4>3 有效努力三大模块规划</h4><p>整套训练共20天，分三大阶段：①模块1（第2-6天）：高压稳定心态，减少内耗、聚焦目标；②模块2（第7-11天）：精力管理，学会有效休息，长期可持续；③模块3（第12-19天）：拆解目标、落地行动、解决复杂难题。</p><h4>4 神经可塑性（头脑健身核心）</h4><p>大脑终身可重塑：重复有效行动 → 正向神经通路固化，形成好习惯；重复逃避/内耗 → 负面通路强化，遇事习惯性退缩。头脑健身=通过正念、书写强化有效经验，弱化无效反应。</p><h4>5 三大基础工具</h4><h5>① 正念</h5><p>定义：有意、非评判地觉察当下。作用：提升注意力稳定度与灵活度，降低应激，改善情绪、工作、人际、幸福感。</p><h5>② 书写</h5><p>两类书写：1. 回顾式书写：复盘过往，提取成功经验；2. 前瞻式书写：提前规划行动，降低临场思考消耗。作用：外化杂乱思绪，减少反复内耗，留存应对预案。</p><h5>③ 行为实验</h5><p>理论落地实操工具，第二模块详细训练。</p><h4>6 如何高效练习</h4><ol><li>浅读深练：粗略浏览阅读，实操卡住再回看；费曼学习法（转述、讲解他人）记忆效率最高</li><li>社群讨论，主动提问深化收获</li><li>练习不适属正常：如同健身肌肉酸痛，大脑重塑必经过程</li><li>重复为王：单次练习改变微弱，多次巩固形成稳定反应</li><li>无需根除旧习惯，只需新增一套有效应对方案</li><li>能力提升后，自然迎接更高难度目标</li></ol>`,
+    writeTitle: "第01天下｜书写：可控性分析",
+    writeGuide: "<strong>控制点理论（朱利安·罗特）</strong>：内控型——相信自身行动可改变结果，主动寻找解法；外控型——归因运气、他人、环境，被动等待。任何事件同时存在可控/不可控因素（打分1~10）。练习目标：接纳不可控部分减少内耗，聚焦可控部分最大化努力收益。",
+    writeFields: [
+      { label: "1. 近期我正在推进的重要事情（选一件分析）", placeholder: "① \n② \n\n选择哪件：" },
+      { label: "2. 这件事我想要达成的最终结果", placeholder: "写下你希望看到的具体结果..." },
+      { label: "3. 列出所有影响这件事的因素，分别打分（1~10）", placeholder: "因素①：  分数：\n因素②：  分数：\n因素③：  分数：" },
+      { label: "4. 在高可控事项里，我已经做出的有效行动", placeholder: "" },
+      { label: "5. 后续我可以继续尝试的可控行动", placeholder: "" },
+    ]
+  },
+  // Day 2
+  {
+    readTitle: "第02天上｜阅读：重新理解压力",
+    author: "罗浩贤",
+    overview: ["压力=重要+成长的信号", "压力下人体生理、大脑变化", "应激反应进化意义：提速变强", "压力下常见无效努力", "压力完整链路与二次调整"],
+    readContent: `<h4>1 压力本质（应激stress）</h4><p>外界变化带来身心不适；变动越多、掌控感越低，压力越大。分层模型：舒适区（可控无压力）→ 压力区（本能退缩）→ 学习成长区（穿越压力习得新能力）。</p><h4>2 压力应激生理&大脑变化</h4><p><strong>身体</strong>：心跳加速、呼吸急促、出汗、肌肉紧绷、肾上腺素/皮质醇飙升。<strong>大脑</strong>：注意力收窄，只捕捉危险信号，复杂逻辑思考能力下降，依赖直觉判断。</p><h4>3 应激反应利弊</h4><p>优势：短期爆发力、反应速度提升（战斗/逃跑本能）。代价：高能耗，事后需要长时间恢复；注意力狭窄，忽略关键信息，判断失真。</p><h4>4 压力下最常见无效努力</h4><p>强行压制心慌、紧张等应激感受。弊端：①注意力从做事转移到对抗情绪，偏离目标；②压制失败加重自我否定，压力持续放大。核心认知：紧张和兴奋生理反应完全一致；区别只在于你的解读。</p><h4>5 完整压力链路</h4><p>事件 → 注意 → 评估 → 本能第一反应 → <strong>二次调整空间</strong>：二次注意+二次评估，生成更理性第二反应。比喻《象与骑象人》：大象=本能应激；骑象人=理性觉察思考；二者是协作而非对抗关系。</p>`,
+    writeTitle: "第02天下｜书写：压力反应表",
+    writeGuide: "人无法消除第一本能应激，但可自主选择第二行动逻辑。书写复盘=回看事件录像，区分「消除情绪的无效行为」&「推进目标的有效行为」。选择中等强度压力事件，避免回忆带来强烈情绪冲击。",
+    writeFields: [
+      { label: "1. 客观描述近期一件高压事件（不带主观评价）", placeholder: "只描述发生了什么，不加评判..." },
+      { label: "2. 当时我的身体感受、情绪、脑海想法（全部应激反应）", placeholder: "身体感受：\n情绪：\n脑海想法：" },
+      { label: "3. 应激下我做出的所有行动", placeholder: "" },
+      { label: "4. 这件事我的核心目标", placeholder: "" },
+      { label: "5. 行动里，只为缓解情绪、无助于目标的行为", placeholder: "" },
+      { label: "6. 行动里，真正解决问题、推进目标的行为", placeholder: "" },
+    ]
+  },
+  // Day 3
+  {
+    readTitle: "第03天上｜阅读：掌控注意力",
+    author: "郭婷婷",
+    overview: ["耶克斯-多德森定律（压力-表现倒U曲线）", "两大快速降低应激的方法", "大脑最高指挥部：控制中心", "注意力定义与三大规律", "两类正念注意力训练", "高压急救：54321着陆技术", "着陆≠逃避"],
+    readContent: `<h4>1 耶克斯-多德森倒U曲线</h4><p>低压：动力不足；中等压力：警觉、专注、最优表现区间；高压过载：认知崩盘，表现断崖下滑。皮质醇适度提升巩固记忆，长期高皮质醇损伤思考能力。</p><h4>2 降低应激两种有效方式</h4><ol><li>缓慢深呼吸：拮抗交感神经，快速平复身体紧张</li><li>拓宽注意力、修正片面负面评估</li></ol><h4>3 注意力定义&三大规律</h4><p>威廉·詹姆斯：注意力是意识的选择性筛选器。三大规律：①走神是常态（日均47%时间思绪脱离当下）；②压力自动收窄焦距；③白熊效应（大脑无法执行「不要XX」指令，越压制越关注）。</p><h4>4 正念双注意力训练</h4><p>①专注式正念：稳定聚焦单一目标；②开放式正念：拓宽视野，收集多元信息。长期正念强化前额叶、前扣带回，同步优化情绪、觉察能力。</p><h4>5 54321着陆技术（高压急救）</h4><p>原理：五感锚定现实，脱离情绪风暴，降低负面注意力。操作：①看见5样身边物品；②触摸4种触觉感受；③听见3种环境声音；④闻到2种气味；⑤品尝1种口腔味道。搭配深呼吸、短距离活动，数十秒起效。</p><h4>6 着陆vs逃避</h4><p>逃避式转移：刷手机娱乐，只为消灭情绪，长期强化恐惧回避。着陆技术：短暂定神，不脱离当前问题，平复后立刻回归任务，提升注意力掌控力。</p>`,
+    writeTitle: "第03天下｜书写：压力行动锦囊",
+    writeGuide: "核心工具：<strong>如果…那么…执行意图（前瞻计划法）</strong>。如果=触发场景/身体反应/时间信号；那么=可直接落地简易行动。优势：高压下大脑思考力下降，提前预设预案，无需临场决策，反复使用自动化。",
+    writeFields: [
+      { label: "1. 未来容易给我带来压力的场景", placeholder: "描述具体场景..." },
+      { label: "2. 根据过往经验，我本能第一反应", placeholder: "" },
+      { label: "3. 这件事核心目标", placeholder: "" },
+      { label: "4. 更高效的替代行动方向", placeholder: "" },
+    ],
+    writeSubs: [
+      { title: "① 情绪着陆锦囊", fields: [{ label: "如果", placeholder: "出现了…（情绪/身体信号）" }, { label: "那么", placeholder: "我就做…（着陆动作）" }] },
+      { title: "② 推进目标行动锦囊1", fields: [{ label: "如果", placeholder: "" }, { label: "那么", placeholder: "" }] },
+      { title: "③ 推进目标行动锦囊2", fields: [{ label: "如果", placeholder: "" }, { label: "那么", placeholder: "" }] },
+    ]
+  },
+  // Day 4
+  {
+    readTitle: "第04天上｜阅读：跳出想法内耗陷阱",
+    author: "罗浩贤",
+    overview: ["什么是想法", "制造内耗：大脑默认网络", "内耗的两种核心形式", "解套技术：脱离思维绑架", "解套三大使用注意事项"],
+    readContent: `<h4>1 什么是想法</h4><p>大脑持续生成文字、画面、内心独白，日均数万条；极易混淆「主观想法」和「客观事实」，陷入空想无法行动。</p><h4>2 默认网络（胡思乱想专属脑区）</h4><p>空闲时高度活跃，专注做事时被抑制；四大思考内容：自我评价、他人看法、过往回忆、未来空想。所有想法均基于旧经验，只有行动才能获取新客观证据，修正片面判断。</p><h4>3 两类内耗负面想法</h4><p><strong>① 灾难化预测</strong>：预判最坏结局，衍生过度准备（消耗精力规避想象风险）或直接回避（认定必然失败放弃尝试）。</p><p><strong>② 自我否定反刍</strong>：反复自责贬低自己。反刍=只纠结「我很差」，无解决方案；有效反思=聚焦问题、思考改进路径，导向行动。</p><h4>4 想法解套技术（ACT接纳承诺疗法）</h4><p>句式：<strong>「我注意到，我此刻有一个XXX的想法」</strong>。操作：给负面想法命名（灾难预测/自我批判等），切换旁观者视角，拉开思维距离，抑制默认网络，激活理性皮层。</p><h4>5 解套三大注意事项</h4><ol><li>不解套≠消除想法：无需等杂念消失，带着想法做事即可</li><li>不代表想法是错：想法只是过往经验推导，真假需要行动验证</li><li>需要反复练习：负面思绪会反复出现，每次命名都是一次训练</li></ol>`,
+    writeTitle: "第04天下｜书写：想法解套",
+    writeGuide: "解套三步：觉察被想法困住 → 命名客观区分想法与现实 → 回归目标行动。事后书写更容易梳理思绪，熟练后可现场实时使用；无需记录全部杂念，核心是建立旁观者视角。",
+    writeFields: [
+      { label: "1. 近期高压事件（客观描述）", placeholder: "" },
+      { label: "2. 当时脑海出现所有内心画面/声音", placeholder: "" },
+      { label: "3. 被这些想法支配后，我的行为", placeholder: "" },
+      { label: "4. 这件事我的核心目标", placeholder: "" },
+      { label: "5. 有助于推进目标的想法", placeholder: "" },
+      { label: "6. 只会带来内耗、无帮助的想法", placeholder: "" },
+    ]
+  },
+  // Day 5
+  {
+    readTitle: "第05天上｜阅读：长期压力应对",
+    author: "郭婷婷",
+    overview: ["压力是生活常态", "如何长期提升抗压能力", "象与骑象拓展：三大情绪系统", "改变惯性需要长期重复", "焦虑、抑郁求助专业指南"],
+    readContent: `<h4>1 压力无法彻底消除</h4><p>两大压力来源：①外部客观变化（四季、人事、事物损耗，不可规避）；②自我成长突破舒适区必然伴随不适。逃避只会堆积问题，直面才是唯一解法。</p><h4>2 提升抗压逻辑</h4><p>原理同健身超量恢复：可控压力练习扩大个人最优表现区间。选材标准：唤起轻微应激，但仍保有思考能力；新手优先低强度事件模拟。</p><h4>3 三大情绪本能系统（大象）</h4><p><strong>威胁系统</strong>（杏仁核、皮质醇/肾上腺素）：焦虑、恐惧、愤怒；识别危险、触发逃避/对抗；高压最先激活。</p><p><strong>驱动系统</strong>（伏隔核、多巴胺）：渴望、专注、成就感；驱动持续行动；切换视角为迎接挑战即可激活。</p><p><strong>安抚系统</strong>（前额叶、催产素）：安心、满足、被支持；负责身心修复、人际联结；缓解压力依靠社交、充足休息。</p><h4>4 惯性改变原理</h4><p>旧思维、行为通路经过无数次重复，神经牢固；新习惯初期极不稳定，需要持续刻意练习强化正向通路，改写压力反应模式。</p>`,
+    writeTitle: "第05天下｜书写：压力综合复盘日记",
+    writeGuide: "两大板块：<strong>回顾式书写</strong>（复盘事件链路，提取有效经验）+ <strong>前瞻式书写</strong>（设计行动锦囊）。情绪强烈先做54321着陆降温，再开始书写。",
+    writeFields: [
+      { label: "1. 近期带来压力的事件", placeholder: "" },
+      { label: "2. 事件中产生的全部想法", placeholder: "" },
+      { label: "3. 受想法驱动做出的行动", placeholder: "" },
+      { label: "4. 我在这件事里想要达成的目标", placeholder: "" },
+      { label: "5. 无帮助负面想法，统一命名", placeholder: "例：「灾难化预测」、「自我否定」" },
+      { label: "6. 有效行动，我当时是如何做到的（留存经验）", placeholder: "" },
+    ],
+    writeSubs: [
+      { title: "① 情绪着陆锦囊", fields: [{ label: "如果", placeholder: "" }, { label: "那么", placeholder: "" }] },
+      { title: "② 目标推进锦囊", fields: [{ label: "如果", placeholder: "" }, { label: "那么", placeholder: "" }] },
+    ]
+  },
+  // Day 6
+  {
+    readTitle: "第06天上｜阅读：第一模块完整复习总结",
+    author: "郭婷婷",
+    overview: ["模块成就庆祝", "有效努力百科词典（第一模块）", "第一模块五大核心实操技术"],
+    readContent: `<h4>五大核心实操技术</h4><ol><li><strong>着陆（54321）</strong>：五感锚定现实，紧急高压降温，不逃避问题</li><li><strong>想法解套</strong>：命名杂念，脱离思维绑架，回到现实行动</li><li><strong>呼吸空间</strong>：觉察情绪-专注呼吸-拓宽环境，创造理性反应空间</li><li><strong>事件复盘</strong>：事后拆解压力完整链路，区分有效/无效行为</li><li><strong>行动锦囊（如果那么）</strong>：提前预设预案，高压无需临场思考</li></ol><h4>百科词典精选</h4><p>神经可塑性、正念、书写、压力/应激、耶克斯-多德森定律、注意力白熊效应、默认网络 vs 注意控制网络、威胁/驱动/安抚三大系统。</p><h4>场景应用题（6道）</h4><ol><li>上台汇报紧张焦虑 → 先54321着陆，再梳理PPT（非强行压制）✓</li><li>全新工作任务，内心灾难化 → 解套想法，向前辈咨询信息 ✓</li><li>正念/着陆技术临场想不起 → 低难度刻意高频练习，接纳新手不熟练 ✓</li><li>考试被难题卡住心慌 → 54321着陆，调整答题顺序 ✓</li><li>缓解焦虑后依旧不想开工 → 带着情绪直接做事（非等完全有动力）✓</li><li>转岗遇难题，自我怀疑 → 解套「自我怀疑」，书写梳理解法 ✓</li></ol>`,
+    writeTitle: "第06天下｜书写：知识应用题+模块复盘",
+    writeGuide: "梳理第一模块学到的知识、实操改变；区分印象深刻技能与自身新行为，结合生活落地练习。",
+    writeFields: [
+      { label: "1. 不查阅资料，第一模块印象最深的知识/技能", placeholder: "①\n②" },
+      { label: "2. 练习期间我做出的和过去不同的新行动", placeholder: "" },
+      { label: "3. 学到的知识技能（0~10分）+ 意义", placeholder: "分数：\n意义：" },
+      { label: "4. 我的新尝试行动（0~10分）+ 意义", placeholder: "分数：\n意义：" },
+    ]
+  },
+  // Day 7
+  {
+    readTitle: "第07天上｜阅读：我们为什么要休息",
+    author: "王偲偲",
+    overview: ["专注极度耗能", "人类自然生产力节律", "休息激活创造力", "大脑本能抗拒主动休息", "耗竭漏斗与身心耗竭损伤", "核心工具：行为实验"],
+    readContent: `<h4>1 专注极度耗能</h4><p>大脑仅1kg，消耗全身20%-25%热量；持续专注时交感神经全程激活，肌肉紧绷、皮质醇持续分泌。疲劳信号：注意力涣散、冷漠无力、身体沉重酸痛。</p><h4>2 生产力节律</h4><p>人持续高效专注上限25~90分钟，结束必须休息5~20分钟恢复。主流方案：番茄25min+5min；51min+9min；90min深度专注（适合高难度脑力）。</p><h4>3 休息提升创造力</h4><p>长期专注容易思维僵局；户外散步20分钟创意产出提升60%；室内走动同样有效。</p><h4>4 耗竭漏斗（玛丽·埃斯伯格）</h4><p>压力期逐步舍弃娱乐、社交、运动，最后只剩工作，最终身心崩溃。阶段：工作+生活+休息+爱好 → 只剩工作 → 失眠、疾病、情绪崩溃。</p><h4>5 行为实验（第二模块核心工具）</h4><p>流程：提出假设 → 设计方案 → 执行收集反馈 → 调整优化 → 重复验证。核心逻辑：无失败，所有反馈都是经验；用个性化实验找到专属休息、精力方案。</p>`,
+    writeTitle: "第07天下｜书写：休息行为实验",
+    writeGuide: "休息必须提前规划，不能等彻底透支；实验小幅调整生活，无需巨大改变，任何反馈都有价值。",
+    writeFields: [
+      { label: "1. 昨日精力打分（0~100）及依据", placeholder: "分数：\n依据（身体、情绪、效率）：" },
+      { label: "2. 昨日消耗精力最多的事", placeholder: "" },
+      { label: "3. 做事中途进行的休息", placeholder: "休息1：\n休息2：\n触发线索（身体/时间/情绪）：" },
+      { label: "4. 工作结束后的休息", placeholder: "休息1：\n休息2：" },
+    ],
+    writeSubs: [
+      { title: "做事中途休息预案", fields: [{ label: "如果", placeholder: "" }, { label: "那么", placeholder: "" }] },
+      { title: "工作结束休息预案", fields: [{ label: "如果", placeholder: "" }, { label: "那么", placeholder: "" }] },
+    ]
+  },
+  // Day 8
+  {
+    readTitle: "第08天上｜阅读：有效休息科学指南",
+    author: "王偲偲",
+    overview: ["交感&副交感神经运转逻辑", "三类有效休息方法", "行动模式vs存在模式（正念核心）", "自我友善安抚心态"],
+    readContent: `<h4>1 两大自主神经</h4><p><strong>交感（战斗）</strong>：工作专注激活，心跳快、血压高、皮质醇高、高耗能。<strong>副交感（修复）</strong>：休息激活，心跳放缓、肌肉放松、皮质醇下降，身体储能。双向调节：调整呼吸、肌肉可主动切换副交感。</p><h4>2 三大有效休息策略</h4><ol><li>调控呼吸肌肉：缓慢呼气、渐进式肌肉放松（先紧后松）</li><li>暂时离开压力源：物理+思维双重抽离，不反复复盘工作</li><li>高价值滋养活动：高愉悦、低唤醒，不亢奋。优质滋养清单：远眺、慢拉伸、正念、轻音乐、户外散步、抚摸小动物。户外20分钟显著降低皮质醇。</li></ol><h4>3 行动模式 vs 存在模式</h4><p><strong>行动模式（doing）</strong>：紧盯现状与目标差距，持续思考规划（工作必备，但无法休息）。<strong>存在模式（being）</strong>：放下目标，只感知当下感官，无评判，真正休息。误区：努力放松反而持续激活交感，越歇越累。</p><h4>4 自我友善</h4><p>休息时容易出现自我批评「我太懒」；使用解套技术区分想法，温柔对待自己，激活安抚系统、催产素。</p>`,
+    writeTitle: "第08天下｜书写：定制三步放松操",
+    writeGuide: "放松动作清单（12种）：深呼吸、梳头皮、刮眼眶、揉太阳穴、绕肩、手放胸口、自我拥抱、蝴蝶拍、手指活动、脚趾活动、伸懒腰、自选动作。自选3个组合专属放松操；练习放下目标，只感受身体，不评判自己。",
+    writeFields: [
+      { label: "1. 我的专属三步放松操", placeholder: "1)\n2)\n3)" },
+      { label: "2. 昨日尝试的休息方式", placeholder: "① 工作中休息：活动+体验\n② 下班后休息：活动+体验" },
+      { label: "3. 休息实验收获", placeholder: "① 更容易启动休息的技巧：\n② 不同休息带来的身心感受：" },
+    ],
+    writeSubs: [
+      { title: "明日休息行动计划", fields: [
+        { label: "① 工作中途 — 如果", placeholder: "" },
+        { label: "那么（做放松操）", placeholder: "" },
+        { label: "② 工作结束 — 如果", placeholder: "" },
+        { label: "那么", placeholder: "" },
+      ]}
+    ]
+  },
+  // Day 9
+  {
+    readTitle: "第09天上｜阅读：睡眠、运动、饮食——精力扩容",
+    author: "郭婷婷",
+    overview: ["睡眠：大脑深度清洗修复", "运动：提升大脑功能、强健身心", "饮食：稳定血糖维持脑力", "长期精力扩容思路"],
+    readContent: `<h4>1 睡眠核心作用</h4><p>脑脊液夜间清除大脑毒素（淀粉样蛋白）；睡眠完成记忆巩固、肌肉修复、免疫提升、情绪调控。睡眠质量标准：<strong>日间精力状态</strong>，而非入睡时长、时间点。改善睡眠核心：晨起晒太阳激活生物钟；失眠不要强迫入睡，起身做低唤醒滋养活动。</p><h4>2 运动价值</h4><p>运动提升BDNF神经营养因子，扩充大脑血管，改善情绪、抗压、记忆力。世卫最低标准：每周150分钟中等强度/75分钟高强度，每周2次力量训练。不爱运动技巧：绑定爱好（户外、结伴、舞蹈等），微运动起步。</p><h4>3 饮食逻辑</h4><p>大脑消耗20%葡萄糖，低血糖注意力崩盘、情绪暴躁。进食标准：中等饥饿及时补充，避免极度饥饿；七八分饱停止，减少精制碳水，防止餐后犯困；正念进食感知饥饱。</p><h4>4 精力扩容思路</h4><p>休息是临时快充；睡眠/运动/饮食永久扩容电池容量；微小改变长期见效，用行为实验摸索适合自己的方案。</p>`,
+    writeTitle: "第09天下｜书写：精力扩容行为实验",
+    writeGuide: "在睡眠/运动/饮食三选一设计微小长期实验。微运动清单：快速整理、广播体操、转腰、爬楼梯、高抬腿、蹲起、踝泵、原地拳击等。",
+    writeFields: [
+      { label: "1. 尝试的微运动+身体体验", placeholder: "" },
+      { label: "2. 昨日休息实验记录", placeholder: "① 工作休息：活动+感受\n② 事后休息：活动+感受" },
+      { label: "3. 休息实验收获", placeholder: "① 更容易启动休息的方法：\n② 不同休息带来的身体感受：" },
+    ],
+    writeSubs: [
+      { title: "明日休息计划", fields: [
+        { label: "① 工作中 — 如果", placeholder: "" }, { label: "那么", placeholder: "" },
+        { label: "② 结束后 — 如果", placeholder: "" }, { label: "那么", placeholder: "" },
+      ]},
+      { title: "精力扩容实验（睡眠/运动/饮食三选一）", fields: [
+        { label: "活动1 — 如果", placeholder: "" }, { label: "那么", placeholder: "" },
+        { label: "活动2 — 如果", placeholder: "" }, { label: "那么", placeholder: "" },
+      ]},
+    ]
+  },
+  // Day 10
+  {
+    readTitle: "第10天上｜阅读：长期习惯养成攻略",
+    author: "郭婷婷",
+    overview: ["行动底层：动力VS阻力", "降低阻力两大方法", "提升动力四大方法", "福格行为模型 B=动机×能力×提示"],
+    readContent: `<h4>1 动力&阻力</h4><p>驱动系统（渴望、成就）推动行动；威胁系统（恐惧、疲惫）制造阻力。行动发生条件：动力＞阻力。</p><h4>2 降低阻力</h4><p>①卸下想法包袱：固定型思维（怕失败、回避挑战），用解套技术剥离负面自我评价，切换成长型思维（失败=获取经验）。②简化行动：步骤少、熟悉、指令清晰。</p><h4>3 提升动力四大策略</h4><ol><li>完成即时庆祝：正向联结行为与愉悦，打造习惯高速路</li><li>品味积极体验：主动记录、回味美好，抵消大脑负性记忆偏差</li><li>满足三大心理需求（自我决定理论）：自主感、胜任感、联结感</li><li>助推提示：环境、闹钟、便签等外部提醒</li></ol><h4>4 福格行为模型</h4><p>行为发生=<strong>动机充足 + 行动简单（能力高） + 明确提示（助推）</strong>。三者同时满足行动才容易落地；动机最难稳定，优先简化行动、增加提示。</p>`,
+    writeTitle: "第10天下｜书写：一周精力提升计划",
+    writeGuide: "基于数日休息、扩容实验，制定周计划；利用福格模型设计高可执行行动。",
+    writeFields: [
+      { label: "1. 本周整体精力打分（0~100）", placeholder: "" },
+      { label: "2. 休息实验收获", placeholder: "① 更容易启动休息的技巧：\n② 休息带来的身心改变：" },
+      { label: "3. 个人精力清单", placeholder: "① 休息放松清单（快速回血）：活动1 / 活动2\n② 精力扩容清单（睡眠/运动/饮食）：活动1 / 活动2" },
+      { label: "4. 自我提醒（照顾精力重点）", placeholder: "" },
+    ],
+    writeSubs: [
+      { title: "一周精力计划 — 工作日", fields: [
+        { label: "活动1 — 如果", placeholder: "" }, { label: "那么", placeholder: "" },
+        { label: "活动2 — 如果", placeholder: "" }, { label: "那么", placeholder: "" },
+      ]},
+      { title: "一周精力计划 — 休息日", fields: [
+        { label: "活动1 — 如果", placeholder: "" }, { label: "那么", placeholder: "" },
+      ]},
+    ]
+  },
+  // Day 11
+  {
+    readTitle: "第11天上｜阅读：第二模块完整复习总结",
+    author: "郭婷婷",
+    overview: ["模块成就庆祝", "精力模块百科词典", "第二模块实操技术清单"],
+    readContent: `<h4>第二模块实操技术</h4><ol><li>行为实验：假设-执行-反馈-迭代，个性化探索休息/运动/饮食方案</li><li>渐进式肌肉放松：交替紧绷放松，激活副交感</li><li>滋养清单：个人专属低唤醒放松活动库</li><li>精力扩容清单：睡眠/运动/饮食长期改良方案</li><li>正念系列：身体扫描、正念看风景、正念进食、正念行走（训练存在模式）</li></ol><h4>6道场景应用题</h4><ol><li>职场新人下午精力崩盘 → 工作间隙主动休息（非大量喝咖啡）✓</li><li>长期压缩休息，持续疲惫 → 陷入耗竭漏斗（非心理素质差）✓</li><li>香薰音乐放松但越紧绷 → 放下放松目标，专注感官感受 ✓</li><li>休息后自我攻击「我太懒」→ 解套+自我友善 ✓</li><li>休息效果时好时坏 → 行为实验摸索自己的方式 ✓</li><li>不爱运动，想养成习惯 → 福格模型降低难度、增加提示 ✓</li></ol>`,
+    writeTitle: "第11天下｜书写：场景应用题+模块复盘",
+    writeGuide: "",
+    writeFields: [
+      { label: "1. 第二模块印象最深的知识、实操技能", placeholder: "" },
+      { label: "2. 练习期间全新生活行动", placeholder: "" },
+      { label: "3. 学到知识技能（分数+意义）", placeholder: "分数：\n意义：" },
+      { label: "4. 我的新尝试行动（分数+意义）", placeholder: "分数：\n意义：" },
+    ]
+  },
+  // Day 12
+  {
+    readTitle: "第12天上｜阅读：如何做出好选择",
+    author: "郭婷婷",
+    overview: ["两套思考系统：大象（直觉）&骑象人（理性）", "成本收益损益分析", "杏仁核劫持：情绪干扰决策", "保守选择内卷陷阱", "价值观：选择指南针", "提升正向选择吸引力三方法"],
+    readContent: `<h4>1 双思考系统</h4><p>系统一（大象/95%场景）：直觉、快速、省力，缺点易偏见。系统二（骑象/5%重要选择）：理性推演、成本收益分析，高耗能，适合重大抉择。<strong>损失厌恶</strong>：大脑对损失敏感度远高于收益，天然保守。</p><h4>2 情绪劫持</h4><p>威胁系统激活（杏仁核），压制前额叶理性；过度担忧、回避风险。</p><h4>3 保守选择内卷</h4><p>所有人扎堆低成本高收益赛道，竞争加剧、成功率降低。难而正确：短期有投入、长期竞争少、成长空间大。</p><h4>4 价值观</h4><p>价值观=你心中认为重要、值得的事（人生指南针）。普世价值：友善、公平、成长、求真；个人价值：舒适、财富、人际、独立等。价值观来源于过往美好体验，反复觉察可明晰人生方向。</p><h4>5 强化正向选择动力</h4><ol><li>主动认领选择：明白所有选择自己做主，拥有自主感</li><li>具象愿景：清晰目标实现后的生活画面，降低模糊恐惧感</li><li>小步试探：不用一次性终极决定，微小行动收集反馈</li></ol><p>选择三原则：小事随心（大象直觉）；中事算损益（成本收益）；大事看价值观。</p>`,
+    writeTitle: "第12天下｜书写：成本-收益分析",
+    writeGuide: "适用三类纠结：做/不做、继续/放弃、二选一。中小选择练习最佳，重大选择可分步收集信息。",
+    writeFields: [
+      { label: "1. 近期纠结的选择事件", placeholder: "" },
+      { label: "2. 可选方案A", placeholder: "" },
+      { label: "3. 可选方案B", placeholder: "" },
+    ],
+    writeSubs: [
+      { title: "方案A 分析", fields: [
+        { label: "收益（收获/生活向好变化）", placeholder: "" },
+        { label: "成本（时间/精力/情绪损失）", placeholder: "" },
+        { label: "该选择代表我看重什么价值", placeholder: "" },
+        { label: "总分（收益-成本，每条1~10分加权）", placeholder: "" },
+      ]},
+      { title: "方案B 分析", fields: [
+        { label: "收益", placeholder: "" },
+        { label: "成本", placeholder: "" },
+        { label: "该选择代表我看重什么价值", placeholder: "" },
+        { label: "总分", placeholder: "" },
+      ]},
+    ]
+  },
+  // Day 13
+  {
+    readTitle: "第13天上｜阅读：如何设定优质目标",
+    author: "郭婷婷",
+    overview: ["目标生成：复盘过往+定义why/what", "目标优化三大维度（胜任/自主/联结）"],
+    readContent: `<h4>1 目标生成</h4><p>人生如同探险迷宫，目标是沿途路标。目标两大核心：<strong>why</strong>（目标价值、关联个人价值观）+ <strong>what</strong>（目标达成清晰可识别的迹象）。两类目标：常规目标（固定流程、清晰路径）；创造型目标（无标准答案、大量试错）。</p><h4>2 目标优化三要素（自我决定理论）</h4><p><strong>胜任感</strong>：设置保守/进取双版本目标。保守：状态差最低底线；进取：状态拉满最优上限。二者中间为舒适进步区间，避免目标过高畏难、过低无成长。</p><p><strong>自主感</strong>：内化目标，把他人要求转化为自我认同，拥有选择权，创造力更强。</p><p><strong>联结感</strong>：寻找盟友、看见目标受益人；把竞争者转为同伴，共享资源互相支撑。</p>`,
+    writeTitle: "第13天下｜书写：目标优化与拆解",
+    writeGuide: "梳理长线目标，拆解单日保守/进取小目标；若暂无目标，依托价值观创造新方向。",
+    writeFields: [
+      { label: "1. 现阶段核心长线目标", placeholder: "" },
+      { label: "2. 目标背后的价值意义（我想成为什么样的人）", placeholder: "" },
+      { label: "3. 目标达成的清晰判断迹象", placeholder: "" },
+      { label: "4. 目标完成进度（0起点~10满分）", placeholder: "" },
+      { label: "5. 推进目标已做的有效行动", placeholder: "" },
+      { label: "6. 能支持我的盟友资源", placeholder: "" },
+      { label: "7. 目标实现后受益人群", placeholder: "" },
+      { label: "8. 是否愿意继续推进该目标？", placeholder: "" },
+      { label: "9. 明日短期目标 — 进取版", placeholder: "" },
+      { label: "10. 明日短期目标 — 保守版", placeholder: "" },
+    ]
+  },
+  // Day 14
+  {
+    readTitle: "第14天上｜阅读：制定更容易完成的计划",
+    author: "郭婷婷",
+    overview: ["前瞻记忆（计划本质）三类线索", "执行意图：如果…那么 万能计划工具", "六大计划常见难题解决方案"],
+    readContent: `<h4>1 前瞻记忆</h4><p>大脑记住未来要做的事，三类触发线索：①时间线索（两点开会）；②事件线索（客户来电后回复）；③活动线索（吃完晚饭复盘）。人脑天然不擅长前瞻记忆，备忘录、闹钟、便利贴都是外挂辅助。</p><h4>2 执行意图</h4><p>预判正常流程+预判意外阻碍，提前设计替代行动，大幅提升完成率。</p><h4>3 六大计划难题对策</h4><ol><li><strong>预估时间不准</strong>：不熟悉/创造型任务不硬性限时；空闲只规划投入时长；紧急任务设定最低产出底线；多用活动线索替代纯时间规划。</li><li><strong>突发额外事务</strong>：预留未知变动空间，计划允许迭代，不必完美固定。</li><li><strong>事情过多完不成</strong>：每日只保留1-3件最重要要事；警惕「紧急陷阱」，优先长期重要事。</li><li><strong>任务复杂多变</strong>：像诸葛亮锦囊，预判分叉路口，准备替代行动预案。</li><li><strong>容易分心</strong>：训练突显网络，正念提升监控走神能力，行动前锚定目标价值。</li><li><strong>完美主义</strong>：区分适合/不适合完美主义的场景，对苛责想法解套。</li></ol>`,
+    writeTitle: "第14天下｜书写：一日目标与计划",
+    writeGuide: "复盘昨日目标完成情况，最多设定3件核心事，搭配执行意图应对突发阻碍。",
+    writeFields: [
+      { label: "1. 昨日目标完成进度（0~10），判断依据", placeholder: "" },
+      { label: "2. 推进目标的有效行动", placeholder: "" },
+      { label: "3. 明日最多3个核心目标（标记最重要）", placeholder: "① \n② \n③ " },
+      { label: "4. 最重要目标对我的价值意义", placeholder: "" },
+      { label: "5. 该目标进取版/保守版", placeholder: "进取版：\n保守版：" },
+    ],
+    writeSubs: [
+      { title: "核心事项执行计划", fields: [
+        { label: "事项1 — 预计时长", placeholder: "" },
+        { label: "正常流程", placeholder: "" },
+        { label: "如果阻碍发生：那么替代行动", placeholder: "" },
+        { label: "事项2（时长+流程+预案）", placeholder: "" },
+        { label: "事项3（时长+流程+预案）", placeholder: "" },
+      ]}
+    ]
+  },
+  // Day 15
+  {
+    readTitle: "第15天上｜阅读：点燃持续行动动力",
+    author: "郭婷婷",
+    overview: ["两大动力系统：威胁VS驱动", "外部动机&内部动机", "游戏化进度条思维、成就清单"],
+    readContent: `<h4>1 两套行动动力</h4><p><strong>威胁系统驱动（避坑）</strong>：动力来源：不做就会糟糕；短期起效，长期空虚，只追求安全，无成长收获。</p><p><strong>驱动系统驱动（追求想要）</strong>：依靠多巴胺奖赏回路。外部动机（分数、薪资、赞美）：激励短暂，易内卷对比。内部动机（兴趣、成长、价值感）：持久不竭，满足自主/胜任/联结三大需求。</p><h4>2 持续动力关键：关注进步（进度条思维）</h4><p>大脑负性偏差，更容易记住失败痛苦，忽略微小进步。<strong>成就清单</strong>作用：记录每一小步有效行动，强化正向多巴胺反馈，把努力变成「升级游戏」。成功=有效行动×重复；不必等终点再庆祝，每一步推进都值得正向强化。</p>`,
+    writeTitle: "第15天下｜书写：每日成就清单",
+    writeGuide: "聚焦当日有效推进的微小行动，复盘进步、设计次日计划，激活内部驱动力。",
+    writeFields: [
+      { label: "1. 当下长线目标", placeholder: "" },
+      { label: "2. 今日进度（0~10）：从__分到__分", placeholder: "" },
+      { label: "3. 今日推进目标的有效行动+执行方法", placeholder: "行动1：\n如何做到：\n行动2：\n如何做到：" },
+      { label: "4. 证明我取得进步的迹象", placeholder: "" },
+      { label: "5. 专属庆祝仪式（强化正向感受）", placeholder: "" },
+      { label: "6. 明日是否继续推进，预期进度目标", placeholder: "" },
+    ],
+    writeSubs: [
+      { title: "明日核心行动（搭配意外预案）", fields: [
+        { label: "预期行动1：时长、过程", placeholder: "" },
+        { label: "如果阻碍：那么", placeholder: "" },
+        { label: "预期行动2", placeholder: "" },
+      ]}
+    ]
+  },
+  // Day 16
+  {
+    readTitle: "第16天上｜阅读：问题解决决策树",
+    author: "窦泽南",
+    overview: ["四步决策判断：意愿→价值→难度→心态"],
+    readContent: `<h4>四步决策流程</h4><ol><li><strong>判断意愿</strong>：能否清晰描述、是否愿意解决</li><li><strong>判断价值</strong>：区分两类无价值假问题。重力问题（无法改变客观现实，接纳而非解决）；蚊子问题（收益极低、消耗大量精力，适度忽略）</li><li><strong>判断难度</strong>：十次试错原则，失败=收集经验</li><li><strong>调整心态</strong>：区分「证明自己」vs「提升自己」；灾难化、自我否定想法使用解套技术</li></ol><p>完整决策树：能否描述问题 → 无意愿=终止；有意愿 → 判断价值（无价值终止）→ 判断难度（可尝试）→ 调整心态（接纳失败再行动）</p><p><em>平静祷词：赐予我勇气改变可改变之事；赐予我平静接纳不可改变之事；赐予我智慧区分二者。</em></p>`,
+    writeTitle: "第16天下｜书写：问题解决决策树",
+    writeGuide: "",
+    writeFields: [
+      { label: "1. 我近期想要解决的问题（如何/怎么办句式）", placeholder: "" },
+      { label: "2. 解决意愿打分（1~10）", placeholder: "" },
+      { label: "3. 问题解决后，生活正向具体变化", placeholder: "" },
+      { label: "4. 这些变化对我的核心价值", placeholder: "" },
+      { label: "5. 解决需要投入的时间/精力/物质成本", placeholder: "" },
+      { label: "6. 收益-成本综合，是否值得解决", placeholder: "" },
+      { label: "7. 过往所有尝试+收获经验", placeholder: "尝试1：\n经验：\n尝试2：\n经验：" },
+      { label: "8. 未来计划尝试方向，预期能学到什么", placeholder: "尝试1：\n预期收获：" },
+      { label: "9. 内心阻碍担忧想法，给想法命名", placeholder: "" },
+      { label: "10. 评估后当下意愿打分，是否选择推进", placeholder: "" },
+    ]
+  },
+  // Day 17
+  {
+    readTitle: "第17天上｜阅读：问题解决七步地图",
+    author: "窦泽南",
+    overview: ["七步完整解题流程"],
+    readContent: `<h4>七步完整解题流程</h4><ol><li><strong>一次只聚焦单一问题</strong>：多困境分批处理，优先影响最大核心问题</li><li><strong>明确问题空间</strong>：清晰区分「现状起点」&「理想终点」，拒绝模糊概括，用具象事实描述</li><li><strong>挖掘个人成功经验</strong>：过往同类困境应对方法，自身是解决问题第一专家</li><li><strong>寻找例外面</strong>：问题减轻/完全不出现的时刻，复制有效条件</li><li><strong>寻找外部资源</strong>：盟友（共同目标互相支持）、专家（同类问题经验丰富者）、可靠信息（权威资料、专业渠道）</li><li><strong>先发散头脑风暴，再收敛筛选方案</strong>（匹配目标、低成本、高可行性）</li><li><strong>进度可视化</strong>：起点→当前→下一步→终点，微小进步及时庆祝</li></ol>`,
+    writeTitle: "第17天下｜书写：问题解决七步地图实操",
+    writeGuide: "",
+    writeFields: [
+      { label: "1. 列出所有困扰问题，圈定当下最优先解决的一件", placeholder: "" },
+      { label: "2. 现状（客观事实）", placeholder: "" },
+      { label: "3. 目标（理想状态，可量化）", placeholder: "" },
+      { label: "4. 过往同类困境成功应对经验", placeholder: "" },
+      { label: "5. 问题减轻/消失的例外场景，如何复刻", placeholder: "" },
+      { label: "6. 可利用外部资源", placeholder: "盟友：\n专业求助对象：\n信息获取渠道：" },
+      { label: "7. 发散全部解法", placeholder: "" },
+      { label: "8. 收敛筛选最优可行方案", placeholder: "" },
+    ]
+  },
+  // Day 18
+  {
+    readTitle: "第18天上｜阅读：让你的错误变得有价值",
+    author: "窦泽南",
+    overview: ["犯错本质：大脑校准参数的学习过程", "正负预测误差与多巴胺机制", "犯错后的反刍「甩锅」思维陷阱", "复盘偏离行为四步标准化实操流程", "四类行动偏离对应优化方案"],
+    readContent: `<h4>学习本质</h4><p>任何技能掌握都遵循「动作偏离→感知失衡→大脑调整参数→恢复平衡」循环。<strong>预测误差</strong>：实际结果和预判产生差值时产生惊讶，记忆深度大幅提升。正向预测误差（结果超预期，多巴胺大量分泌，强化该行为）；负向预测误差（结果差于预期，多巴胺分泌抑制，弱化该行为）。</p><h4>复盘四步实操流程</h4><ol><li><strong>跟随时间，梳理完整事实</strong>：按时间线依次记录，仅客观记录，不加评判</li><li><strong>先梳理全部做对的部分</strong>：内在资源（能力、经验、品质）+ 外在资源（盟友、工具）</li><li><strong>为偏离事实辩护（是的…但是句式）</strong>：「是的，我出现XX偏离，但是当时发生XX客观现实」</li><li><strong>匹配偏离类型，制定下一步计划</strong>：①经验/能力不足→增加重复练习；②计划不完善→细化流程补充锦囊；③情绪压倒理性→着陆、解套技术；④不可抗力意外→提前做多套预案+接纳不可控</li></ol>`,
+    writeTitle: "第18天下｜书写：复盘「偏离行为」",
+    writeGuide: "适用场景：目标推进不达预期、环节出错、主观定义为「失败」的全部经历。若面对复盘产生强烈抗拒，先使用着陆+解套平复情绪再书写。",
+    writeFields: [
+      { label: "1. 事件完整时间线（按先后客观记录）", placeholder: "时间节点1：行动&发生的事\n时间节点2：行动&发生的事\n时间节点3：行动&发生的事" },
+      { label: "2. 本次事件预期目标", placeholder: "" },
+      { label: "3. 全程与目标一致、做对的环节", placeholder: "" },
+      { label: "4. 支撑我完成有效行动的资源", placeholder: "内在优势（能力/经验/品质）：\n外在资源（他人/工具/资料）：" },
+      { label: "5. 行动偏离的环节（原本计划VS实际做法）", placeholder: "环节1：预想行动｜实际行动\n环节2：预想行动｜实际行动" },
+      { label: "6. 为偏离客观辩护（是的…但是）", placeholder: "环节1辩护：\n环节2辩护：" },
+    ],
+    writeSubs: [
+      { title: "分环节制定优化计划（配套意外预案）", fields: [
+        { label: "优化环节1：预计行动流程", placeholder: "" },
+        { label: "如果出现阻碍：那么替代行动", placeholder: "" },
+        { label: "优化环节2：预计行动流程", placeholder: "" },
+        { label: "如果出现阻碍：那么替代行动", placeholder: "" },
+        { label: "其他补充改进方案", placeholder: "" },
+      ]}
+    ]
+  },
+  // Day 19
+  {
+    readTitle: "第19天上｜阅读：第三模块完整复习·有效行动词典",
+    author: "郭婷婷",
+    overview: ["模块总结庆祝", "有效行动百科词典（49–92）", "第三模块实操技能清单"],
+    readContent: `<h4>第三模块实操技能清单</h4><ol><li>成本收益分析（第12天）</li><li>目标空间拆解（第13天）</li><li>执行意图「如果那么」计划（第14天）</li><li>每日成就清单（第15天）</li><li>苏格拉底提问（第16天）</li><li>问题决策树（第16天）</li><li>七步问题解决地图（第17天）</li><li>偏离行为复盘（第18天）</li></ol><h4>8道场景应用题</h4><ol><li>两份工作二选一 → 结合自身价值观判断 ✓</li><li>养成晨跑习惯 → 设置保守+进取双目标 ✓</li><li>城市纪实摄影创造型目标 → 先自由探索，明确主题再定产出 ✓</li><li>大学生长期发展 → 探索兴趣、获得内在成就感 ✓</li><li>完美主义工程师纠结微小色差bug → 转移重心到核心功能 ✓</li><li>研究生害怕向导师求助 → 主动求助获取多元思路 ✓</li><li>和朋友吵架反复内耗 → 梳理沟通过程、优化后续表达 ✓</li><li>课题和自身兴趣不符 → 结合兴趣挖掘研究方向，获得自主感 ✓</li></ol>`,
+    writeTitle: "第19天下｜书写：第三模块场景应用题+模块复盘",
+    writeGuide: "梳理第三模块学到的理论、实操，记录生活中新行动，区分重要程度。",
+    writeFields: [
+      { label: "1. 不查阅资料，第三模块印象最深的知识&技能", placeholder: "" },
+      { label: "2. 练习期间，我和过去相比全新的行动方式", placeholder: "" },
+      { label: "3. 学到的知识技能（分数+意义）", placeholder: "分数：\n意义：" },
+      { label: "4. 我的全新尝试（分数+意义）", placeholder: "分数：\n意义：" },
+    ]
+  },
+  // Day 20
+  {
+    readTitle: "第20天上｜阅读：有效努力全套通关地图",
+    author: "",
+    overview: ["完整三大模块18个核心锦囊"],
+    readContent: `<h4>第一模块：高压应对（5个）</h4><ol><li>逃避应激时：连接目标，建立第二反应（第2天）</li><li>突发强烈焦虑：54321着陆（第3天）</li><li>思维混乱注意力下降：呼吸空间正念</li><li>灾难化想法困住自己：想法解套行动（第4天）</li><li>反复同类压力：复盘+行动预案（第6天）</li></ol><h4>第二模块：精力补给（4个）</h4><ol start="6"><li>不知道何时休息：身体扫描+休息行为实验（第7天）</li><li>想要高质量休息：搭建个人滋养活动清单（第8天）</li><li>长期扩容精力：睡眠/运动/饮食行为实验（第9天）</li><li>总忘记休息：降低行动阻力、增加环境助推（第10天）</li></ol><h4>第三模块：有效行动（9个）</h4><ol start="10"><li>选择纠结停滞：成本收益分析（第12天）</li><li>缺少行动动力：澄清目标内在价值（第13天）</li><li>目标难落地：设置保守/进取区间（第13天）</li><li>计划总被打乱：执行意图多预案（第14天）</li><li>待办太多完不成：要事优先只留1–3件（第14天）</li><li>长期目标动力枯竭：记录微小成就（第15天）</li><li>遇到卡点难题：判断问题投入价值（第16天）</li><li>思路混乱无从下手：七步问题解决地图（第17天）</li><li>结果不达预期：偏离行为复盘（第18天）</li></ol>`,
+    writeTitle: "第20天下｜书写：技能加练规划",
+    writeGuide: "对照通关地图，区分自身<strong>生疏区</strong>（原理懂但不会用）、<strong>偏离区</strong>（经常出错的工具），选定一项专项复习加练。",
+    writeFields: [
+      { label: "1. 我选择重温的技能，属于生疏区/偏离区？", placeholder: "" },
+      { label: "2. 该技能对我的重要程度（1~10分）：理由", placeholder: "分数：\n理由：" },
+      { label: "3. 熟练掌握后，我的生活会出现哪些正向改变", placeholder: "" },
+    ]
+  },
+  // Day 21
+  {
+    readTitle: "第21天上｜阅读：持续「大脑健身」长期攻略",
+    author: "郭婷婷",
+    overview: ["四大核心底层心理能力", "两层优化流程", "长期练习三大决策树", "复训学习分层建议", "周期休息规则"],
+    readContent: `<h4>四大核心底层心理能力（整套训练目标）</h4><ol><li>情绪调控（模块1：高压应对）</li><li>注意调控（模块3前半段）</li><li>自我照顾（模块2：精力休息）</li><li>问题解决（模块3后半段）</li></ol><h4>长期练习三大决策树</h4><p><strong>决策1：是否继续大脑健身？</strong>值得投入→进入复训；当前有优先级更高的事→后续随时回归。</p><p><strong>决策2：复训有效努力，还是切换专项？</strong>不适合继续的两类情况：①长期失眠、焦虑抑郁、耗竭（优先睡眠/情绪专项）；②紧急DDL、严重拖延（优先拖延应对计划）。</p><p><strong>决策3：专项练习选择</strong>：失眠→睡眠专项；拖延任务启动难→拖延应对；长期焦虑→情绪EBP→CBT；缺少动力→积极思维；经常自我苛责→自我关怀；通用打底→正念全梯度训练。</p><h4>复训学习分层</h4><p>首轮：通读理论，完成书写正念建立认知；复训：减少阅读，重点在生活实战；专项特训：针对性攻克自身卡点技能。训练周期25天，配套10天自主休息缓冲期。</p>`,
+    writeTitle: "第21天下｜书写：成就总结与下一步计划",
+    writeGuide: "暂停一下，再出发。今天，带着顺利通关的喜悦，一起来盘点本期练习的成就吧！成就，就是那些你为实现目标做对了的事情。",
+    writeFields: [
+      { label: "1. 再次和自己的初心目标连接：在本期练习中，你最想获得什么？", placeholder: "" },
+      { label: "2. 如果完全实现是100分，毫无进展是0分，你现在在进度条的哪个位置？", placeholder: "" },
+      { label: "3. 哪些迹象让你知道，你已经获得了一些进展？", placeholder: "" },
+      { label: "4. 在这个过程中，你做了什么，让这些改变发生了？", placeholder: "成就行动1：\n我是如何做到的：\n成就行动2：\n我是如何做到的：" },
+      { label: "5. 就在此刻，为自己的成就庆祝！", placeholder: "" },
+      { label: "6. 如果让进度条继续往前推进一点，你希望自己还能做到什么？", placeholder: "" },
+      { label: "7. 当你实现了下一个目标，你的生活还将有哪些新变化？", placeholder: "" },
+      { label: "8. 为了实现这些变化，你还将为之付出哪些成本？", placeholder: "时间：\n精力：\n其他：" },
+      { label: "9. 综合成本-收益评估，你是否还愿意继续保持「大脑健身」练习？", placeholder: "" },
+      { label: "10. 如果愿意继续，给自己制定一个继续行动方案吧。", placeholder: "" },
+    ]
+  },
+];
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const BASE_URL = "https://github.com/liv-65/ielts-app/releases/download/v1.0/";
+let currentDay = 0;
+let currentTab = 'reading'; // 'reading' | 'writing' | 'mindfulness'
+let completed = [];
+let writingData = {}; // key: "day-fieldIndex" or "day-sub-subIdx-fieldIdx" → string
+let pendingImportData = null;
+
+function loadData() {
+  try {
+    const stored = localStorage.getItem('yxnl_v2');
+    if (stored) {
+      const d = JSON.parse(stored);
+      completed = d.completed || [];
+      writingData = d.writingData || {};
+    }
+  } catch(e) {}
+}
+
+function saveData() {
+  try {
+    localStorage.setItem('yxnl_v2', JSON.stringify({ completed, writingData }));
+  } catch(e) {}
+}
+
+// ─── EXPORT / IMPORT ─────────────────────────────────────────────────────────
+function exportData() {
+  const data = {
+    version: 2,
+    exportTime: new Date().toISOString(),
+    completed,
+    writingData,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `有效努力练习数据_${new Date().toLocaleDateString('zh-CN').replace(/\//g, '-')}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('数据已导出');
+}
+
+function triggerImport() {
+  document.getElementById('import-file').value = '';
+  document.getElementById('import-file').click();
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.completed || !data.writingData) throw new Error('格式不正确');
+      pendingImportData = data;
+      document.getElementById('confirm-import-btn').onclick = confirmImport;
+      document.getElementById('import-modal').classList.add('show');
+    } catch(err) {
+      showToast('导入失败：文件格式不正确');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function confirmImport() {
+  if (!pendingImportData) return;
+  completed = pendingImportData.completed || [];
+  writingData = pendingImportData.writingData || {};
+  saveData();
+  pendingImportData = null;
+  closeModal();
+  renderSidebar();
+  renderMain();
+  updateProgress();
+  showToast('数据已成功导入');
+}
+
+function closeModal() {
+  document.getElementById('import-modal').classList.remove('show');
+}
+document.getElementById('import-modal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// ─── TOAST ───────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ─── SIDEBAR ─────────────────────────────────────────────────────────────────
+function renderSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  let html = '';
+  const sections = [
+    { label: '第一阶段：专注力基础', range: [0, 5] },
+    { label: '第二阶段：存在与休息', range: [6, 10] },
+    { label: '第三阶段：注意进阶', range: [11, 18] },
+    { label: '第四阶段：巩固与整合', range: [19, 20] },
+    { label: '彩蛋练习', range: [21, 24] },
+  ];
+  sections.forEach(sec => {
+    html += `<div class="sidebar-section-title">${sec.label}</div>`;
+    for (let i = sec.range[0]; i <= sec.range[1]; i++) {
+      const d = DAYS[i];
+      const isActive = i === currentDay;
+      const isDone = completed.includes(i);
+      const hasRW = i < 21;
+      const hasWriteData = hasRW && Object.keys(writingData).some(k => k.startsWith(`${i}-`));
+      html += `<div class="day-item ${isActive ? 'active' : ''} ${isDone ? 'completed' : ''}" onclick="goDay(${i})">
+        <div class="day-num">${isDone && !isActive ? '✓' : i + 1}</div>
+        <div class="day-text">
+          <div class="day-title">${d.title.replace('正念：', '')}</div>
+          <div class="day-tag">${d.tag}</div>
+        </div>
+        <div class="day-badges">
+          ${hasRW ? `<div class="day-badge-dot has-read" title="含阅读内容"></div>` : ''}
+          ${hasWriteData ? `<div class="day-badge-dot has-write" title="有书写记录"></div>` : ''}
+        </div>
+      </div>`;
+    }
+  });
+  sidebar.innerHTML = html;
+}
+
+// ─── CALENDAR ────────────────────────────────────────────────────────────────
+function renderCalendar() {
+  let html = '';
+  for (let i = 0; i < 25; i++) {
+    const cls = i === currentDay ? 'current' : completed.includes(i) ? 'done' : '';
+    html += `<div class="cal-dot ${cls}" title="第 ${i+1} 天" onclick="goDay(${i})"></div>`;
+  }
+  return html;
+}
+
+// ─── TABS ────────────────────────────────────────────────────────────────────
+function setTab(tab) {
+  currentTab = tab;
+  renderMain();
+}
+
+// ─── MAIN RENDER ─────────────────────────────────────────────────────────────
+function renderMain() {
+  const day = DAYS[currentDay];
+  const guide = GUIDANCE[currentDay];
+  const isDone = completed.includes(currentDay);
+  const dayNum = currentDay + 1;
+  const audioSrc = BASE_URL + String(dayNum).padStart(2, '0') + '.mp3';
+  const rw = currentDay < 21 ? READ_WRITE[currentDay] : null;
+
+  const guideParts = guide.text.split('\n\n').map(p => `<p>${p}</p>`).join('');
+
+  // Build tab content
+  let tabContent = '';
+
+  if (currentTab === 'reading' && rw) {
+    // Reading tab
+    const overviewItems = rw.overview.map((o, i) => `<li>${o}</li>`).join('');
+    tabContent = `
+      <div class="card">
+        <div class="card-label amber">${rw.readTitle}</div>
+        ${rw.author ? `<div style="font-size:12px;color:var(--text-muted);margin-bottom:1rem;">作者：${rw.author}</div>` : ''}
+        <div class="read-overview">
+          <div class="read-overview-label">今日阅读概览</div>
+          <ol>${overviewItems}</ol>
+        </div>
+        <div class="read-section">
+          ${rw.readContent}
+        </div>
+      </div>
+    `;
+  } else if (currentTab === 'writing' && rw) {
+    // Writing tab
+    tabContent = renderWritingTab(rw);
+  } else {
+    // Mindfulness tab (default for days 22-25 or when tab === 'mindfulness')
+    tabContent = `
+      <div class="card">
+        <div class="player-top">
+          <div class="player-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+            </svg>
+          </div>
+          <div class="player-info">
+            <div class="player-title">语音引导音频</div>
+            <div class="player-hint">点击播放，跟随引导开始练习</div>
+          </div>
+        </div>
+        <audio controls preload="none" id="audio-player">
+          <source src="${audioSrc}" type="audio/mpeg">你的浏览器不支持音频播放。
+        </audio>
+        <div class="action-row">
+          <a href="${audioSrc}" target="_blank" class="btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            在新窗口打开
+          </a>
+          <a href="${audioSrc}" download class="btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            下载音频
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">练习引导</div>
+        <div class="guidance-text">${guideParts}</div>
+        ${guide.tips ? `<div class="tips-box"><div class="tips-label">小贴士</div><div class="tips-text">${guide.tips}</div></div>` : ''}
+      </div>
+    `;
+  }
+
+  const hasTabs = rw !== null;
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="day-header">
+      <div class="calendar-strip">${renderCalendar()}</div>
+      <div class="day-badge-pill">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        第 ${dayNum} 天 · ${day.tag}
+      </div>
+      <h2>${day.title}</h2>
+      <div class="day-meta">语音引导 · 正念练习${rw ? ' · 阅读书写练习' : ''}</div>
+    </div>
+
+    ${hasTabs ? `
+    <div class="tabs">
+      <button class="tab-btn ${currentTab === 'reading' ? 'active' : ''}" onclick="setTab('reading')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        阅读内容
+      </button>
+      <button class="tab-btn ${currentTab === 'writing' ? 'active' : ''}" onclick="setTab('writing')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        书写练习
+      </button>
+      <button class="tab-btn ${currentTab === 'mindfulness' ? 'active' : ''}" onclick="setTab('mindfulness')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        正念练习
+      </button>
+    </div>
+    ` : ''}
+
+    ${tabContent}
+
+    <div class="nav-row">
+      <button class="nav-btn" onclick="goDay(${currentDay - 1})" ${currentDay === 0 ? 'disabled' : ''}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        上一天
+      </button>
+      <button class="nav-btn complete-btn ${isDone ? 'done' : ''}" onclick="markDone(${currentDay})">
+        ${isDone ? '✓ 已完成' : '标记为完成'}
+      </button>
+      <button class="nav-btn" onclick="goDay(${currentDay + 1})" ${currentDay === 24 ? 'disabled' : ''}>
+        下一天
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  `;
+
+  updateProgress();
+}
+
+// ─── WRITING TAB ─────────────────────────────────────────────────────────────
+function renderWritingTab(rw) {
+  let html = `
+    <div class="card">
+      <div class="card-label purple">${rw.writeTitle}</div>
+      ${rw.writeGuide ? `<div class="write-guide">${rw.writeGuide}</div>` : ''}
+  `;
+
+  // Main fields
+  rw.writeFields.forEach((field, fi) => {
+    const key = `${currentDay}-f-${fi}`;
+    const val = writingData[key] || '';
+    html += `
+      <div class="write-field">
+        <label>${field.label}</label>
+        <textarea data-key="${key}" placeholder="${field.placeholder || ''}" rows="3">${escapeHtml(val)}</textarea>
+      </div>
+    `;
+  });
+
+  // Sub-sections
+  if (rw.writeSubs) {
+    rw.writeSubs.forEach((sub, si) => {
+      html += `<div class="write-subsection"><div class="write-subsection-title">${sub.title}</div>`;
+      sub.fields.forEach((field, fi) => {
+        const key = `${currentDay}-s-${si}-${fi}`;
+        const val = writingData[key] || '';
+        html += `
+          <div class="write-field">
+            <label>${field.label}</label>
+            <textarea data-key="${key}" placeholder="${field.placeholder || ''}" rows="2">${escapeHtml(val)}</textarea>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    });
+  }
+
+  html += `
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem;">
+        <span class="save-indicator" id="save-indicator">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          已自动保存
+        </span>
+      </div>
+    </div>
+  `;
+  return html;
+}
+
+function escapeHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── TEXTAREA AUTO-SAVE ───────────────────────────────────────────────────────
+let saveTimer = null;
+document.addEventListener('input', (e) => {
+  if (e.target.tagName === 'TEXTAREA' && e.target.dataset.key) {
+    writingData[e.target.dataset.key] = e.target.value;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      saveData();
+      renderSidebar(); // update dot
+      const ind = document.getElementById('save-indicator');
+      if (ind) {
+        ind.classList.add('show');
+        setTimeout(() => ind.classList.remove('show'), 1800);
+      }
+    }, 600);
+  }
+});
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────
+function goDay(n) {
+  if (n < 0 || n > 24) return;
+  currentDay = n;
+  // Default to reading tab if day has content, else mindfulness
+  currentTab = n < 21 ? 'reading' : 'mindfulness';
+  renderSidebar();
+  renderMain();
+  window.scrollTo(0, 0);
+}
+
+function markDone(n) {
+  if (!completed.includes(n)) {
+    completed.push(n);
+    saveData();
+    showToast(`第 ${n + 1} 天已完成 🎉`);
+  }
+  renderSidebar();
+  renderMain();
+}
+
+function updateProgress() {
+  const pct = Math.round((completed.length / 25) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `${completed.length} / 25 天`;
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+loadData();
+goDay(0);
+</script>
+</body>
+</html>
