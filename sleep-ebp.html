@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>睡眠EBP · 21天完整手册</title>
+<style>
+  :root {
+    --blue-50: #E8F0FE;
+    --blue-100: #C5D8FD;
+    --blue-200: #8AB4FB;
+    --blue-400: #4A86E8;
+    --blue-600: #2A60C5;
+    --blue-800: #1A3E8F;
+    --indigo-50: #EEF0FE;
+    --indigo-200: #ABAEF0;
+    --indigo-400: #7276DC;
+    --indigo-600: #4447B5;
+    --amber-50: #FFF8E8;
+    --amber-200: #F6CC6E;
+    --amber-400: #E6A817;
+    --amber-600: #B07C0A;
+    --gray-50: #F6F7FA;
+    --gray-100: #ECEEF4;
+    --gray-200: #D1D4E0;
+    --gray-400: #888BA0;
+    --gray-600: #5E6070;
+    --gray-900: #1A1B25;
+    --text-primary: #1A1B25;
+    --text-secondary: #5E6070;
+    --text-muted: #888BA0;
+    --surface-0: #F6F7FA;
+    --surface-1: #ECEEF4;
+    --surface-2: #ffffff;
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.15);
+    --radius: 8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --blue-50: #0D1E3D;
+      --blue-100: #1A3E8F;
+      --blue-200: #2A60C5;
+      --blue-400: #4A86E8;
+      --blue-600: #8AB4FB;
+      --blue-800: #C5D8FD;
+      --indigo-50: #1A1B45;
+      --indigo-200: #4447B5;
+      --indigo-400: #7276DC;
+      --indigo-600: #ABAEF0;
+      --amber-50: #2E2200;
+      --amber-200: #7A5000;
+      --amber-400: #E6A817;
+      --amber-600: #F6CC6E;
+      --gray-50: #1A1B25;
+      --gray-100: #242535;
+      --gray-200: #383A50;
+      --gray-400: #888BA0;
+      --gray-600: #B4B6C8;
+      --gray-900: #F6F7FA;
+      --text-primary: #EEF0F8;
+      --text-secondary: #B4B6C8;
+      --text-muted: #888BA0;
+      --surface-0: #12131C;
+      --surface-1: #1A1B25;
+      --surface-2: #242535;
+      --border: rgba(255,255,255,0.07);
+      --border-strong: rgba(255,255,255,0.14);
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+    background: var(--surface-0);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  .header {
+    background: var(--surface-2);
+    border-bottom: 0.5px solid var(--border);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 0.75rem; }
+
+  .logo-mark {
+    width: 32px; height: 32px;
+    background: var(--blue-400);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .header-titles { display: flex; flex-direction: column; }
+  .header-title { font-size: 15px; font-weight: 500; color: var(--text-primary); letter-spacing: -0.01em; }
+  .header-subtitle { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+  .header-right { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+
+  .progress-bar-wrap { display: flex; align-items: center; gap: 0.5rem; }
+  .progress-label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+  .progress-track { width: 100px; height: 4px; background: var(--surface-1); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--blue-400); border-radius: 2px; transition: width 0.4s ease; }
+
+  .io-btns { display: flex; gap: 0.4rem; }
+  .io-btn {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: var(--radius);
+    font-size: 12px; font-weight: 500;
+    cursor: pointer; border: 0.5px solid var(--border-strong);
+    background: transparent; color: var(--text-secondary);
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .io-btn:hover { background: var(--surface-1); color: var(--text-primary); }
+  .io-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .io-btn.export { border-color: var(--blue-400); color: var(--blue-600); }
+  .io-btn.export:hover { background: var(--blue-50); }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 272px 1fr;
+    min-height: calc(100vh - 61px);
+  }
+
+  .sidebar {
+    background: var(--surface-2);
+    border-right: 0.5px solid var(--border);
+    overflow-y: auto;
+    position: sticky;
+    top: 61px;
+    height: calc(100vh - 61px);
+    padding: 0.75rem 0;
+  }
+
+  .sidebar-section-title {
+    font-size: 10px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-muted);
+    padding: 0.75rem 1.25rem 0.375rem;
+  }
+
+  .day-item {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.45rem 1.25rem;
+    cursor: pointer; transition: background 0.15s;
+    border-left: 2px solid transparent;
+  }
+  .day-item:hover { background: var(--surface-0); }
+  .day-item.active { background: var(--blue-50); border-left-color: var(--blue-400); }
+  .day-item.completed .day-num { background: var(--blue-400); color: white; border-color: var(--blue-400); }
+
+  .day-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 0.5px solid var(--border-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 500;
+    color: var(--text-secondary);
+    flex-shrink: 0; transition: all 0.15s;
+  }
+  .day-item.active .day-num { background: var(--blue-400); color: white; border-color: var(--blue-400); }
+
+  .day-text { flex: 1; min-width: 0; }
+  .day-title {
+    font-size: 12px; color: var(--text-primary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .day-item.active .day-title { color: var(--blue-600); font-weight: 500; }
+  .day-tag { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+  .day-badges { display: flex; gap: 3px; flex-shrink: 0; }
+  .day-badge-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--gray-200);
+  }
+  .day-badge-dot.has-write { background: var(--indigo-400); }
+
+  .main { padding: 2rem 2.5rem; max-width: 780px; }
+
+  .tabs {
+    display: flex; gap: 0; margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab-btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.6rem 1.25rem;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; border: none; background: transparent;
+    color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+  .tab-btn:hover { color: var(--text-primary); }
+  .tab-btn.active { color: var(--blue-400); border-bottom-color: var(--blue-400); }
+  .tab-btn svg { width: 14px; height: 14px; }
+
+  .day-header { margin-bottom: 1.5rem; }
+  .day-badge-pill {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: var(--blue-50); color: var(--blue-600);
+    font-size: 11px; font-weight: 500;
+    padding: 0.2rem 0.65rem; border-radius: 100px;
+    margin-bottom: 0.6rem;
+    border: 0.5px solid rgba(74,134,232,0.2);
+  }
+  .day-header h2 {
+    font-size: 22px; font-weight: 500;
+    letter-spacing: -0.02em; color: var(--text-primary);
+    line-height: 1.3; margin-bottom: 0.4rem;
+  }
+  .day-meta { font-size: 13px; color: var(--text-muted); }
+
+  .card {
+    background: var(--surface-2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .card-label {
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--blue-400); margin-bottom: 0.75rem;
+  }
+  .card-label.amber { color: var(--amber-600); }
+  .card-label.indigo { color: var(--indigo-400); }
+
+  .player-top { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+  .player-icon {
+    width: 44px; height: 44px;
+    background: var(--blue-50); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .player-icon svg { width: 22px; height: 22px; color: var(--blue-400); }
+  .player-info { flex: 1; }
+  .player-title { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 2px; }
+  .player-hint { font-size: 12px; color: var(--text-muted); }
+  audio { width: 100%; height: 38px; border-radius: var(--radius); outline: none; }
+  audio::-webkit-media-controls-panel { background: var(--surface-1); border-radius: var(--radius); }
+
+  .action-row { display: flex; gap: 0.6rem; margin-top: 1rem; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radius); font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s;
+    border: 0.5px solid var(--border-strong);
+    background: transparent; color: var(--text-secondary);
+    text-decoration: none;
+  }
+  .btn:hover { background: var(--surface-1); color: var(--text-primary); }
+  .btn svg { width: 13px; height: 13px; }
+
+  .content-text { font-size: 14px; color: var(--text-primary); line-height: 1.85; }
+  .content-text p { margin-bottom: 0.8rem; }
+  .content-text p:last-child { margin-bottom: 0; }
+
+  .tips-box {
+    background: var(--indigo-50);
+    border: 0.5px solid rgba(114,118,220,0.2);
+    border-radius: var(--radius);
+    padding: 0.875rem 1.1rem; margin-top: 1rem;
+  }
+  .tips-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--indigo-400); margin-bottom: 0.35rem; }
+  .tips-text { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+
+  .read-section { margin-bottom: 1.5rem; }
+  .read-section h3 {
+    font-size: 16px; font-weight: 500; color: var(--text-primary);
+    margin-bottom: 0.75rem; padding-bottom: 0.5rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .read-section h4 { font-size: 13px; font-weight: 600; color: var(--text-primary); margin: 1rem 0 0.4rem; }
+  .read-section h5 { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin: 0.75rem 0 0.3rem; }
+  .read-section p { font-size: 14px; color: var(--text-primary); line-height: 1.85; margin-bottom: 0.6rem; }
+  .read-section ol, .read-section ul { font-size: 14px; color: var(--text-primary); line-height: 1.8; padding-left: 1.4rem; margin-bottom: 0.6rem; }
+  .read-section li { margin-bottom: 0.2rem; }
+  .read-section strong { color: var(--text-primary); }
+  .read-section table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 0.8rem; }
+  .read-section th, .read-section td { border: 0.5px solid var(--border-strong); padding: 0.5rem 0.75rem; text-align: left; }
+  .read-section th { background: var(--surface-1); font-weight: 600; }
+
+  .read-overview {
+    background: var(--blue-50);
+    border: 0.5px solid rgba(74,134,232,0.2);
+    border-radius: var(--radius);
+    padding: 0.875rem 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .read-overview-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--blue-600); margin-bottom: 0.4rem; }
+  .read-overview ol { font-size: 13px; color: var(--text-secondary); padding-left: 1.2rem; }
+
+  .template-box {
+    background: var(--amber-50);
+    border: 0.5px solid rgba(230,168,23,0.25);
+    border-radius: var(--radius);
+    padding: 0.875rem 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .template-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--amber-600); margin-bottom: 0.4rem; }
+  .template-text { font-size: 13px; color: var(--text-secondary); line-height: 1.75; white-space: pre-wrap; }
+
+  .example-box {
+    background: var(--surface-1);
+    border-radius: var(--radius);
+    padding: 0.875rem 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  .example-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 0.4rem; }
+  .example-text { font-size: 13px; color: var(--text-secondary); line-height: 1.75; }
+
+  .write-field { margin-bottom: 1rem; }
+  .write-field label {
+    display: block; font-size: 12px; font-weight: 500;
+    color: var(--text-secondary); margin-bottom: 0.35rem;
+  }
+  .write-field textarea {
+    width: 100%; min-height: 72px;
+    background: var(--surface-0);
+    border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: 0.65rem 0.875rem;
+    font-size: 14px; color: var(--text-primary);
+    font-family: inherit; line-height: 1.7;
+    resize: vertical; transition: border-color 0.15s;
+  }
+  .write-field textarea:focus { outline: none; border-color: var(--blue-400); }
+  .write-field textarea::placeholder { color: var(--text-muted); }
+
+  .write-guide {
+    background: var(--amber-50);
+    border: 0.5px solid rgba(230,168,23,0.25);
+    border-radius: var(--radius);
+    padding: 0.875rem 1.1rem; margin-bottom: 1rem;
+    font-size: 13px; color: var(--text-secondary); line-height: 1.75;
+  }
+  .write-guide strong { color: var(--amber-600); }
+
+  .save-indicator {
+    font-size: 11px; color: var(--blue-400);
+    opacity: 0; transition: opacity 0.3s;
+    display: inline-flex; align-items: center; gap: 0.3rem;
+  }
+  .save-indicator.show { opacity: 1; }
+
+  .calendar-strip { display: flex; gap: 3px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .cal-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--surface-1); border: 0.5px solid var(--border-strong);
+    cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+  }
+  .cal-dot.done { background: var(--blue-400); border-color: var(--blue-400); }
+  .cal-dot.current { background: var(--indigo-400); border-color: var(--indigo-400); }
+  .cal-dot:hover { transform: scale(1.35); }
+
+  .nav-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 2rem; padding-top: 1.25rem;
+    border-top: 0.5px solid var(--border);
+  }
+  .nav-btn {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.55rem 1.1rem; border-radius: var(--radius);
+    font-size: 13px; cursor: pointer;
+    border: 0.5px solid var(--border-strong);
+    background: transparent; color: var(--text-primary);
+    transition: all 0.15s;
+  }
+  .nav-btn:hover { background: var(--surface-1); }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .nav-btn svg { width: 15px; height: 15px; }
+
+  .complete-btn { background: var(--blue-400); color: white; border-color: var(--blue-400); }
+  .complete-btn:hover { background: var(--blue-600); border-color: var(--blue-600); }
+  .complete-btn.done { background: var(--gray-200); color: var(--text-muted); border-color: var(--gray-200); }
+  .complete-btn.done:hover { background: var(--gray-200); }
+
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(10px);
+    background: var(--gray-900); color: white;
+    padding: 0.6rem 1.25rem; border-radius: 100px;
+    font-size: 13px; opacity: 0; transition: all 0.25s;
+    pointer-events: none; z-index: 999; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    z-index: 500; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .modal-overlay.show { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--surface-2); border-radius: 16px;
+    padding: 2rem; max-width: 420px; width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    transform: translateY(12px); transition: transform 0.2s;
+  }
+  .modal-overlay.show .modal { transform: translateY(0); }
+  .modal h3 { font-size: 17px; font-weight: 500; margin-bottom: 0.5rem; }
+  .modal p { font-size: 13px; color: var(--text-secondary); line-height: 1.65; margin-bottom: 1.25rem; }
+  .modal-btns { display: flex; gap: 0.75rem; justify-content: flex-end; }
+  .modal-btn {
+    padding: 0.5rem 1.1rem; border-radius: var(--radius);
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    border: 0.5px solid var(--border-strong);
+    background: transparent; color: var(--text-primary); transition: all 0.15s;
+  }
+  .modal-btn:hover { background: var(--surface-1); }
+  .modal-btn.primary { background: var(--blue-400); color: white; border-color: var(--blue-400); }
+  .modal-btn.primary:hover { background: var(--blue-600); border-color: var(--blue-600); }
+
+  @media (max-width: 700px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 1rem 1.25rem; max-width: 100%; }
+    .header { padding: 0.875rem 1.25rem; }
+    .progress-bar-wrap { display: none; }
+    .io-btns { gap: 0.3rem; }
+    .io-btn span { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="logo-mark">🌙</div>
+    <div class="header-titles">
+      <div class="header-title">睡眠EBP · 21天完整手册</div>
+      <div class="header-subtitle">循证睡眠改善计划 · 主讲：孙轶群</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="progress-bar-wrap">
+      <span class="progress-label" id="progress-label">0 / 22 天</span>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <div class="io-btns">
+      <button class="io-btn export" onclick="exportData()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>导出数据</span>
+      </button>
+      <button class="io-btn" onclick="triggerImport()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span>导入数据</span>
+      </button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main" id="main-content"></main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="import-modal">
+  <div class="modal">
+    <h3>导入数据</h3>
+    <p>导入将覆盖当前所有进度和书写内容。建议先导出备份当前数据，再进行导入。</p>
+    <div class="modal-btns">
+      <button class="modal-btn" onclick="closeModal()">取消</button>
+      <button class="modal-btn primary" id="confirm-import-btn">确认导入</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
+const BASE_URL = "https://github.com/liv-65/ielts-app/releases/download/v2.0/";
+
+const DAYS = [
+  { title: "我的初心与承诺", tag: "启程准备", audio: "00.mp3" },
+  { title: "睡眠日记", tag: "基线记录", audio: "01.mp3" },
+  { title: "压力与渐进式肌肉放松", tag: "躯体放松", audio: "02.mp3" },
+  { title: "大脑杂念认知加工", tag: "认知觉察", audio: "03.mp3" },
+  { title: "聆听睡眠的信号", tag: "破除误区", audio: "04.mp3" },
+  { title: "减少睡眠努力", tag: "放下执念", audio: "05.mp3" },
+  { title: "不完美也可以", tag: "睡眠卫生", audio: "06.mp3" },
+  { title: "调控睡眠的两只手", tag: "睡眠动力", audio: "07.mp3" },
+  { title: "了解你的睡眠", tag: "解读周报", audio: "08.mp3" },
+  { title: "计算个人睡眠能力", tag: "时间表", audio: "09.mp3" },
+  { title: "睡眠轻断食", tag: "短期痛苦换长期获益", audio: "10.mp3" },
+  { title: "识别清醒的不适感", tag: "区分困与累", audio: "11.mp3" },
+  { title: "应对清醒不适感", tag: "休息活动清单", audio: "12.mp3" },
+  { title: "识别困意·清醒-睡意量尺", tag: "白天保持清醒", audio: "13.mp3" },
+  { title: "不合适的睡眠线索", tag: "避开错误触发", audio: "14.mp3" },
+  { title: "复盘睡眠日记", tag: "调整时间表", audio: "15.mp3" },
+  { title: "改变我与床的关系", tag: "刺激控制疗法", audio: "16.mp3" },
+  { title: "夜间醒来做什么", tag: "夜间活动清单", audio: "17.mp3" },
+  { title: "醒后起床/回床判断标准", tag: "夜醒应对", audio: "18.mp3" },
+  { title: "接纳睡眠的不完美", tag: "睡眠四阶段", audio: "19.mp3" },
+  { title: "根据睡眠效率调整时间表", tag: "动态调整", audio: "20.mp3" },
+  { title: "回顾初心·21天总结", tag: "休营与复训", audio: "21.mp3" },
+];
+
+const DAY_CONTENT = [
+  // Day 0: 初心与承诺
+  {
+    tag: "第0天",
+    overview: ["写下本期练习目标", "提前预判可能的阻碍及应对方案", "描述练习终点期待的生活改变", "签下与自己的承诺"],
+    content: `<h4>我的初心与承诺</h4>
+<p>从今天开始，我每天都会给自己留出一段时间，「暂停」下来，完成练习。</p>
+<p>这个计划不是束缚，而是主动把照顾自己，作为优先级更高的事情；当我遇到阻碍，可以灵活调整练习难度，也可以回到这里，重温初心；期待中的改变可能不会很快发生，但我依然愿意带上耐心和信心，尽己所能地试试看。</p>`,
+    writeTitle: "写下你的承诺",
+    writeGuide: "花几分钟静下来，诚实地回答下面这些问题。这份承诺只写给自己看。",
+    writeFields: [
+      { label: "1. 本期，我选择的练习是：", placeholder: "睡眠EBP 21天手册" },
+      { label: "2. 我回到这里，继续练习，是为了：", placeholder: "我希望改善..." },
+      { label: "3. 根据往期经验，我可能遇到的阻碍1及应对方法", placeholder: "可能的阻碍：\n这时候我会：" },
+      { label: "4. 可能遇到的阻碍2及应对方法", placeholder: "可能的阻碍：\n这时候我会：" },
+      { label: "5. 如果一切如期完成，我期待自己的生活发生这些改变：", placeholder: "在练习的终点，我希望..." },
+      { label: "承诺人（写下你的昵称）", placeholder: "" },
+    ]
+  },
+  // Day 1: 睡眠日记
+  {
+    tag: "第1天",
+    overview: ["睡眠日记的作用与填写攻略", "连续7天建立个人睡眠基线", "每日晨起1分钟记录"],
+    content: `<h4>01 练习核心：睡眠日记</h4>
+<p>睡眠EBP第一周核心任务：使用睡眠日记摸清个人睡眠模式。</p>
+<ul>
+<li>记录入睡、起床、睡眠时长等数据，是评估失眠、设计作息方案的核心依据</li>
+<li>客观识别失眠背后的负面想法与不良行为，重建对睡眠的掌控感</li>
+</ul>
+<p><strong>基线建立</strong>：连续完整记录7天睡眠日记，得到个人睡眠基线；第8天会系统解读周报数据。</p>
+<h4>02 填写攻略</h4>
+<ol>
+<li>耗时极短，每日1分钟即可，建议晨起第一件事填写</li>
+<li>放轻松：无标准答案，估算即可，允许误差30分钟内；每期3次跳过机会</li>
+<li>正常作息：不用刻意盯表、不用睡眠监测设备，避免增加焦虑</li>
+<li>设置提醒：手机闹钟/待办定时，可自由调整填写时段</li>
+</ol>`,
+    writeTitle: "今日睡眠日记",
+    writeGuide: "晨起填写，估算即可，不需要精确到分钟。",
+    writeFields: [
+      { label: "昨晚几点上床？", placeholder: "例：23:30" },
+      { label: "昨晚几点入睡（估算）？", placeholder: "例：00:10" },
+      { label: "中途醒来几次？每次大约多久？", placeholder: "例：醒来1次，约20分钟" },
+      { label: "今早几点起床？", placeholder: "例：7:00" },
+      { label: "昨晚睡眠效率（实际睡眠÷在床时长×100%）", placeholder: "例：85%" },
+      { label: "今日睡眠感受（1-10分）及简要说明", placeholder: "分数：\n感受：" },
+    ]
+  },
+  // Day 2: 压力与渐进式肌肉放松
+  {
+    tag: "第2天",
+    overview: ["急性失眠根源：压力事件", "压力带来的生理应激反应", "渐进式肌肉放松练习的三大作用"],
+    content: `<h4>01 急性失眠根源：压力事件</h4>
+<p><strong>诱发压力分类</strong>：突发危机（车祸、灾害、暴力冲突）；长期慢性压力（工作难题、家庭矛盾、疾病、情绪问题）</p>
+<p><strong>压力带来的生理应激反应</strong>：肾上腺素升高、心跳加快、浅快呼吸；大脑警觉性提升，听觉视觉敏感；血液流向心脑肌肉，肌肉紧绷。以上反应会持续到夜间，直接破坏睡眠。</p>
+<h4>02 渐进式肌肉放松练习作用</h4>
+<ol>
+<li>白天练习：降低压力激素，减少应激对睡眠的长期影响</li>
+<li>睡前/夜醒练习：产生介于清醒与睡眠之间的脑电波，更容易入睡</li>
+<li>长期坚持效果：数周后躯体紧张、焦虑、易怒、低落显著减轻</li>
+</ol>
+<div class="tips-box"><div class="tips-label">注意</div><div class="tips-text">若存在慢性疼痛、关节受限：可跳过疼痛部位，轻柔收缩舒张；动作幅度减小，产生痛感立刻停止；长期疼痛建议同步就医康复。</div></div>`,
+    writeTitle: "练习书写",
+    writeGuide: "完成音频引导的渐进式肌肉放松练习后，记录你的感受。",
+    writeFields: [
+      { label: "今日睡眠日记（参考第1天格式）", placeholder: "上床时间：\n入睡时间：\n起床时间：\n睡眠效率：\n感受评分：" },
+      { label: "使用「渐进式肌肉放松练习」，我的感受是：", placeholder: "身体感受、情绪变化、任何想到的事..." },
+    ]
+  },
+  // Day 3: 大脑杂念认知加工
+  {
+    tag: "第3天",
+    overview: ["持续产生想法是大脑的基础功能", "人脑每日产生4-6万个念头", "睡前杂念造成认知唤醒、延长入睡潜伏期", "小练习：3分钟记录脑海想法"],
+    content: `<h4>核心内容</h4>
+<ol>
+<li>持续产生想法是人类大脑基础功能，用于预判危险、生存避险</li>
+<li>数据：人脑每日产生4-6万个念头，绝大多数想法不等于客观事实</li>
+<li>睡前大量杂念会造成<strong>认知唤醒</strong>，延长入睡潜伏期</li>
+</ol>
+<h4>小练习</h4>
+<p>计时3分钟，纸笔记录脑海中全部冒出的想法，直观感受大脑杂念数量。这不是要解决这些想法，只是观察它们的存在。</p>`,
+    writeTitle: "练习书写",
+    writeGuide: "完成3分钟杂念记录练习后，填写睡眠日记，并写下今日感受。",
+    writeFields: [
+      { label: "今日睡眠日记", placeholder: "上床：  入睡：  起床：  效率：  评分：" },
+      { label: "3分钟内，我脑海中出现了哪些想法？（不用记录全部，写下印象深刻的）", placeholder: "想法1：\n想法2：\n想法3：\n共约___条" },
+      { label: "这个练习让我意识到：", placeholder: "" },
+    ]
+  },
+  // Day 4: 破除睡眠误区
+  {
+    tag: "第4天",
+    overview: ["误区1：必须睡够8小时", "误区2：必须早睡早起", "误区3：累=困，疲劳就能睡着", "配套练习：想象放松"],
+    content: `<h4>误区1：必须睡够8小时</h4>
+<p>8小时仅为人群统计平均值，不存在统一标准。睡眠时长受年龄、基因、激素、健康、季节、人生阶段动态变化。睡眠是动态自平衡系统，大脑自主调节，无需强行对标数字。</p>
+<h4>误区2：必须早睡早起</h4>
+<p>无医学证据证明早睡早起优于规律晚睡晚起；<strong>固定作息比早睡早起更关键</strong>。人群分两类：百灵鸟（早睡早起基因）、猫头鹰（晚睡晚起基因），强行颠倒节律会持续不适。判断睡眠充足的唯一标准：起床后清醒、白天精力充足。</p>
+<h4>误区3：累=困，疲劳就能睡着</h4>
+<p><strong>困</strong>：清醒的反面，身体睡眠生理信号，伴随眼皮沉、打哈欠、反应迟钝，极易入睡。<strong>累/疲劳</strong>：肌肉、精神耗竭，属于清醒不适感，不等于需要睡觉；很多人越累越失眠。</p>
+<h4>核心结论</h4>
+<p>放下「必须睡8小时、必须早睡」的执念，听从身体困意、清醒信号；正念练习重新连接身体感知，尊重个人专属睡眠节律。</p>
+<h4>配套练习：想象放松练习</h4>
+<p>构建安全舒适想象场景，触发身心放松，睡前/白天焦虑均可使用，单次15分钟。避开会触发创伤回忆的场景，任选舒适场景即可。初学者建议白天熟练后，再在睡前使用。</p>`,
+    writeTitle: "练习书写",
+    writeGuide: "记录想象放松练习过程中的情绪、身体感受、脑海画面，无标准答案。",
+    writeFields: [
+      { label: "今日睡眠日记", placeholder: "上床：  入睡：  起床：  效率：  评分：" },
+      { label: "想象放松练习中，我脑海中出现了什么画面？", placeholder: "场景、颜色、声音、气味..." },
+      { label: "练习时的情绪和身体感受", placeholder: "放松感、紧张感、任何身体变化..." },
+    ]
+  },
+  // Day 5: 减少睡眠努力
+  {
+    tag: "第5天",
+    overview: ["越强迫入睡，越清醒", "破除「睡不好就会彻底崩溃」的灾难化思维", "短期睡眠不足不会摧毁认知"],
+    content: `<h4>01 核心逻辑：越强迫入睡，越清醒</h4>
+<p>失眠人群典型困境：上床后全力逼迫自己睡着，监控入睡时长、担心睡眠不足，交感神经持续兴奋，形成恶性循环；一到夜晚就恐惧睡觉。</p>
+<h4>02 破除「睡不好就会彻底崩溃」灾难化思维</h4>
+<p>短期睡眠不足不会摧毁认知、工作能力。案例：</p>
+<ul>
+<li>阿波罗13号航天员遇险期间每晚仅3小时睡眠，完成航天器返航</li>
+<li>国内医生仅2.51%每晚睡满8小时，仍可完成精密手术、高强度诊疗</li>
+</ul>
+<p>解决方案：<strong>减少睡眠努力</strong>——不再盯着睡眠，而是关注白天能完成哪些任务，重新发现睡眠的真实影响范围。</p>`,
+    writeTitle: "练习书写",
+    writeGuide: "回想近期某一天睡眠较差，按照模板记录当天的任务完成情况。",
+    writeFields: [
+      { label: "今日睡眠日记", placeholder: "上床：  入睡：  起床：  效率：  评分：" },
+      { label: "当天我需要做的任务是：", placeholder: "" },
+      { label: "头一天晚上我的睡眠评分（1-10分，分数越高睡得越好）：", placeholder: "" },
+      { label: "那一天我的感受是：", placeholder: "身体状态、情绪..." },
+      { label: "完成这些任务，我的经历和感受是：", placeholder: "上午...  下午...  晚上..." },
+    ]
+  },
+  // Day 6: 睡眠卫生误区
+  {
+    tag: "第6天",
+    overview: ["酒精助眠的真相", "咖啡因影响因人而异，无需一刀切戒除", "完美睡眠环境并非核心", "睡眠环境10条参考建议"],
+    content: `<h4>1. 喝酒助眠——误区</h4>
+<p>酒精快速镇静缩短入睡时间，但严重破坏睡眠周期：抑制深度睡眠、后半夜反弹清醒、脱水频繁起夜，次日头痛疲惫，睡眠质量大幅下降。</p>
+<h4>2. 失眠必须完全戒掉咖啡/茶——误区</h4>
+<p>咖啡因影响因人而异，无需一刀切戒除；多数人上午少量摄入不影响夜间睡眠；<strong>下午4点后建议减少摄入</strong>（咖啡、浓茶、可乐、巧克力均含咖啡因），根据自身耐受度调整。</p>
+<h4>3. 完美睡眠环境才能睡好——误区</h4>
+<p>卧室光线、噪音、温度仅次要影响因素；长期失眠核心诱因是围绕睡眠的负面想法与错误行为，而非环境瑕疵；过度追求极致睡眠环境只会加重焦虑。</p>
+<h4>睡眠环境10条参考建议</h4>
+<table><tr><th>避免行为</th><th>推荐做法</th></tr>
+<tr><td>下午4点后摄入咖啡因</td><td>根据耐受度控制摄入时间</td></tr>
+<tr><td>晚上6点后饮酒</td><td>尽量不饮酒，尤其睡前</td></tr>
+<tr><td>晚上6点后抽烟</td><td>减少全天吸烟，睡前完全停止</td></tr>
+<tr><td>空腹/大量宵夜上床</td><td>少量碳水小零食，避开油腻刺激食物</td></tr>
+<tr><td>睡前大量饮水</td><td>适度补水，减少夜间频繁起夜</td></tr>
+<tr><td>-</td><td>打造私密安全卧室；遮光窗帘；偏凉爽温度；定期清洁床品</td></tr></table>`,
+    writeTitle: "练习书写",
+    writeGuide: "统计自己已经做到几条环境建议，并制定微小调整方案。",
+    writeFields: [
+      { label: "今日睡眠日记", placeholder: "上床：  入睡：  起床：  效率：  评分：" },
+      { label: "以上10条建议，我目前做到了几条？", placeholder: "我做到了___条：\n①...\n②..." },
+      { label: "接下来我准备调整/新增第几项？", placeholder: "" },
+    ]
+  },
+  // Day 7: 双过程睡眠模型
+  {
+    tag: "第7天",
+    overview: ["睡眠动力（腺苷）原理", "昼夜节律生物钟", "破坏睡眠动力的行为", "当日练习：户外晒太阳30分钟"],
+    content: `<h4>第一只手：睡眠动力（腺苷）</h4>
+<p>大脑清醒代谢产生腺苷，腺苷堆积越多，困意越强；睡眠过程清除腺苷。</p>
+<p><strong>破坏睡眠动力的行为</strong>：白天长时间补觉、午睡过久、提前上床；清醒时间不足，夜晚困意微弱，入睡困难。</p>
+<p><strong>提升睡眠动力核心方案</strong>：白天保持清醒，减少日间补觉。</p>
+<h4>第二只手：昼夜节律生物钟</h4>
+<p><strong>校准核心</strong>：自然光；规律起床、固定三餐时间稳定节律。</p>
+<p><strong>紊乱诱因</strong>：频繁更换入睡/起床时间、昼夜颠倒、长期室内不见阳光。</p>
+<p>注意：早早躺在床上等睡意 无法稳定昼夜节律。</p>
+<h4>当日练习：户外晒太阳30分钟</h4>
+<p>阳光校准生物钟，促进夜间褪黑素分泌。时段：清晨、傍晚阳光效果最优，日间任意时段均可。防晒允许：遮阳伞、帽子、防晒霜、阴凉处散步均可。阴天备选：窗边短暂采光。</p>`,
+    writeTitle: "练习书写",
+    writeGuide: "完成户外晒太阳30分钟后，记录感受。",
+    writeFields: [
+      { label: "今日睡眠日记", placeholder: "上床：  入睡：  起床：  效率：  评分：" },
+      { label: "在户外晒太阳30分钟，我的练习感受是：", placeholder: "时间、地点、身体感受、心情变化..." },
+    ]
+  },
+  // Day 8: 解读睡眠周报
+  {
+    tag: "第8天",
+    overview: ["睡眠周报三大核心指标", "平均在床时长、实际睡眠时长、睡眠效率", "自我复盘5个思考问题"],
+    content: `<h4>01 睡眠周报三大核心指标（7天睡眠日记汇总）</h4>
+<ol>
+<li><strong>平均在床时长</strong>：每日躺在床上总时长</li>
+<li><strong>平均实际睡眠时长</strong>：每日真实睡着时长（个人睡眠能力上限）</li>
+<li><strong>平均睡眠效率</strong>：实际睡眠时长 ÷ 在床时长 ×100%，失眠人群最重要参考指标</li>
+</ol>
+<h4>02 自我复盘思考问题</h4>
+<ol>
+<li>早起/晚睡偏好？固定作息时间？</li>
+<li>入睡困难还是早醒为主？工作日vs周末睡眠差异？</li>
+<li>前一晚睡眠质量是否影响次日睡眠？</li>
+<li>主观睡眠感受、有没有超出预期的数据？</li>
+<li>一句话总结自己的睡眠模式。</li>
+</ol>`,
+    writeTitle: "解读我的睡眠周报",
+    writeGuide: "回顾过去7天的睡眠日记数据，计算关键指标并进行自我分析。",
+    writeFields: [
+      { label: "过去7天平均在床时长", placeholder: "例：8.5小时" },
+      { label: "过去7天平均实际睡眠时长", placeholder: "例：6小时" },
+      { label: "过去7天平均睡眠效率（实际÷在床×100%）", placeholder: "例：70%" },
+      { label: "我的睡眠偏好：早起型/晚睡型？入睡困难/早醒为主？", placeholder: "" },
+      { label: "周报中让我意外的数据是：", placeholder: "" },
+      { label: "一句话总结我的睡眠模式", placeholder: "" },
+    ]
+  },
+  // Day 9: 制定初始睡眠时间表
+  {
+    tag: "第9天",
+    overview: ["慢性失眠核心成因：在床时间远超睡眠能力", "睡眠时间表计算公式", "目标睡眠效率≥90%"],
+    content: `<h4>01 慢性失眠核心成因</h4>
+<p>案例：平均睡眠能力7.2小时，但每日在床上待9.6小时，每天2.4小时清醒躺床。</p>
+<p><strong>恶性循环</strong>：躺床时间过长 → 睡眠碎片化、入睡慢、频繁夜醒 → 焦虑 → 更早上床、白天补觉 → 睡眠动力进一步下降。</p>
+<p><strong>解决方案</strong>：睡眠限制（睡眠轻断食），压缩在床上的时间，匹配自身睡眠能力，挤压碎片化睡眠。</p>
+<h4>02 睡眠时间表计算公式</h4>
+<p>目标睡眠效率 ≥ 90%</p>
+<p><strong>所需最大在床时长 = 平均实际睡眠时长 ÷ 0.9</strong></p>
+<h4>重要说明</h4>
+<p>「最早上床时间」不是强制入睡时间，到点仍不困可继续活动，困意出现再上床。</p>`,
+    writeTitle: "制定我的初始睡眠时间表",
+    writeGuide: "根据第8天的周报数据，计算并制定专属睡眠时间表。",
+    writeFields: [
+      { label: "我的平均实际睡眠时长是：", placeholder: "例：6小时" },
+      { label: "让睡眠效率达到90%以上，我需要的在床时间是：（÷0.9）", placeholder: "例：6÷0.9≈6.7小时" },
+      { label: "我打算设定的起床时间是：（固定、易坚持）", placeholder: "例：7:30" },
+      { label: "我打算设定的最早上床时间是：", placeholder: "例：起床时间往前推6.7小时 = 00:50" },
+      { label: "制定时间表时，我的顾虑和感受是：", placeholder: "" },
+    ]
+  },
+  // Day 10: 睡眠轻断食
+  {
+    tag: "第10天",
+    overview: ["睡眠轻断食原理", "三大核心顾虑解答", "执行时间表三大硬性规则"],
+    content: `<h4>01 睡眠轻断食原理</h4>
+<p>主动压缩在床时长，制造适度睡眠缺口，提升睡眠动力，让睡眠变得整块、高效；短期白天疲惫不适是正常信号，代表方案起效。</p>
+<h4>02 三大核心顾虑解答</h4>
+<p><strong>顾虑1：少睡伤身</strong><br>睡眠剥夺（想睡但被迫不能睡）≠ 睡眠轻断食（主动匹配自身能力）。短期轻微缺觉人体可耐受，不会造成长期损伤。</p>
+<p><strong>顾虑2：需要永久缩短睡眠时间</strong><br>时间表动态调整，每周根据睡眠效率微调；效率达标后逐步延长在床时长，找到适配区间。</p>
+<p><strong>顾虑3：该方法是否有效</strong><br>睡眠缺口会自动提升深度睡眠占比，缩短入睡时间、减少夜醒。</p>
+<h4>03 执行时间表三大硬性规则</h4>
+<ol>
+<li>固定起床时间，不赖床</li>
+<li>不早于规定「最早上床时间」躺床</li>
+<li>白天补觉严格控制在半小时内，尽量不午睡</li>
+</ol>`,
+    writeTitle: "练习书写",
+    writeGuide: "回应三大硬性规则，提前想好应对难点的方法。",
+    writeFields: [
+      { label: "今日睡眠日记", placeholder: "上床：  入睡：  起床：  效率：  评分：" },
+      { label: "三大规则中，对我来说较有挑战性的是：", placeholder: "" },
+      { label: "针对于此，我提前想到了下面的办法来帮自己坚持行动：", placeholder: "" },
+      { label: "我愿意用短期的不适感交换长期获益（写下你的承诺）：", placeholder: "「睡眠轻断食」可能会在近期给我带来一些不适感，但它是科学的、安全的，我愿意..." },
+    ]
+  },
+  // Day 11: 识别清醒不适感
+  {
+    tag: "第11天",
+    overview: ["唯一睡眠生理信号：困", "其余所有不舒服都属于清醒不适感", "各类不适感对应正确缓解方式"],
+    content: `<h4>01 核心区分</h4>
+<p>唯一睡眠生理信号：<strong>困</strong>；其余所有不舒服都属于清醒不适感，无法帮助入睡：</p>
+<ul>
+<li>累/肌肉疲劳、躯体疼痛、无聊、烦躁、思绪杂乱、情绪低落</li>
+</ul>
+<p>以上感受只能通过休息缓解，不等于需要睡觉；顺着这些感受上床，极易失眠。</p>
+<h4>02 常见错误认知</h4>
+<p>大众惯性思维：累了/头疼/无聊就睡觉；失眠人群频繁踩坑，躺床后依旧清醒，加重焦虑。</p>
+<h4>03 各类不适感对应正确缓解方式</h4>
+<ol>
+<li>身体疲惫：户外散步、拉伸、静坐休息，不一定睡觉</li>
+<li>头痛肩颈痛：按摩、热敷、调整体态，睡眠仅临时掩盖痛感</li>
+<li>无聊单调：增加互动、新鲜活动，丰富外界刺激</li>
+<li>情绪烦躁：倾诉、放松练习、运动疏导</li>
+</ol>`,
+    writeTitle: "练习书写",
+    writeGuide: "识别自己容易混淆的清醒不适感，和困意做出区分。",
+    writeFields: [
+      { label: "今日睡眠日记", placeholder: "上床：  入睡：  起床：  效率：  评分：" },
+      { label: "当我感到以下清醒感受时，虽然不困，我也会想去睡觉：", placeholder: "清醒感受1：\n清醒感受2：\n清醒感受3：" },
+      { label: "今天，我用什么方式应对了清醒不适感（而没有上床）？", placeholder: "" },
+    ]
+  },
+  // Day 12: 休息活动清单
+  {
+    tag: "第12天",
+    overview: ["偶尔违反时间表无需自责", "主动安排愉悦放松活动", "把睡眠当修复手段之一，而非唯一解药"],
+    content: `<h4>01 心态：偶尔违反时间表无需自责</h4>
+<p>白天补觉、提前上床、赖床不代表计划失败，不用自我否定；改变睡眠节律本身难度极高，允许弹性、循序渐进。</p>
+<h4>02 缓解白天不适思路</h4>
+<p>睡眠轻断食阶段身体对疲惫、无聊、疼痛更敏感，主动给自己安排愉悦放松活动，减少对睡眠的依赖；把睡眠当作修复手段之一，而非唯一解药。</p>
+<h4>通用休息活动清单（灵感参考）</h4>
+<p>游泳、公园散步、看云、玩乐器、陪宠物、发呆、轻度游戏、冰淇淋、徒步、敷面膜、按摩SPA、泡澡、拍照、巧克力、咖啡厅静坐、正念冥想、户外捡落叶、光脚行走、球类运动、逛展馆、陌生聊天、联系亲友、听音乐、跳舞、看电影、手工编织、泡脚、做饭、写诗……</p>`,
+    writeTitle: "练习书写",
+    writeGuide: "今天给自己安排一个放松活动，并建立你的专属休息清单。",
+    writeFields: [
+      { label: "今日睡眠日记", placeholder: "上床：  入睡：  起床：  效率：  评分：" },
+      { label: "今天我给自己安排的一个休息、放松，让我感到开心的活动是：", placeholder: "" },
+      { label: "我的练习感受是：", placeholder: "" },
+      { label: "其它我喜欢的休息活动（建立专属清单）：", placeholder: "活动1：\n活动2：\n活动3：\n活动4：" },
+    ]
+  },
+  // Day 13: 清醒-睡意量尺
+  {
+    tag: "第13天",
+    overview: ["困意的身体信号", "不要刻意追逐困意", "白天维持清醒提升夜间睡眠动力", "清醒-睡意量尺（1-7分）"],
+    content: `<h4>01 如何识别困意</h4>
+<p>困意常和疲惫同步出现，容易混淆；刻意寻找困意时，意识主动清醒，困意直接消失。</p>
+<p><strong>困意身体信号</strong>：频繁打哈欠、眼皮沉重、控制不住点头、反应迟钝、阅读重复看不懂文字。</p>
+<p>关键提醒：不要刻意追逐困意，越迫切越清醒；困意是自然出现的信号，无需主动寻找。</p>
+<h4>02 白天维持清醒，提升夜间睡眠动力</h4>
+<ol>
+<li>多接触户外阳光，校准生物钟，强化日间清醒感</li>
+<li>丰富日间活动：多社交、接触新鲜信息，避免长时间单调重复工作</li>
+<li>稳定三餐，咀嚼提升清醒度；冷水洗脸、多喝水；咖啡/茶控制饮用时段</li>
+</ol>
+<h4>03 清醒-睡意量尺（1~7分）</h4>
+<ol>
+<li>清醒：精力充沛，毫无困意</li>
+<li>较清醒：注意力可集中</li>
+<li>松弛：清醒放松，对外刺激反应正常</li>
+<li>昏沉：头脑发沉，警觉下降</li>
+<li>迷糊：昏沉迟钝，对事物失去兴趣</li>
+<li>瞌睡：强烈想躺下，需要费力维持清醒</li>
+<li>入睡：无需费力保持清醒，很快睡着</li>
+</ol>
+<p>晚间尽量等到5分及以上困意，再上床。</p>`,
+    writeTitle: "练习书写",
+    writeGuide: "全天不同时段记录清醒-睡意量尺评分，观察自身困意波动规律。",
+    writeFields: [
+      { label: "今日睡眠日记", placeholder: "上床：  入睡：  起床：  效率：  评分：" },
+      { label: "上午（时间___）：睡意量尺评分 + 感受", placeholder: "分数：\n感受：" },
+      { label: "下午（时间___）：睡意量尺评分 + 感受", placeholder: "分数：\n感受：" },
+      { label: "晚间（时间___）：睡意量尺评分 + 感受", placeholder: "分数：\n感受：" },
+      { label: "今天上床时，我的睡意量尺评分是：", placeholder: "" },
+    ]
+  },
+  // Day 14: 不合适的睡眠线索
+  {
+    tag: "第14天",
+    overview: ["四类错误睡眠线索", "时间线索、情绪线索、环境线索、疲劳线索"],
+    content: `<h4>四类错误睡眠线索</h4>
+<p><strong>1. 时间线索</strong>：「必须睡满8小时、十一点前必须上床」等社会规训内化；到点强制躺床，不困硬睡，加重失眠焦虑。</p>
+<p><strong>2. 情绪线索</strong>：抑郁、焦虑、悲伤时，试图用睡觉逃避负面情绪；睡眠只能临时掩盖情绪，无法解决根源。长期情绪低落伴随失眠，需寻求心理咨询/医院精神科帮助。</p>
+<p><strong>3. 环境线索</strong>：阴雨天、餐后血糖升高、午休集体趴睡、闷热/昏暗环境，即便不困也想躺卧，消耗夜间睡眠动力。</p>
+<p><strong>4. 疲劳线索</strong>：长期重复工作、肌肉酸痛、精神耗竭，误以为需要睡觉，实际仅需要轻度休息。</p>`,
+    writeTitle: "练习书写",
+    writeGuide: "识别你自己的错误睡眠线索，并制定应对方案。",
+    writeFields: [
+      { label: "今日睡眠日记", placeholder: "上床：  入睡：  起床：  效率：  评分：" },
+      { label: "我容易出现的睡眠线索（分类描述）：", placeholder: "时间线索：\n情绪线索：\n环境线索：\n疲劳线索：" },
+      { label: "遇到这些线索时，我可以怎么做替代上床？", placeholder: "" },
+    ]
+  },
+  // Day 15: 复盘睡眠日记
+  {
+    tag: "第15天",
+    overview: ["第三周核心主题：夜间醒后无法复睡", "坚持作息的重要性", "效果不佳的两大原因及解决方案"],
+    content: `<h4>01 第三周核心主题：夜间醒后无法复睡</h4>
+<h4>02 坚持作息的重要性</h4>
+<p>睡眠效率刚有起色时不要随意睡懒觉、白天长时间补觉；生物钟稳定需要持续坚持，短期限制睡眠是临时方案，无需长期执行；每个人调整周期不同，效果出现快慢有差异，不用和他人对比。</p>
+<h4>03 效果不佳两大原因</h4>
+<ol>
+<li>睡眠日记填写随意，数据失真，睡眠时间表设计失去参考；需重新记录基线数据</li>
+<li>作息执行混乱：频繁早睡、晚起、日间长时间补觉、入睡起床时间波动；无需自责，重新稳定作息即可</li>
+</ol>
+<h4>04 特殊情况提醒</h4>
+<p>失眠伴随外伤、慢性疼痛、抑郁焦虑等躯体/心理疾病，坚持练习同时建议就医，疗法可同步辅助治疗。</p>`,
+    writeTitle: "复盘睡眠日记·调整时间表",
+    writeGuide: "回顾过去一周的睡眠数据，评估时间表执行情况并做调整。",
+    writeFields: [
+      { label: "今日睡眠日记", placeholder: "上床：  入睡：  起床：  效率：  评分：" },
+      { label: "本周平均睡眠效率：", placeholder: "" },
+      { label: "时间表执行情况（按时起床、不早上床、控制午睡）：", placeholder: "" },
+      { label: "执行中的难点和应对方法：", placeholder: "" },
+      { label: "下周是否需要调整时间表？如何调整？", placeholder: "" },
+    ]
+  },
+  // Day 16: 刺激控制疗法
+  {
+    tag: "第16天",
+    overview: ["床与清醒、焦虑绑定是失眠核心行为问题", "重建床与睡眠联结三大规则", "刺激控制疗法"],
+    content: `<h4>01 失眠核心行为问题：床与清醒、焦虑绑定</h4>
+<p>条件反射原理（巴普洛夫实验）：</p>
+<ul>
+<li>睡眠良好人群：床 = 睡眠放松暗示</li>
+<li>失眠人群：床上长时间辗转反侧、焦虑、工作、玩手机，床变成清醒、烦躁的提示，一躺下立刻精神</li>
+</ul>
+<h4>02 重建床与睡眠联结三大规则</h4>
+<ol>
+<li>床<strong>仅用于睡觉与性生活</strong>；杜绝床上办公、刷手机、追剧、思考烦心事</li>
+<li>困了再上床：到达规定上床时间但无困意，继续做舒缓活动，不提前躺床；用清醒睡意量尺判断困意</li>
+<li>醒了就起床：入睡困难、半夜醒来清醒无困意，立刻离开床铺，昏暗环境做安静放松事，困意回归再回床</li>
+</ol>
+<p><strong>补充</strong>：担心整夜无困意：白天不补觉前提下，整夜清醒概率极低；短暂一晚少睡不会损伤健康，次日睡眠动力会大幅提升。</p>`,
+    writeTitle: "练习书写",
+    writeGuide: "回顾昨晚起床行为，制定今晚刺激控制方案。",
+    writeFields: [
+      { label: "今日睡眠日记", placeholder: "上床：  入睡：  起床：  效率：  评分：" },
+      { label: "昨晚入睡困难/夜醒时，我做了什么？", placeholder: "" },
+      { label: "今晚，如果清醒无困意，我计划做：", placeholder: "起床后我会...\n在哪里...\n做什么..." },
+    ]
+  },
+  // Day 17: 夜间活动清单
+  {
+    tag: "第17天",
+    overview: ["夜醒后必须离开床的原因", "夜间活动三大要求", "制定专属夜间活动清单"],
+    content: `<h4>01 夜醒后行动原则</h4>
+<p>清醒无困意必须离开床，做愉悦、放松、不刺激的活动；干坐发呆会持续关注睡眠焦虑，进一步推走困意。</p>
+<h4>02 夜间活动三大要求</h4>
+<ol>
+<li><strong>活动类型</strong>：低情绪刺激、舒缓放松（阅读、手工、瑜伽、听播客、泡脚等）</li>
+<li><strong>光线限制</strong>：全程昏暗暖黄光，禁止强光、手机平板（蓝光抑制褪黑素）</li>
+<li><strong>正念适配</strong>：正念可增强身体觉察力，白天熟练后夜间使用；初学者夜间正念容易越练越清醒，优先轻度手工、阅读</li>
+</ol>`,
+    writeTitle: "我的夜间活动清单",
+    writeGuide: "制定具体的夜间活动方案，让夜醒有所依靠而不是焦虑等待。",
+    writeFields: [
+      { label: "今日睡眠日记", placeholder: "上床：  入睡：  起床：  效率：  评分：" },
+      { label: "夜间醒来睡不着的时候，我可以起床做下面这些活动：", placeholder: "活动1：（准备物品：）\n活动2：（准备物品：）\n活动3：（准备物品：）" },
+      { label: "灯光方案（什么颜色的灯、放在哪里）：", placeholder: "" },
+      { label: "活动区域准备（沙发/地毯/书桌，需要什么物品）：", placeholder: "" },
+    ]
+  },
+  // Day 18: 醒后判断标准
+  {
+    tag: "第18天",
+    overview: ["什么时候起床？", "什么时候回到床上？", "担心越玩越清醒怎么办", "失眠者常见负面思维调整"],
+    content: `<h4>01 什么时候起床？</h4>
+<p>上床难入睡、半夜醒来反复翻身，觉察到自己持续清醒、无法快速入睡，立刻起身；无需看表计时，相信身体感受。</p>
+<h4>02 什么时候回到床上？</h4>
+<p>唯一标准：困意重新出现；禁止频繁看时钟，计时会加重焦虑；完全投入夜间活动，不要时刻监控困意。</p>
+<h4>03 担心越玩越清醒怎么办？</h4>
+<p>短期一晚睡眠减少，会提升次日整体睡眠动力，长期收益更高；清醒只是身体当下状态，无需对抗、消灭。</p>
+<h4>04 失眠者常见负面思维调整</h4>
+<p>不要灾难化解读失眠：不要认定睡不好会重病、崩溃；把睡眠从「高标准疗愈工具」转换为平等的朋友，接纳它的不完美。</p>`,
+    writeTitle: "练习书写",
+    writeGuide: "回顾夜醒经历，强化正确的起床/回床判断。",
+    writeFields: [
+      { label: "今日睡眠日记", placeholder: "上床：  入睡：  起床：  效率：  评分：" },
+      { label: "昨晚夜醒时，我的身体感受是：（困意量尺几分）", placeholder: "" },
+      { label: "我做了什么？是否起床？效果如何？", placeholder: "" },
+      { label: "如果下次类似情况发生，我会：", placeholder: "" },
+    ]
+  },
+  // Day 19: 接纳睡眠不完美
+  {
+    tag: "第19天",
+    overview: ["完整睡眠四阶段", "四大不合理睡眠期待破除", "夜醒空间提前布置方案"],
+    content: `<h4>01 完整睡眠四阶段</h4>
+<ol>
+<li><strong>阶段二（浅睡眠）</strong>：脑电波间歇性振荡，易被唤醒</li>
+<li><strong>阶段三、四（深度睡眠）</strong>：心率、血压、代谢降至全天最低，修复核心阶段，整夜仅1~2小时；延长卧床时间只会增加浅睡眠，不会增加深睡</li>
+<li><strong>快速眼动期（做梦）</strong>：肌肉暂时瘫痪，负责记忆、情绪调节；整夜多次做梦，忘记梦境只是记忆问题</li>
+</ol>
+<h4>02 四大不合理睡眠期待（破除执念）</h4>
+<ol>
+<li>期待一：沾枕头立刻睡着——入睡是缓慢减速过程，无法瞬间切换</li>
+<li>期待二：整夜深度沉睡——深睡眠总量有限，后半夜以浅睡、梦境为主</li>
+<li>期待三：整夜完全不醒——一夜无意识醒6次以上属于正常</li>
+<li>期待四：完全不做梦——完整睡眠周期必然产生梦境</li>
+</ol>
+<h4>03 夜醒空间提前布置方案</h4>
+<ul>
+<li>提前规划夜间活动，备好全部物料</li>
+<li>舒适坐具：沙发、地毯、瑜伽垫，搭配抱枕</li>
+<li>灯光：可调暖光小夜灯，避免强光</li>
+<li>温度配套：薄毯、小风扇</li>
+<li>氛围：香薰、舒缓轻音乐</li>
+</ul>`,
+    writeTitle: "练习书写",
+    writeGuide: "布置夜醒空间，记录感受。",
+    writeFields: [
+      { label: "今日睡眠日记", placeholder: "上床：  入睡：  起床：  效率：  评分：" },
+      { label: "布置夜醒空间，我的感受是：", placeholder: "" },
+      { label: "我的夜醒空间布置方案：", placeholder: "位置：\n坐具：\n灯光：\n准备的活动物品：" },
+    ]
+  },
+  // Day 20: 调整睡眠时间表
+  {
+    tag: "第20天",
+    overview: ["每周调整时间表规则", "效率>90%：提前15分钟上床", "效率<85%：延后15分钟上床", "干扰睡眠的客观因素"],
+    content: `<h4>01 每周调整时间表规则（核心指标：平均睡眠效率）</h4>
+<ol>
+<li>平均效率 ＞ 90%：最早上床时间提前15分钟</li>
+<li>85% ≤ 效率 ≤ 90%：维持当前作息不变</li>
+<li>效率 ＜ 85%：最早上床时间延后15分钟</li>
+<li>硬性底线：总在床时长不得低于5小时</li>
+</ol>
+<h4>02 整体执行原则</h4>
+<p>始终遵循「困了再睡，醒了就起」；作息调整如同试鞋，小幅增减时长找到适配区间；未坚持无需气馁，可多次复训。</p>
+<h4>03 干扰睡眠的客观因素</h4>
+<p>搬家、婴幼儿照料、夜班、长期噪音强光、影响睡眠药物、酒精滥用，需同步针对性调整或寻求专业医疗帮助。</p>`,
+    writeTitle: "本周睡眠复盘与时间表调整",
+    writeGuide: "计算本周平均睡眠效率，根据规则调整下周时间表。",
+    writeFields: [
+      { label: "本周平均睡眠效率：", placeholder: "（7天实际睡眠÷在床时长的平均值）" },
+      { label: "根据规则，下周时间表调整：", placeholder: "效率>90%：上床提前15分钟 → 新时间：\n或 维持不变 / 延后15分钟" },
+      { label: "练习中哪些体验出乎你的意料？", placeholder: "" },
+      { label: "睡眠之外，生活有无正向改变？", placeholder: "" },
+      { label: "还需要哪些支持？后续行动计划？", placeholder: "" },
+    ]
+  },
+  // Day 21: 21天总结
+  {
+    tag: "第21天",
+    overview: ["21天里程碑总结", "休营期规则", "核心技能：困了再睡，醒了就起", "完成后测问卷"],
+    content: `<h4>01 21天里程碑总结</h4>
+<p>完成完整21天练习代表持续为自身睡眠健康行动，进度快慢因人而异，无需和他人对比；可根据自身情况选择复训基础营，或进阶睡眠认知课程。</p>
+<h4>02 休营期规则</h4>
+<ol>
+<li>休营可自主休息，也可持续自主练习</li>
+<li>全部工具永久开放：睡眠日记、放松音频、每日练习文稿</li>
+<li>核心技能已掌握：记录睡眠日记、动态调整作息、核心行动准则「困了再睡，醒了就起」</li>
+</ol>
+<h4>03 成为自己的睡眠管理专家</h4>
+<p>经过21天的系统练习，你已经掌握了：</p>
+<ul>
+<li>了解自己的睡眠模式与能力</li>
+<li>识别困意与清醒不适感的区别</li>
+<li>制定并动态调整个人睡眠时间表</li>
+<li>建立床与睡眠的正向联结</li>
+<li>夜醒后的健康应对策略</li>
+<li>接纳睡眠的不完美，放下过度努力</li>
+</ul>`,
+    writeTitle: "回顾初心·21天总结",
+    writeGuide: "暂停一下，在出发前，盘点这21天的成就与改变。",
+    writeFields: [
+      { label: "1. 在本期练习开始时，我最想获得什么？", placeholder: "" },
+      { label: "2. 如果完全实现是100分，你现在在进度条的哪个位置？", placeholder: "___分" },
+      { label: "3. 哪些迹象让你知道，你已经获得了一些进展？", placeholder: "" },
+      { label: "4. 在这个过程中，你做了什么，让这些改变发生了？", placeholder: "成就行动1：\n我是如何做到的：\n成就行动2：\n我是如何做到的：" },
+      { label: "5. 就在此刻，为自己的成就庆祝！", placeholder: "我想对自己说..." },
+      { label: "6. 你希望接下来还能做到什么？", placeholder: "" },
+      { label: "7. 你是否愿意继续保持「困了再睡，醒了就起」的核心原则？", placeholder: "" },
+    ]
+  },
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let currentDay = 0;
+let currentTab = 'audio'; // 'audio' | 'content' | 'writing'
+let completed = [];
+let writingData = {};
+let pendingImportData = null;
+
+function loadData() {
+  try {
+    const stored = localStorage.getItem('sleep_ebp_v1');
+    if (stored) {
+      const d = JSON.parse(stored);
+      completed = d.completed || [];
+      writingData = d.writingData || {};
+    }
+  } catch(e) {}
+}
+
+function saveData() {
+  try {
+    localStorage.setItem('sleep_ebp_v1', JSON.stringify({ completed, writingData }));
+  } catch(e) {}
+}
+
+// ─── EXPORT / IMPORT ─────────────────────────────────────────────────────────
+function exportData() {
+  const data = { version: 1, exportTime: new Date().toISOString(), completed, writingData };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `睡眠EBP数据_${new Date().toLocaleDateString('zh-CN').replace(/\//g, '-')}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('数据已导出');
+}
+
+function triggerImport() {
+  document.getElementById('import-file').value = '';
+  document.getElementById('import-file').click();
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.completed || !data.writingData) throw new Error('格式不正确');
+      pendingImportData = data;
+      document.getElementById('confirm-import-btn').onclick = confirmImport;
+      document.getElementById('import-modal').classList.add('show');
+    } catch(err) {
+      showToast('导入失败：文件格式不正确');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function confirmImport() {
+  if (!pendingImportData) return;
+  completed = pendingImportData.completed || [];
+  writingData = pendingImportData.writingData || {};
+  saveData();
+  pendingImportData = null;
+  closeModal();
+  renderSidebar();
+  renderMain();
+  updateProgress();
+  showToast('数据已成功导入');
+}
+
+function closeModal() {
+  document.getElementById('import-modal').classList.remove('show');
+}
+document.getElementById('import-modal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// ─── TOAST ───────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ─── SIDEBAR ─────────────────────────────────────────────────────────────────
+function renderSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  let html = '';
+  const sections = [
+    { label: '启程', range: [0, 0] },
+    { label: '第一周：了解睡眠·建立基线', range: [1, 7] },
+    { label: '第二周：制定睡眠时间表', range: [8, 14] },
+    { label: '第三周：刺激控制·接纳不完美', range: [15, 21] },
+  ];
+  sections.forEach(sec => {
+    html += `<div class="sidebar-section-title">${sec.label}</div>`;
+    for (let i = sec.range[0]; i <= sec.range[1]; i++) {
+      const d = DAYS[i];
+      const isActive = i === currentDay;
+      const isDone = completed.includes(i);
+      const hasWriteData = Object.keys(writingData).some(k => k.startsWith(`${i}-`));
+      html += `<div class="day-item ${isActive ? 'active' : ''} ${isDone ? 'completed' : ''}" onclick="goDay(${i})">
+        <div class="day-num">${isDone && !isActive ? '✓' : i}</div>
+        <div class="day-text">
+          <div class="day-title">${d.title}</div>
+          <div class="day-tag">${d.tag}</div>
+        </div>
+        <div class="day-badges">
+          ${hasWriteData ? `<div class="day-badge-dot has-write" title="有书写记录"></div>` : ''}
+        </div>
+      </div>`;
+    }
+  });
+  sidebar.innerHTML = html;
+}
+
+// ─── CALENDAR ────────────────────────────────────────────────────────────────
+function renderCalendar() {
+  let html = '';
+  for (let i = 0; i <= 21; i++) {
+    const cls = i === currentDay ? 'current' : completed.includes(i) ? 'done' : '';
+    html += `<div class="cal-dot ${cls}" title="第 ${i} 天" onclick="goDay(${i})"></div>`;
+  }
+  return html;
+}
+
+// ─── TABS ────────────────────────────────────────────────────────────────────
+function setTab(tab) {
+  currentTab = tab;
+  renderMain();
+}
+
+// ─── MAIN RENDER ─────────────────────────────────────────────────────────────
+function renderMain() {
+  const day = DAYS[currentDay];
+  const dc = DAY_CONTENT[currentDay];
+  const isDone = completed.includes(currentDay);
+  const audioSrc = BASE_URL + day.audio;
+
+  let tabContent = '';
+
+  if (currentTab === 'audio') {
+    tabContent = `
+      <div class="card">
+        <div class="card-label">语音引导</div>
+        <div class="player-top">
+          <div class="player-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+            </svg>
+          </div>
+          <div class="player-info">
+            <div class="player-title">${day.title}</div>
+            <div class="player-hint">点击播放，跟随音频完成今日练习</div>
+          </div>
+        </div>
+        <audio controls preload="none">
+          <source src="${audioSrc}" type="audio/mpeg">你的浏览器不支持音频播放。
+        </audio>
+        <div class="action-row">
+          <a href="${audioSrc}" target="_blank" class="btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            在新窗口打开
+          </a>
+          <a href="${audioSrc}" download class="btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            下载音频
+          </a>
+        </div>
+      </div>
+    `;
+  } else if (currentTab === 'content') {
+    const overviewItems = dc.overview.map(o => `<li>${o}</li>`).join('');
+    tabContent = `
+      <div class="card">
+        <div class="card-label amber">${dc.tag} · 今日学习内容</div>
+        <div class="read-overview">
+          <div class="read-overview-label">今日概览</div>
+          <ol>${overviewItems}</ol>
+        </div>
+        <div class="read-section">${dc.content}</div>
+      </div>
+    `;
+  } else {
+    // writing tab
+    tabContent = renderWritingTab(dc);
+  }
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="day-header">
+      <div class="calendar-strip">${renderCalendar()}</div>
+      <div class="day-badge-pill">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        第 ${currentDay} 天 · ${day.tag}
+      </div>
+      <h2>${day.title}</h2>
+      <div class="day-meta">主讲：孙轶群 · 语音练习 · 课程内容 · 书写练习</div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn ${currentTab === 'audio' ? 'active' : ''}" onclick="setTab('audio')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        语音练习
+      </button>
+      <button class="tab-btn ${currentTab === 'content' ? 'active' : ''}" onclick="setTab('content')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        课程内容
+      </button>
+      <button class="tab-btn ${currentTab === 'writing' ? 'active' : ''}" onclick="setTab('writing')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        书写练习
+      </button>
+    </div>
+
+    ${tabContent}
+
+    <div class="nav-row">
+      <button class="nav-btn" onclick="goDay(${currentDay - 1})" ${currentDay === 0 ? 'disabled' : ''}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        上一天
+      </button>
+      <button class="nav-btn complete-btn ${isDone ? 'done' : ''}" onclick="markDone(${currentDay})">
+        ${isDone ? '✓ 已完成' : '标记为完成'}
+      </button>
+      <button class="nav-btn" onclick="goDay(${currentDay + 1})" ${currentDay === 21 ? 'disabled' : ''}>
+        下一天
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  `;
+
+  updateProgress();
+}
+
+// ─── WRITING TAB ─────────────────────────────────────────────────────────────
+function renderWritingTab(dc) {
+  let html = `
+    <div class="card">
+      <div class="card-label indigo">${dc.writeTitle}</div>
+      ${dc.writeGuide ? `<div class="write-guide">${dc.writeGuide}</div>` : ''}
+  `;
+
+  dc.writeFields.forEach((field, fi) => {
+    const key = `${currentDay}-f-${fi}`;
+    const val = writingData[key] || '';
+    html += `
+      <div class="write-field">
+        <label>${field.label}</label>
+        <textarea data-key="${key}" placeholder="${field.placeholder || ''}" rows="3">${escapeHtml(val)}</textarea>
+      </div>
+    `;
+  });
+
+  html += `
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem;">
+        <span class="save-indicator" id="save-indicator">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          已自动保存
+        </span>
+      </div>
+    </div>
+  `;
+  return html;
+}
+
+function escapeHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── TEXTAREA AUTO-SAVE ───────────────────────────────────────────────────────
+let saveTimer = null;
+document.addEventListener('input', (e) => {
+  if (e.target.tagName === 'TEXTAREA' && e.target.dataset.key) {
+    writingData[e.target.dataset.key] = e.target.value;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      saveData();
+      renderSidebar();
+      const ind = document.getElementById('save-indicator');
+      if (ind) {
+        ind.classList.add('show');
+        setTimeout(() => ind.classList.remove('show'), 1800);
+      }
+    }, 600);
+  }
+});
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────
+function goDay(n) {
+  if (n < 0 || n > 21) return;
+  currentDay = n;
+  currentTab = 'audio';
+  renderSidebar();
+  renderMain();
+  window.scrollTo(0, 0);
+}
+
+function markDone(n) {
+  if (!completed.includes(n)) {
+    completed.push(n);
+    saveData();
+    showToast(`第 ${n} 天已完成 🌙`);
+  }
+  renderSidebar();
+  renderMain();
+}
+
+function updateProgress() {
+  const pct = Math.round((completed.length / 22) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `${completed.length} / 22 天`;
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+loadData();
+goDay(0);
+</script>
+</body>
+</html>
