@@ -32,6 +32,7 @@
     --ielts-writing: #5E5CE6;
     --ielts-speaking: #FF6B6B;
     --ielts-listening: #32ADE6;
+    --ielts-reading: #30D158;
 
     --radius: 16px;
     --tab-h: 83px;
@@ -175,6 +176,7 @@
   .quick-btn.ielts-writing::before   { background: var(--ielts-writing); }
   .quick-btn.ielts-speaking::before  { background: var(--ielts-speaking); }
   .quick-btn.ielts-listening::before { background: var(--ielts-listening); }
+  .quick-btn.ielts-reading::before   { background: var(--ielts-reading); }
   .quick-btn .q-icon { font-size: 28px; }
   .quick-btn .q-label { font-size: 13px; font-weight: 600; color: var(--text); }
   .quick-btn .q-sub   { font-size: 11px; color: var(--label); }
@@ -197,6 +199,7 @@
   .stat-val.ielts-writing   { color: var(--ielts-writing); }
   .stat-val.ielts-speaking  { color: var(--ielts-speaking); }
   .stat-val.ielts-listening { color: var(--ielts-listening); }
+  .stat-val.ielts-reading   { color: var(--ielts-reading); }
   .stat-name { font-size: 11px; color: var(--label); margin-top: 4px; }
 
   /* ===== RECENT LIST ===== */
@@ -217,6 +220,7 @@
   .record-icon.ielts-writing   { background: #EEEEFF; }
   .record-icon.ielts-speaking  { background: #FFECEC; }
   .record-icon.ielts-listening { background: #E5F4FF; }
+  .record-icon.ielts-reading   { background: #E3FBE8; }
   .record-info { flex: 1; min-width: 0; }
   .record-title { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .record-time  { font-size: 12px; color: var(--label); margin-top: 1px; }
@@ -251,9 +255,6 @@
   }
   .checkin-card.effort .checkin-icon { background: #FFF3E0; }
   .checkin-card.sleep  .checkin-icon { background: #EEEEFF; }
-  .checkin-card.ielts-writing   .checkin-icon { background: #EEEEFF; }
-  .checkin-card.ielts-speaking  .checkin-icon { background: #FFECEC; }
-  .checkin-card.ielts-listening .checkin-icon { background: #E5F4FF; }
   .checkin-info { flex: 1; min-width: 0; }
   .checkin-title { font-size: 15px; font-weight: 600; color: var(--text); }
   .checkin-sub { font-size: 12px; color: var(--label); margin-top: 2px; }
@@ -269,9 +270,67 @@
   }
   .checkin-card.effort.done .checkin-check { background: var(--effort); border-color: var(--effort); color: #fff; }
   .checkin-card.sleep.done  .checkin-check { background: var(--sleep);  border-color: var(--sleep);  color: #fff; }
-  .checkin-card.ielts-writing.done   .checkin-check { background: var(--ielts-writing);   border-color: var(--ielts-writing);   color: #fff; }
-  .checkin-card.ielts-speaking.done  .checkin-check { background: var(--ielts-speaking);  border-color: var(--ielts-speaking);  color: #fff; }
-  .checkin-card.ielts-listening.done .checkin-check { background: var(--ielts-listening); border-color: var(--ielts-listening); color: #fff; }
+
+  /* ===== IELTS STUDY PLAN ===== */
+  .plan-summary-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .plan-summary-top { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
+  .plan-summary-title { font-size:15px; font-weight:600; }
+  .plan-summary-pct { font-size:13px; color:var(--label); font-weight:600; }
+  .plan-progress-track { height:8px; border-radius:4px; background:#E5E5EA; overflow:hidden; }
+  .plan-progress-fill { height:100%; background:var(--ielts-writing); border-radius:4px; transition:width .2s; }
+
+  .plan-week-scroll { display:flex; gap:8px; overflow-x:auto; padding: 4px 2px 10px; -webkit-overflow-scrolling:touch; }
+  .plan-week-scroll::-webkit-scrollbar { display:none; }
+  .plan-week-chip {
+    flex-shrink:0;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--card);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--label);
+    cursor:pointer;
+    border: 1.5px solid transparent;
+    white-space: nowrap;
+    transition: background .12s, color .12s, border-color .12s;
+  }
+  .plan-week-chip.active { background:#EAF2FF; color:var(--blue); border-color:var(--blue); }
+
+  .plan-phase-label { font-size:13px; color:var(--label); margin: 2px 4px 10px; }
+
+  .plan-day-card { background:var(--card); border-radius:var(--radius); padding:14px 16px; margin-bottom:10px; }
+  .plan-day-card.today { outline: 2px solid var(--blue); outline-offset: -2px; }
+  .plan-day-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+  .plan-day-title { font-size:15px; font-weight:600; }
+  .plan-day-title .plan-day-date { font-weight:400; color:var(--label); font-size:12px; margin-left:6px; }
+  .plan-day-tag { font-size:11px; padding:2px 8px; border-radius:999px; background:#EAF2FF; color:var(--blue); font-weight:600; flex-shrink:0; }
+  .plan-task-row { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-top:0.5px solid var(--separator); }
+  .plan-task-row:first-of-type { border-top:none; }
+  .plan-task-icon { width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; margin-top:1px; }
+  .plan-task-icon.listening { background:#E5F4FF; }
+  .plan-task-icon.reading   { background:#E3FBE8; }
+  .plan-task-icon.writing   { background:#EEEEFF; }
+  .plan-task-icon.speaking  { background:#FFECEC; }
+  .plan-task-text { flex:1; font-size:13.5px; line-height:1.4; color:var(--text); }
+  .plan-task-text.done { color:var(--label); text-decoration: line-through; }
+  .plan-task-off { flex:1; font-size:13.5px; color:var(--label); font-style:italic; padding-top:2px; }
+  .plan-task-check {
+    width:22px; height:22px; border-radius:50%;
+    border:1.5px solid var(--separator);
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px; color:transparent; flex-shrink:0; margin-top:1px;
+    transition: background .12s, border-color .12s, color .12s;
+    cursor:pointer;
+  }
+  .plan-task-check.done { color:#fff; }
+  .plan-task-check.listening.done { background:var(--ielts-listening); border-color:var(--ielts-listening); }
+  .plan-task-check.reading.done   { background:var(--ielts-reading);   border-color:var(--ielts-reading); }
+  .plan-task-check.writing.done   { background:var(--ielts-writing);   border-color:var(--ielts-writing); }
+  .plan-task-check.speaking.done  { background:var(--ielts-speaking);  border-color:var(--ielts-speaking); }
 
   /* ===== DOT MATRIX CHART ===== */
   .chart-wrap {
@@ -422,6 +481,7 @@
   .chip.ielts-writing-chip.active   { color: #3A2FA0; border-color: var(--ielts-writing);   background: #EEEEFF; }
   .chip.ielts-speaking-chip.active  { color: #C03030; border-color: var(--ielts-speaking);  background: #FFECEC; }
   .chip.ielts-listening-chip.active { color: #1A6FA0; border-color: var(--ielts-listening); background: #E5F4FF; }
+  .chip.ielts-reading-chip.active   { color: #1A7A36; border-color: var(--ielts-reading);   background: #E3FBE8; }
 
   .bristol-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 6px; }
   .bristol-btn {
@@ -685,6 +745,26 @@
           <span class="q-label">扔垃圾</span>
           <span class="q-sub">记录清理</span>
         </button>
+        <button class="quick-btn ielts-writing" onclick="openSheet('ielts-writing')">
+          <span class="q-icon">✍️</span>
+          <span class="q-label">写作</span>
+          <span class="q-sub">雅思练习</span>
+        </button>
+        <button class="quick-btn ielts-speaking" onclick="openSheet('ielts-speaking')">
+          <span class="q-icon">🗣️</span>
+          <span class="q-label">口语</span>
+          <span class="q-sub">雅思练习</span>
+        </button>
+        <button class="quick-btn ielts-listening" onclick="openSheet('ielts-listening')">
+          <span class="q-icon">🎧</span>
+          <span class="q-label">听力</span>
+          <span class="q-sub">雅思练习</span>
+        </button>
+        <button class="quick-btn ielts-reading" onclick="openSheet('ielts-reading')">
+          <span class="q-icon">📖</span>
+          <span class="q-label">阅读</span>
+          <span class="q-sub">雅思练习</span>
+        </button>
       </div>
     </div>
 
@@ -735,6 +815,10 @@
         <div class="stat-card">
           <div class="stat-val ielts-listening" id="stat-ielts-listening">0</div>
           <div class="stat-name">雅思听力</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val ielts-reading" id="stat-ielts-reading">0</div>
+          <div class="stat-name">雅思阅读</div>
         </div>
       </div>
     </div>
@@ -805,6 +889,7 @@
           <div class="legend-item"><div class="legend-dot" style="background:var(--ielts-writing)"></div><span class="legend-label">写作</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--ielts-speaking)"></div><span class="legend-label">口语</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--ielts-listening)"></div><span class="legend-label">听力</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--ielts-reading)"></div><span class="legend-label">阅读</span></div>
           <div style="margin-left:auto;display:flex;align-items:center;gap:4px">
             <span style="font-size:11px;color:var(--label)">少</span>
             <div style="display:flex;gap:2px">
@@ -879,6 +964,30 @@
     <div style="height:16px"></div>
   </div>
 
+  <div class="screen" id="screen-plan" style="display:none">
+    <div class="nav-header">
+      <h1>备考计划</h1>
+      <div class="nav-sub">雅思8周计划 · 听力/阅读/写作/口语</div>
+    </div>
+
+    <div class="section">
+      <div class="plan-summary-card">
+        <div class="plan-summary-top">
+          <div class="plan-summary-title">总体进度</div>
+          <div class="plan-summary-pct" id="plan-overall-pct">0/0 · 0%</div>
+        </div>
+        <div class="plan-progress-track"><div class="plan-progress-fill" id="plan-overall-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top:16px">
+      <div class="plan-week-scroll" id="plan-week-scroll"></div>
+      <div class="plan-phase-label" id="plan-phase-label"></div>
+      <div id="plan-days-list"></div>
+    </div>
+    <div style="height:16px"></div>
+  </div>
+
   <!-- ====== TAB BAR ====== -->
   <div class="tab-bar">
     <div class="tab-item active" id="tab-summary" onclick="switchTab('summary')">
@@ -889,6 +998,11 @@
     <div class="tab-item" id="tab-chart" onclick="switchTab('chart')">
       <span class="tab-icon">📊</span>
       <span class="tab-label">图表</span>
+      <div class="tab-dot"></div>
+    </div>
+    <div class="tab-item" id="tab-plan" onclick="switchTab('plan')">
+      <span class="tab-icon">📅</span>
+      <span class="tab-label">计划</span>
       <div class="tab-dot"></div>
     </div>
     <div class="tab-item" id="tab-manage" onclick="switchTab('manage')">
@@ -1353,6 +1467,48 @@
   </div>
 </div>
 
+<!-- ====== IELTS READING SHEET ====== -->
+<div class="sheet" id="sheet-ielts-reading">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">📖 雅思阅读练习</div>
+    <div class="sheet-close" onclick="closeSheet()">完成</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">练习篇章</div>
+      <div class="chip-row" id="ielts-reading-passage">
+        <div class="chip ielts-reading-chip" data-val="Passage 1" onclick="toggleChipExclusive(this,'ielts-reading-passage')">P1</div>
+        <div class="chip ielts-reading-chip" data-val="Passage 2" onclick="toggleChipExclusive(this,'ielts-reading-passage')">P2</div>
+        <div class="chip ielts-reading-chip" data-val="Passage 3" onclick="toggleChipExclusive(this,'ielts-reading-passage')">P3</div>
+        <div class="chip ielts-reading-chip" data-val="全套" onclick="toggleChipExclusive(this,'ielts-reading-passage')">全套</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">练习时长（分钟）</div>
+      <div class="chip-row" id="ielts-reading-duration">
+        <div class="chip generic" data-val="20" onclick="toggleChipExclusive(this,'ielts-reading-duration')">20</div>
+        <div class="chip generic" data-val="40" onclick="toggleChipExclusive(this,'ielts-reading-duration')">40</div>
+        <div class="chip generic" data-val="60" onclick="toggleChipExclusive(this,'ielts-reading-duration')">60</div>
+      </div>
+      <input type="number" id="ielts-reading-duration-input" placeholder="或手动输入分钟数…" min="1" max="999" style="margin-top:8px">
+    </div>
+    <div class="form-section">
+      <div class="form-label">得分/备注</div>
+      <input type="text" id="ielts-reading-note" placeholder="得分或备注…">
+    </div>
+    <div class="form-section">
+      <div class="form-label">时间</div>
+      <div class="time-edit" onclick="editTime('ielts-reading-time')">
+        <span>记录时间</span>
+        <span class="time-edit-val" id="ielts-reading-time-display"></span>
+      </div>
+      <input type="datetime-local" id="ielts-reading-time" style="display:none" onchange="updateTimeDisplay('ielts-reading-time')">
+    </div>
+    <button class="save-btn" style="background:var(--ielts-reading)" onclick="saveRecord('ielts-reading')">保存记录</button>
+  </div>
+</div>
+
 <!-- ====== EXPORT SHEET ====== -->
 <div class="sheet" id="sheet-export">
   <div class="sheet-handle"></div>
@@ -1468,9 +1624,6 @@ function getRecords() { return loadData().records; }
 const CHECKIN_CAMPAIGNS = [
   { id: 'effort', icon: '🔥', name: '有效努力', sub: '每日打卡', end: '2026-07-21' },
   { id: 'sleep',  icon: '😴', name: '睡眠行动', sub: '每日打卡', end: '2026-07-23' },
-  { id: 'ielts-writing',   icon: '✍️', name: '雅思写作', sub: '每日打卡', end: '2026-07-27', recordType: 'ielts-writing' },
-  { id: 'ielts-speaking',  icon: '🗣️', name: '雅思口语', sub: '每日打卡', end: '2026-07-19', recordType: 'ielts-speaking' },
-  { id: 'ielts-listening', icon: '🎧', name: '雅思听力', sub: '每日打卡', end: '2026-07-12', recordType: 'ielts-listening' },
 ];
 const CHECKIN_STORAGE_KEY = 'lifelog_checkins_v1';
 
@@ -1492,24 +1645,10 @@ function isCampaignActive(c) {
   return todayDateStr() <= c.end;
 }
 function toggleCheckin(id) {
-  const campaign = CHECKIN_CAMPAIGNS.find(c => c.id === id);
-  if (campaign && campaign.recordType) {
-    // 表单型打卡：打开对应 Sheet，保存后由 saveRecord 标记今日完成
-    openSheet(campaign.recordType);
-    return;
-  }
   const data = loadCheckins();
   const today = todayDateStr();
   if (!data[id]) data[id] = {};
   data[id][today] = !data[id][today];
-  saveCheckins(data);
-  renderCheckins();
-}
-function markCheckinDone(id) {
-  const data = loadCheckins();
-  const today = todayDateStr();
-  if (!data[id]) data[id] = {};
-  data[id][today] = true;
   saveCheckins(data);
   renderCheckins();
 }
@@ -1523,19 +1662,13 @@ function renderCheckins() {
     list.innerHTML = '';
     return;
   }
+  section.style.display = 'block';
   const data = loadCheckins();
   const today = todayDateStr();
-  // 今日已打卡的卡片彻底隐藏，第二天 0 点自动恢复
-  const pending = active.filter(c => !(data[c.id] && data[c.id][today]));
-  if (!pending.length) {
-    section.style.display = 'none';
-    list.innerHTML = '';
-    return;
-  }
-  section.style.display = 'block';
-  list.innerHTML = pending.map(c => {
+  list.innerHTML = active.map(c => {
+    const done = !!(data[c.id] && data[c.id][today]);
     return `
-    <button class="checkin-card ${c.id}" onclick="toggleCheckin('${c.id}')">
+    <button class="checkin-card ${c.id}${done ? ' done' : ''}" onclick="toggleCheckin('${c.id}')">
       <div class="checkin-icon">${c.icon}</div>
       <div class="checkin-info">
         <div class="checkin-title">${c.name}</div>
@@ -1543,6 +1676,193 @@ function renderCheckins() {
       </div>
       <div class="checkin-check">✓</div>
     </button>`;
+  }).join('');
+}
+
+// ============================================================
+// IELTS STUDY PLAN (8-week schedule)
+// ============================================================
+// Monday of week 1. Weeks run Mon–Sun, 8 weeks total.
+const PLAN_START_DATE = new Date(2026, 6, 6); // 2026-07-06 (July is month index 6)
+const PLAN_STORAGE_KEY = 'lifelog_plan_v1';
+
+const PLAN_WEEK_LABELS = [
+  '第1-2周：诊断与基础重建',
+  '第1-2周：诊断与基础重建',
+  '第3-5周：分科强化',
+  '第3-5周：分科强化',
+  '第3-5周：分科强化',
+  '第6-7周：模考冲刺',
+  '第6-7周：模考冲刺',
+  '第8周：考前调整',
+];
+
+// Same daily template repeats every week per the source checklist.
+const PLAN_DAY_TEMPLATE = [
+  { day: '周一', tag: null, tasks: {
+      listening: '精听真题1篇：听写+标注错误类型（连读/弱读/生词）',
+      reading:   '真题1篇：限时练习+核心词汇整理',
+      writing:   'Task1练习：图表描述（20分钟计时）',
+      speaking:  '跟读模仿30分钟（BBC/TED片段），录音自评',
+  }},
+  { day: '周二', tag: null, tasks: {
+      listening: '真题一套（严格计时）+ 错题复盘',
+      reading:   '专项练习：判断题/段落匹配（按薄弱题型定）',
+      writing:   'Task2思路整理：一种题型的框架搭建',
+      speaking:  'Part1话题练习：3个话题，录音后自听纠音',
+  }},
+  { day: '周三', tag: null, tasks: {
+      listening: '精听真题1篇，跟读模仿语音语调',
+      reading:   '真题1篇：限时练习，总结同义替换规律',
+      writing:   'Task1批改复盘 + 重写薄弱部分',
+      speaking:  'Part2话题练习：2分钟陈述+复盘逻辑框架',
+  }},
+  { day: '周四', tag: null, tasks: {
+      listening: '真题一套（严格计时）+ 归类错误原因',
+      reading:   '生词复习30分钟 + 真题1篇',
+      writing:   'Task2完整写作（40分钟计时）',
+      speaking:  'Part3话题练习：观点表达，录音自评发音',
+  }},
+  { day: '周五', tag: null, tasks: {
+      listening: '精听+跟读30分钟，巩固弱项题型',
+      reading:   '专项练习：查漏补缺薄弱题型',
+      writing:   'Task2批改复盘 + 积累好句/连接词',
+      speaking:  '话题库整理：补充新素材，练习过渡衔接',
+  }},
+  { day: '周六', tag: '模考日', tasks: {
+      listening: '全真模考（听力部分，计时）',
+      reading:   '全真模考（阅读部分，计时）',
+      writing:   '模考后写一篇Task2（40分钟计时）',
+      speaking:  null,
+  }},
+  { day: '周日', tag: '复盘日', tasks: {
+      listening: '复盘本周听力错题，整理错误类型',
+      reading:   '整理本周生词表，滚动复习',
+      writing:   '复盘本周作文，检查是否重复犯错',
+      speaking:  '复盘本周口语录音，更新话题库',
+  }},
+];
+
+const PLAN_SUBJECT_META = {
+  listening: { icon: '🎧', label: '听力' },
+  reading:   { icon: '📖', label: '阅读' },
+  writing:   { icon: '✍️', label: '写作' },
+  speaking:  { icon: '🗣️', label: '口语' },
+};
+
+let selectedPlanWeek = null; // 1-8, lazily initialized to current week
+
+function planDateFor(week, dayIdx) {
+  const d = new Date(PLAN_START_DATE);
+  d.setDate(d.getDate() + (week - 1) * 7 + dayIdx);
+  return d;
+}
+function planDateStr(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function loadPlanData() {
+  try {
+    const raw = localStorage.getItem(PLAN_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch(e) { return {}; }
+}
+function savePlanData(data) {
+  localStorage.setItem(PLAN_STORAGE_KEY, JSON.stringify(data));
+}
+function planKey(week, dayIdx, subject) {
+  return `${week}-${dayIdx}-${subject}`;
+}
+function computeCurrentPlanWeek() {
+  const todayStr = planDateStr(new Date());
+  for (let w = 1; w <= 8; w++) {
+    const start = planDateStr(planDateFor(w, 0));
+    const end = planDateFor(w, 6); end.setHours(23,59,59,999);
+    if (todayStr <= planDateStr(end) && new Date(todayStr) >= new Date(start)) {
+      return w;
+    }
+  }
+  const firstStart = planDateFor(1, 0);
+  if (new Date(todayStr) < firstStart) return 1;
+  return 8;
+}
+function selectPlanWeek(w) {
+  selectedPlanWeek = w;
+  renderPlan();
+}
+function togglePlanTask(week, dayIdx, subject) {
+  const data = loadPlanData();
+  const key = planKey(week, dayIdx, subject);
+  data[key] = !data[key];
+  savePlanData(data);
+  renderPlan();
+}
+function renderPlan() {
+  if (selectedPlanWeek === null) selectedPlanWeek = computeCurrentPlanWeek();
+  const data = loadPlanData();
+  const todayStr = planDateStr(new Date());
+
+  // Overall progress across all 8 weeks
+  let totalTasks = 0, doneTasks = 0;
+  for (let w = 1; w <= 8; w++) {
+    PLAN_DAY_TEMPLATE.forEach((day, di) => {
+      Object.keys(PLAN_SUBJECT_META).forEach(subject => {
+        if (day.tasks[subject] === null) return;
+        totalTasks++;
+        if (data[planKey(w, di, subject)]) doneTasks++;
+      });
+    });
+  }
+  const pct = totalTasks ? Math.round((doneTasks / totalTasks) * 100) : 0;
+  document.getElementById('plan-overall-pct').textContent = `${doneTasks}/${totalTasks} · ${pct}%`;
+  document.getElementById('plan-overall-fill').style.width = `${pct}%`;
+
+  // Week chips
+  const weekScroll = document.getElementById('plan-week-scroll');
+  weekScroll.innerHTML = Array.from({length: 8}, (_, i) => i + 1).map(w => {
+    const start = planDateFor(w, 0);
+    return `<div class="plan-week-chip${w === selectedPlanWeek ? ' active' : ''}" onclick="selectPlanWeek(${w})">
+      第${w}周 · ${start.getMonth()+1}/${start.getDate()}
+    </div>`;
+  }).join('');
+
+  // Phase label
+  document.getElementById('plan-phase-label').textContent = PLAN_WEEK_LABELS[selectedPlanWeek - 1];
+
+  // Days list
+  const daysList = document.getElementById('plan-days-list');
+  daysList.innerHTML = PLAN_DAY_TEMPLATE.map((day, di) => {
+    const date = planDateFor(selectedPlanWeek, di);
+    const dateStr = planDateStr(date);
+    const isToday = dateStr === todayStr;
+    const dateLabel = `${date.getMonth()+1}/${date.getDate()}`;
+
+    const taskRows = Object.keys(PLAN_SUBJECT_META).map(subject => {
+      const meta = PLAN_SUBJECT_META[subject];
+      const text = day.tasks[subject];
+      if (text === null) {
+        return `
+        <div class="plan-task-row">
+          <div class="plan-task-icon ${subject}">${meta.icon}</div>
+          <div class="plan-task-off">${meta.label}：今日无安排</div>
+        </div>`;
+      }
+      const done = !!data[planKey(selectedPlanWeek, di, subject)];
+      return `
+      <div class="plan-task-row">
+        <div class="plan-task-icon ${subject}">${meta.icon}</div>
+        <div class="plan-task-text${done ? ' done' : ''}">${text}</div>
+        <div class="plan-task-check ${subject}${done ? ' done' : ''}" onclick="togglePlanTask(${selectedPlanWeek},${di},'${subject}')">✓</div>
+      </div>`;
+    }).join('');
+
+    return `
+    <div class="plan-day-card${isToday ? ' today' : ''}">
+      <div class="plan-day-header">
+        <div class="plan-day-title">${day.day}<span class="plan-day-date">${dateLabel}</span></div>
+        ${day.tag ? `<div class="plan-day-tag">${day.tag}</div>` : ''}
+      </div>
+      ${taskRows}
+    </div>`;
   }).join('');
 }
 
@@ -1645,13 +1965,14 @@ let pendingImport = null; // { toAdd:[], toUpdate:[] }
 // TAB NAV
 // ============================================================
 function switchTab(name) {
-  ['summary','chart','manage'].forEach(t => {
+  ['summary','chart','manage','plan'].forEach(t => {
     document.getElementById('screen-'+t).style.display = t===name ? 'block' : 'none';
     document.getElementById('tab-'+t).classList.toggle('active', t===name);
   });
   if (name === 'chart') { renderLifeHeatmap(); renderWaterCheckin(); renderIeltsHeatmap(); renderSummaryStats(); }
   if (name === 'manage') renderAllRecords();
   if (name === 'summary') renderSummary();
+  if (name === 'plan') renderPlan();
 }
 
 // ============================================================
@@ -1681,6 +2002,7 @@ function renderSummary() {
   document.getElementById('stat-ielts-writing').textContent   = today.filter(r=>r.type==='ielts-writing').length;
   document.getElementById('stat-ielts-speaking').textContent  = today.filter(r=>r.type==='ielts-speaking').length;
   document.getElementById('stat-ielts-listening').textContent = today.filter(r=>r.type==='ielts-listening').length;
+  document.getElementById('stat-ielts-reading').textContent   = today.filter(r=>r.type==='ielts-reading').length;
 
   // recent list
   const list = document.getElementById('recent-list');
@@ -1701,7 +2023,7 @@ function renderSummary() {
 }
 
 function typeIcon(t) {
-  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'💧':t==='trash'?'🗑️':t==='ielts-writing'?'✍️':t==='ielts-speaking'?'🗣️':t==='ielts-listening'?'🎧':'🧹';
+  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'💧':t==='trash'?'🗑️':t==='ielts-writing'?'✍️':t==='ielts-speaking'?'🗣️':t==='ielts-listening'?'🎧':t==='ielts-reading'?'📖':'🧹';
 }
 
 function recordTitle(r) {
@@ -1758,6 +2080,12 @@ function recordTitle(r) {
     if (r.section) parts.push(r.section);
     if (r.duration) parts.push(r.duration + ' 分钟');
     return parts.join(' · ') || '雅思听力';
+  }
+  if (r.type==='ielts-reading') {
+    const parts = [];
+    if (r.passage) parts.push(r.passage);
+    if (r.duration) parts.push(r.duration + ' 分钟');
+    return parts.join(' · ') || '雅思阅读';
   }
   return '记录';
 }
@@ -1820,6 +2148,12 @@ function openSheet(name) {
     document.getElementById('ielts-listening-duration-input').value = '';
     setTimeNow('ielts-listening-time');
   }
+  if (name==='ielts-reading') {
+    document.querySelectorAll('#sheet-ielts-reading .chip').forEach(c=>c.classList.remove('active'));
+    document.getElementById('ielts-reading-note').value = '';
+    document.getElementById('ielts-reading-duration-input').value = '';
+    setTimeNow('ielts-reading-time');
+  }
 
   currentSheet = name;
   document.getElementById('sheet-'+name).classList.add('visible');
@@ -1832,7 +2166,7 @@ function closeSheet() {
     document.getElementById('sheet-'+currentSheet).classList.remove('visible');
   }
   // also close detail, export, import
-  ['detail','export','import','shower','clean','exercise','water','trash','ielts-writing','ielts-speaking','ielts-listening'].forEach(n => {
+  ['detail','export','import','shower','clean','exercise','water','trash','ielts-writing','ielts-speaking','ielts-listening','ielts-reading'].forEach(n => {
     const el = document.getElementById('sheet-'+n);
     if (el) el.classList.remove('visible');
   });
@@ -2012,14 +2346,20 @@ function saveRecord(type) {
     rec.duration = parseInt(chipDur || inputDur) || 0;
     rec.note = document.getElementById('ielts-listening-note').value.trim();
   }
+  if (type==='ielts-reading') {
+    const t = document.getElementById('ielts-reading-time').value;
+    if (t) rec.timestamp = new Date(t).getTime();
+    rec.passage = document.querySelector('#ielts-reading-passage .chip.active')?.dataset.val || '';
+    const chipDur = document.querySelector('#ielts-reading-duration .chip.active')?.dataset.val;
+    const inputDur = document.getElementById('ielts-reading-duration-input').value;
+    rec.duration = parseInt(chipDur || inputDur) || 0;
+    rec.note = document.getElementById('ielts-reading-note').value.trim();
+  }
 
   addRecord(rec);
   closeSheet();
-  if (type==='ielts-writing' || type==='ielts-speaking' || type==='ielts-listening') {
-    markCheckinDone(type);
-  }
   renderSummary();
-  const toastMsg = type==='coffee'?'☕ 咖啡已记录':type==='bowel'?'💩 排便已记录':type==='shower'?'🚿 洗澡已记录':type==='exercise'?'🏃 运动已记录':type==='water'?'💧 接水已记录':type==='trash'?'🗑️ 扔垃圾已记录':type==='ielts-writing'?'✍️ 雅思写作已记录':type==='ielts-speaking'?'🗣️ 雅思口语已记录':type==='ielts-listening'?'🎧 雅思听力已记录':'🧹 清洁已记录';
+  const toastMsg = type==='coffee'?'☕ 咖啡已记录':type==='bowel'?'💩 排便已记录':type==='shower'?'🚿 洗澡已记录':type==='exercise'?'🏃 运动已记录':type==='water'?'💧 接水已记录':type==='trash'?'🗑️ 扔垃圾已记录':type==='ielts-writing'?'✍️ 雅思写作已记录':type==='ielts-speaking'?'🗣️ 雅思口语已记录':type==='ielts-listening'?'🎧 雅思听力已记录':type==='ielts-reading'?'📖 雅思阅读已记录':'🧹 清洁已记录';
   showToast(toastMsg);
   if (navigator.vibrate) navigator.vibrate(10);
 }
@@ -2076,6 +2416,12 @@ function showDetail(id) {
     if (r.trashTypes?.length) html += `<div class="detail-field"><div class="detail-key">垃圾类型</div><div class="detail-val">${r.trashTypes.join('、')}</div></div>`;
     if (r.bags)  html += `<div class="detail-field"><div class="detail-key">数量</div><div class="detail-val">${r.bags} 袋</div></div>`;
     if (r.note)  html += `<div class="detail-field"><div class="detail-key">备注</div><div class="detail-val">${r.note}</div></div>`;
+  }
+
+  if (r.type==='ielts-reading') {
+    if (r.passage)  html += `<div class="detail-field"><div class="detail-key">练习篇章</div><div class="detail-val">${r.passage}</div></div>`;
+    if (r.duration) html += `<div class="detail-field"><div class="detail-key">时长</div><div class="detail-val">${r.duration} 分钟</div></div>`;
+    if (r.note)     html += `<div class="detail-field"><div class="detail-key">备注</div><div class="detail-val">${r.note}</div></div>`;
   }
 
   html += `<button class="save-btn" style="background:var(--red);margin-top:24px" onclick="deleteFromDetail('${r.id}')">删除记录</button>`;
@@ -2457,12 +2803,13 @@ function renderIeltsHeatmap() {
   if (!canvas) return;
 
   const records = getRecords();
-  const ieltsTypes = ['ielts-writing','ielts-speaking','ielts-listening'];
-  const ieltsLabels = { 'ielts-writing':'写作', 'ielts-speaking':'口语', 'ielts-listening':'听力' };
+  const ieltsTypes = ['ielts-writing','ielts-speaking','ielts-listening','ielts-reading'];
+  const ieltsLabels = { 'ielts-writing':'写作', 'ielts-speaking':'口语', 'ielts-listening':'听力', 'ielts-reading':'阅读' };
   const ieltsColors = {
     'ielts-writing':  ['#EEEEFF','#9B97E8','#5E5CE6','#3B37B8'],
     'ielts-speaking': ['#FFECEC','#FF9F9F','#FF6B6B','#C03030'],
-    'ielts-listening':['#E5F4FF','#7EC8EF','#32ADE6','#1A6FA0']
+    'ielts-listening':['#E5F4FF','#7EC8EF','#32ADE6','#1A6FA0'],
+    'ielts-reading':  ['#E3FBE8','#7DDBA0','#30D158','#1A7A36']
   };
 
   // Build 12-week grid (84 days), newest day = today
@@ -2595,9 +2942,9 @@ function renderIeltsHeatmap() {
 
 function renderSummaryStats() {
   const records = getRecords();
-  const types = ['coffee','bowel','shower','clean','exercise','ielts-writing','ielts-speaking','ielts-listening'];
-  const names = { coffee:'咖啡', bowel:'排便', shower:'洗澡', clean:'清洁', exercise:'运动', 'ielts-writing':'雅思写作', 'ielts-speaking':'雅思口语', 'ielts-listening':'雅思听力' };
-  const colors = { coffee:'#A6836D', bowel:'#FFD60A', shower:'#5AC8FA', clean:'#34C759', exercise:'#FF6B35', 'ielts-writing':'#5E5CE6', 'ielts-speaking':'#FF6B6B', 'ielts-listening':'#32ADE6' };
+  const types = ['coffee','bowel','shower','clean','exercise','ielts-writing','ielts-speaking','ielts-listening','ielts-reading'];
+  const names = { coffee:'咖啡', bowel:'排便', shower:'洗澡', clean:'清洁', exercise:'运动', 'ielts-writing':'雅思写作', 'ielts-speaking':'雅思口语', 'ielts-listening':'雅思听力', 'ielts-reading':'雅思阅读' };
+  const colors = { coffee:'#A6836D', bowel:'#FFD60A', shower:'#5AC8FA', clean:'#34C759', exercise:'#FF6B35', 'ielts-writing':'#5E5CE6', 'ielts-speaking':'#FF6B6B', 'ielts-listening':'#32ADE6', 'ielts-reading':'#30D158' };
   const total = records.length || 1;
   const counts = {};
   types.forEach(t => counts[t]=records.filter(r=>r.type===t).length);
@@ -2640,6 +2987,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeNow('shower-time');
   setTimeNow('clean-time');
   setTimeNow('exercise-time');
+  setTimeNow('ielts-reading-time');
 
   // Cloud sync on startup
   syncFromCloud();
