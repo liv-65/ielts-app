@@ -745,26 +745,6 @@
           <span class="q-label">扔垃圾</span>
           <span class="q-sub">记录清理</span>
         </button>
-        <button class="quick-btn ielts-writing" onclick="openSheet('ielts-writing')">
-          <span class="q-icon">✍️</span>
-          <span class="q-label">写作</span>
-          <span class="q-sub">雅思练习</span>
-        </button>
-        <button class="quick-btn ielts-speaking" onclick="openSheet('ielts-speaking')">
-          <span class="q-icon">🗣️</span>
-          <span class="q-label">口语</span>
-          <span class="q-sub">雅思练习</span>
-        </button>
-        <button class="quick-btn ielts-listening" onclick="openSheet('ielts-listening')">
-          <span class="q-icon">🎧</span>
-          <span class="q-label">听力</span>
-          <span class="q-sub">雅思练习</span>
-        </button>
-        <button class="quick-btn ielts-reading" onclick="openSheet('ielts-reading')">
-          <span class="q-icon">📖</span>
-          <span class="q-label">阅读</span>
-          <span class="q-sub">雅思练习</span>
-        </button>
       </div>
     </div>
 
@@ -1657,18 +1637,19 @@ function renderCheckins() {
   const list = document.getElementById('checkin-list');
   if (!section || !list) return;
   const active = CHECKIN_CAMPAIGNS.filter(isCampaignActive);
-  if (!active.length) {
+  const data = loadCheckins();
+  const today = todayDateStr();
+  // 今日已完成的卡片要从列表里整个移除，而不是显示"已完成"的勾选态占位
+  const pending = active.filter(c => !(data[c.id] && data[c.id][today]));
+  if (!pending.length) {
     section.style.display = 'none';
     list.innerHTML = '';
     return;
   }
   section.style.display = 'block';
-  const data = loadCheckins();
-  const today = todayDateStr();
-  list.innerHTML = active.map(c => {
-    const done = !!(data[c.id] && data[c.id][today]);
+  list.innerHTML = pending.map(c => {
     return `
-    <button class="checkin-card ${c.id}${done ? ' done' : ''}" onclick="toggleCheckin('${c.id}')">
+    <button class="checkin-card ${c.id}" onclick="toggleCheckin('${c.id}')">
       <div class="checkin-icon">${c.icon}</div>
       <div class="checkin-info">
         <div class="checkin-title">${c.name}</div>
@@ -1751,6 +1732,7 @@ const PLAN_SUBJECT_META = {
 };
 
 let selectedPlanWeek = null; // 1-8, lazily initialized to current week
+let pendingPlanTask = null;  // { week, dayIdx, subject } while a sheet opened from the plan tab is pending save
 
 function planDateFor(week, dayIdx) {
   const d = new Date(PLAN_START_DATE);
@@ -1792,9 +1774,20 @@ function selectPlanWeek(w) {
 function togglePlanTask(week, dayIdx, subject) {
   const data = loadPlanData();
   const key = planKey(week, dayIdx, subject);
-  data[key] = !data[key];
-  savePlanData(data);
-  renderPlan();
+  const alreadyDone = !!data[key];
+
+  if (alreadyDone) {
+    // 取消打卡：直接翻转状态，不涉及记录表单（不会删除已生成的记录）
+    data[key] = false;
+    savePlanData(data);
+    renderPlan();
+    return;
+  }
+
+  // 未完成 → 打开对应科目的记录 Sheet，保存后才真正标记为已完成
+  pendingPlanTask = { week, dayIdx, subject };
+  openSheet('ielts-' + subject);
+  setTimeForDate('ielts-' + subject + '-time', planDateFor(week, dayIdx));
 }
 function renderPlan() {
   if (selectedPlanWeek === null) selectedPlanWeek = computeCurrentPlanWeek();
@@ -2173,6 +2166,7 @@ function closeSheet() {
   document.getElementById('overlay').classList.remove('visible');
   document.body.style.overflow = '';
   currentSheet = null;
+  pendingPlanTask = null; // 关闭 Sheet 但未保存时，清除待处理的计划打卡上下文
 }
 
 function showExportSheet() {
@@ -2205,6 +2199,16 @@ function showImportSheet() {
 function setTimeNow(id) {
   const el = document.getElementById(id);
   el.value = toDatetimeLocal(Date.now());
+  updateTimeDisplay(id);
+}
+
+// 用于「备考计划」打卡：把 Sheet 的时间字段设为指定日期（保留当前时分），
+// 而不是简单的"现在"，这样记录会落在任务对应的那一天而不是永远是今天
+function setTimeForDate(id, date) {
+  const el = document.getElementById(id);
+  const now = new Date();
+  const combined = new Date(date.getFullYear(), date.getMonth(), date.getDate(), now.getHours(), now.getMinutes());
+  el.value = toDatetimeLocal(combined.getTime());
   updateTimeDisplay(id);
 }
 
@@ -2357,8 +2361,19 @@ function saveRecord(type) {
   }
 
   addRecord(rec);
+  // 先记下待处理的计划打卡上下文，因为 closeSheet() 会把它清空
+  const finishedPlanTask = (pendingPlanTask && ('ielts-' + pendingPlanTask.subject) === type) ? pendingPlanTask : null;
   closeSheet();
   renderSummary();
+
+  // 若这次保存是从「备考计划」Tab 的任务打卡触发的，保存成功后才真正标记该任务已完成
+  if (finishedPlanTask) {
+    const planData = loadPlanData();
+    planData[planKey(finishedPlanTask.week, finishedPlanTask.dayIdx, finishedPlanTask.subject)] = true;
+    savePlanData(planData);
+    if (document.getElementById('screen-plan').style.display !== 'none') renderPlan();
+  }
+
   const toastMsg = type==='coffee'?'☕ 咖啡已记录':type==='bowel'?'💩 排便已记录':type==='shower'?'🚿 洗澡已记录':type==='exercise'?'🏃 运动已记录':type==='water'?'💧 接水已记录':type==='trash'?'🗑️ 扔垃圾已记录':type==='ielts-writing'?'✍️ 雅思写作已记录':type==='ielts-speaking'?'🗣️ 雅思口语已记录':type==='ielts-listening'?'🎧 雅思听力已记录':type==='ielts-reading'?'📖 雅思阅读已记录':'🧹 清洁已记录';
   showToast(toastMsg);
   if (navigator.vibrate) navigator.vibrate(10);
