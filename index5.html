@@ -28,7 +28,6 @@
     --clean: #34C759;
     --exercise: #FF6B35;
     --water: #30B0C7;
-    --drink: #A78BFA;
     --trash: #636366;
     --ielts-writing: #5E5CE6;
     --ielts-speaking: #FF6B6B;
@@ -173,7 +172,6 @@
   .quick-btn.clean::before  { background: var(--clean); }
   .quick-btn.exercise::before { background: var(--exercise); }
   .quick-btn.water::before    { background: var(--water); }
-  .quick-btn.drink::before    { background: var(--drink); }
   .quick-btn.trash::before    { background: var(--trash); }
   .quick-btn.ielts-writing::before   { background: var(--ielts-writing); }
   .quick-btn.ielts-speaking::before  { background: var(--ielts-speaking); }
@@ -197,7 +195,6 @@
   .stat-val.clean  { color: var(--clean); }
   .stat-val.exercise { color: var(--exercise); }
   .stat-val.water    { color: var(--water); }
-  .stat-val.drink    { color: var(--drink); }
   .stat-val.trash    { color: var(--trash); }
   .stat-val.ielts-writing   { color: var(--ielts-writing); }
   .stat-val.ielts-speaking  { color: var(--ielts-speaking); }
@@ -219,7 +216,6 @@
   .record-icon.clean  { background: #E3F9EC; }
   .record-icon.exercise { background: #FFF0EB; }
   .record-icon.water    { background: #E0F5F9; }
-  .record-icon.drink    { background: #F1ECFE; }
   .record-icon.trash    { background: #EBEBED; }
   .record-icon.ielts-writing   { background: #EEEEFF; }
   .record-icon.ielts-speaking  { background: #FFECEC; }
@@ -481,7 +477,6 @@
   .chip.generic.active      { color: var(--blue); border-color: var(--blue); background: #EAF2FF; }
   .chip.exercise-chip.active { color: #C94B18; border-color: var(--exercise); background: #FFF0EB; }
   .chip.water-chip.active    { color: #1A7A93; border-color: var(--water);    background: #E0F5F9; }
-  .chip.drink-chip.active    { color: #6B46C1; border-color: var(--drink);    background: #F1ECFE; }
   .chip.trash-chip.active    { color: #3A3A3C; border-color: var(--trash);    background: #EBEBED; }
   .chip.ielts-writing-chip.active   { color: #3A2FA0; border-color: var(--ielts-writing);   background: #EEEEFF; }
   .chip.ielts-speaking-chip.active  { color: #C03030; border-color: var(--ielts-speaking);  background: #FFECEC; }
@@ -720,11 +715,6 @@
           <span class="q-label">咖啡</span>
           <span class="q-sub">记录一杯</span>
         </button>
-        <button class="quick-btn drink" onclick="openSheet('drink')">
-          <span class="q-icon">🥤</span>
-          <span class="q-label">饮品</span>
-          <span class="q-sub">记录喝什么</span>
-        </button>
         <button class="quick-btn bowel" onclick="openSheet('bowel')">
           <span class="q-icon">💩</span>
           <span class="q-label">排便</span>
@@ -748,7 +738,7 @@
         <button class="quick-btn water" onclick="openSheet('water')">
           <span class="q-icon">💧</span>
           <span class="q-label">接水</span>
-          <span class="q-sub">记录打水</span>
+          <span class="q-sub">记录饮水</span>
         </button>
         <button class="quick-btn trash" onclick="openSheet('trash')">
           <span class="q-icon">🗑️</span>
@@ -769,10 +759,6 @@
         <div class="stat-card">
           <div class="stat-val coffee" id="stat-coffee">0</div>
           <div class="stat-name">咖啡</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val drink" id="stat-drink">0</div>
-          <div class="stat-name">饮品</div>
         </div>
         <div class="stat-card">
           <div class="stat-val bowel" id="stat-bowel">0</div>
@@ -840,7 +826,6 @@
       <div class="chart-wrap">
         <div class="heatmap-legend" style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
           <div class="legend-item"><div class="legend-dot" style="background:var(--coffee)"></div><span class="legend-label">咖啡</span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--drink)"></div><span class="legend-label">饮品</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--bowel)"></div><span class="legend-label">排便</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--shower)"></div><span class="legend-label">洗澡</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--clean)"></div><span class="legend-label">清洁</span></div>
@@ -1257,26 +1242,29 @@
 <div class="sheet" id="sheet-water">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
-    <div class="sheet-title">💧 记录打水</div>
+    <div class="sheet-title">💧 记录接水</div>
     <div class="sheet-close" onclick="closeSheet()">完成</div>
   </div>
   <div class="sheet-body">
     <div class="form-section">
       <div class="form-label">容量</div>
       <div class="chip-row" id="water-volume">
+        <div class="chip water-chip" data-val="150ml" onclick="toggleChipExclusive(this,'water-volume')">150ml</div>
+        <div class="chip water-chip" data-val="250ml" onclick="toggleChipExclusive(this,'water-volume')">250ml</div>
+        <div class="chip water-chip" data-val="350ml" onclick="toggleChipExclusive(this,'water-volume')">350ml</div>
         <div class="chip water-chip" data-val="500ml" onclick="toggleChipExclusive(this,'water-volume')">500ml</div>
-        <div class="chip water-chip" data-val="1L" onclick="toggleChipExclusive(this,'water-volume')">1L</div>
-        <div class="chip water-chip" data-val="1.5L" onclick="toggleChipExclusive(this,'water-volume')">1.5L</div>
-        <div class="chip water-chip" data-val="2L" onclick="toggleChipExclusive(this,'water-volume')">2L</div>
+        <div class="chip water-chip" data-val="750ml" onclick="toggleChipExclusive(this,'water-volume')">750ml</div>
       </div>
     </div>
     <div class="form-section">
-      <div class="form-label">水源</div>
-      <div class="chip-row" id="water-source">
-        <div class="chip generic" data-val="饮水机" onclick="toggleChipExclusive(this,'water-source')">饮水机</div>
-        <div class="chip generic" data-val="直饮水" onclick="toggleChipExclusive(this,'water-source')">直饮水</div>
-        <div class="chip generic" data-val="桶装水" onclick="toggleChipExclusive(this,'water-source')">桶装水</div>
-        <div class="chip generic" data-val="其他" onclick="toggleChipExclusive(this,'water-source')">其他</div>
+      <div class="form-label">饮品类型</div>
+      <div class="chip-row" id="water-kind">
+        <div class="chip generic" data-val="白开水" onclick="toggleChipExclusive(this,'water-kind')">白开水</div>
+        <div class="chip generic" data-val="温水" onclick="toggleChipExclusive(this,'water-kind')">温水</div>
+        <div class="chip generic" data-val="绿茶" onclick="toggleChipExclusive(this,'water-kind')">绿茶</div>
+        <div class="chip generic" data-val="花茶" onclick="toggleChipExclusive(this,'water-kind')">花茶</div>
+        <div class="chip generic" data-val="果汁" onclick="toggleChipExclusive(this,'water-kind')">果汁</div>
+        <div class="chip generic" data-val="其他" onclick="toggleChipExclusive(this,'water-kind')">其他</div>
       </div>
     </div>
     <div class="form-section">
@@ -1288,48 +1276,6 @@
       <input type="datetime-local" id="water-time" style="display:none" onchange="updateTimeDisplay('water-time')">
     </div>
     <button class="save-btn" style="background:var(--water)" onclick="saveRecord('water')">保存记录</button>
-  </div>
-</div>
-
-<!-- ====== DRINK SHEET ====== -->
-<div class="sheet" id="sheet-drink">
-  <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <div class="sheet-title">🥤 记录饮品</div>
-    <div class="sheet-close" onclick="closeSheet()">完成</div>
-  </div>
-  <div class="sheet-body">
-    <div class="form-section">
-      <div class="form-label">饮品类型</div>
-      <div class="chip-row" id="drink-kind">
-        <div class="chip drink-chip" data-val="白开水" onclick="toggleChipExclusive(this,'drink-kind')">白开水</div>
-        <div class="chip drink-chip" data-val="温水" onclick="toggleChipExclusive(this,'drink-kind')">温水</div>
-        <div class="chip drink-chip" data-val="绿茶" onclick="toggleChipExclusive(this,'drink-kind')">绿茶</div>
-        <div class="chip drink-chip" data-val="花茶" onclick="toggleChipExclusive(this,'drink-kind')">花茶</div>
-        <div class="chip drink-chip" data-val="果汁" onclick="toggleChipExclusive(this,'drink-kind')">果汁</div>
-        <div class="chip drink-chip" data-val="奶茶" onclick="toggleChipExclusive(this,'drink-kind')">奶茶</div>
-        <div class="chip drink-chip" data-val="其他" onclick="toggleChipExclusive(this,'drink-kind')">其他</div>
-      </div>
-    </div>
-    <div class="form-section">
-      <div class="form-label">容量</div>
-      <div class="chip-row" id="drink-volume">
-        <div class="chip drink-chip" data-val="150ml" onclick="toggleChipExclusive(this,'drink-volume')">150ml</div>
-        <div class="chip drink-chip" data-val="250ml" onclick="toggleChipExclusive(this,'drink-volume')">250ml</div>
-        <div class="chip drink-chip" data-val="350ml" onclick="toggleChipExclusive(this,'drink-volume')">350ml</div>
-        <div class="chip drink-chip" data-val="500ml" onclick="toggleChipExclusive(this,'drink-volume')">500ml</div>
-        <div class="chip drink-chip" data-val="750ml" onclick="toggleChipExclusive(this,'drink-volume')">750ml</div>
-      </div>
-    </div>
-    <div class="form-section">
-      <div class="form-label">时间</div>
-      <div class="time-edit" onclick="editTime('drink-time')">
-        <span>记录时间</span>
-        <span class="time-edit-val" id="drink-time-display"></span>
-      </div>
-      <input type="datetime-local" id="drink-time" style="display:none" onchange="updateTimeDisplay('drink-time')">
-    </div>
-    <button class="save-btn" style="background:var(--drink)" onclick="saveRecord('drink')">保存记录</button>
   </div>
 </div>
 
@@ -1732,47 +1678,51 @@ const PLAN_WEEK_LABELS = [
   '第8周：考前调整',
 ];
 
-// Same daily template repeats every week per the source checklist.
+// 每周对应使用的剑桥真题册号：第1周用剑11，依次递增到第8周剑18
+const PLAN_BOOK_BY_WEEK = ['剑11', '剑12', '剑13', '剑14', '剑15', '剑16', '剑17', '剑18'];
+
+// 每周任务结构相同，只有听力/阅读的具体真题册号不同，
+// 用 {{book}} 占位符表示，渲染时按 PLAN_BOOK_BY_WEEK[week-1] 替换。
 const PLAN_DAY_TEMPLATE = [
   { day: '周一', tag: null, tasks: {
-      listening: '精听真题1篇：听写+标注错误类型（连读/弱读/生词）',
-      reading:   '真题1篇：限时练习+核心词汇整理',
+      listening: '精听：{{book}} Test1 Section1，听写+标注错误类型（连读/弱读/生词）',
+      reading:   '阅读：{{book}} Test1 Passage1，限时练习+核心词汇整理',
       writing:   'Task1练习：图表描述（20分钟计时）',
       speaking:  '跟读模仿30分钟（BBC/TED片段），录音自评',
   }},
   { day: '周二', tag: null, tasks: {
-      listening: '真题一套（严格计时）+ 错题复盘',
-      reading:   '专项练习：判断题/段落匹配（按薄弱题型定）',
+      listening: '真题一套：{{book}} Test2 全套听力（严格计时）+ 错题复盘',
+      reading:   '专项练习：{{book}} Test2 阅读（判断题/段落匹配，按薄弱题型定）',
       writing:   'Task2思路整理：一种题型的框架搭建',
       speaking:  'Part1话题练习：3个话题，录音后自听纠音',
   }},
   { day: '周三', tag: null, tasks: {
-      listening: '精听真题1篇，跟读模仿语音语调',
-      reading:   '真题1篇：限时练习，总结同义替换规律',
+      listening: '精听：{{book}} Test1 Section2，跟读模仿语音语调',
+      reading:   '阅读：{{book}} Test1 Passage2，限时练习，总结同义替换规律',
       writing:   'Task1批改复盘 + 重写薄弱部分',
       speaking:  'Part2话题练习：2分钟陈述+复盘逻辑框架',
   }},
   { day: '周四', tag: null, tasks: {
-      listening: '真题一套（严格计时）+ 归类错误原因',
-      reading:   '生词复习30分钟 + 真题1篇',
+      listening: '真题一套：{{book}} Test3 全套听力（严格计时）+ 归类错误原因',
+      reading:   '生词复习30分钟 + {{book}} Test3 阅读（限时练习）',
       writing:   'Task2完整写作（40分钟计时）',
       speaking:  'Part3话题练习：观点表达，录音自评发音',
   }},
   { day: '周五', tag: null, tasks: {
-      listening: '精听+跟读30分钟，巩固弱项题型',
-      reading:   '专项练习：查漏补缺薄弱题型',
+      listening: '精听：{{book}} Test1 Section3+Section4，跟读30分钟，巩固弱项题型',
+      reading:   '阅读：{{book}} Test1 Passage3，查漏补缺薄弱题型',
       writing:   'Task2批改复盘 + 积累好句/连接词',
       speaking:  '话题库整理：补充新素材，练习过渡衔接',
   }},
   { day: '周六', tag: '模考日', tasks: {
-      listening: '全真模考（听力部分，计时）',
-      reading:   '全真模考（阅读部分，计时）',
-      writing:   '模考后写一篇Task2（40分钟计时）',
+      listening: '全真模考：{{book}} Test4 听力部分（严格计时）',
+      reading:   '全真模考：{{book}} Test4 阅读部分（严格计时）',
+      writing:   '模考后写一篇Task2（40分钟计时，可用{{book}} Test4作文题）',
       speaking:  null,
   }},
   { day: '周日', tag: '复盘日', tasks: {
-      listening: '复盘本周听力错题，整理错误类型',
-      reading:   '整理本周生词表，滚动复习',
+      listening: '复盘本周（{{book}}）听力错题，整理错误类型',
+      reading:   '整理本周（{{book}}）生词表，滚动复习',
       writing:   '复盘本周作文，检查是否重复犯错',
       speaking:  '复盘本周口语录音，更新话题库',
   }},
@@ -1843,6 +1793,11 @@ function togglePlanTask(week, dayIdx, subject) {
   openSheet('ielts-' + subject);
   setTimeForDate('ielts-' + subject + '-time', planDateFor(week, dayIdx));
 }
+function planTaskText(day, subject, week) {
+  const text = day.tasks[subject];
+  if (text === null) return null;
+  return text.replace('{{book}}', PLAN_BOOK_BY_WEEK[week - 1]);
+}
 function renderPlan() {
   if (selectedPlanWeek === null) selectedPlanWeek = computeCurrentPlanWeek();
   const data = loadPlanData();
@@ -1868,12 +1823,12 @@ function renderPlan() {
   weekScroll.innerHTML = Array.from({length: 8}, (_, i) => i + 1).map(w => {
     const start = planDateFor(w, 0);
     return `<div class="plan-week-chip${w === selectedPlanWeek ? ' active' : ''}" onclick="selectPlanWeek(${w})">
-      第${w}周 · ${start.getMonth()+1}/${start.getDate()}
+      第${w}周 · ${start.getMonth()+1}/${start.getDate()} · ${PLAN_BOOK_BY_WEEK[w-1]}
     </div>`;
   }).join('');
 
   // Phase label
-  document.getElementById('plan-phase-label').textContent = PLAN_WEEK_LABELS[selectedPlanWeek - 1];
+  document.getElementById('plan-phase-label').textContent = `${PLAN_WEEK_LABELS[selectedPlanWeek - 1]} · 使用：${PLAN_BOOK_BY_WEEK[selectedPlanWeek - 1]}`;
 
   // Days list
   const daysList = document.getElementById('plan-days-list');
@@ -1885,7 +1840,7 @@ function renderPlan() {
 
     const taskRows = Object.keys(PLAN_SUBJECT_META).map(subject => {
       const meta = PLAN_SUBJECT_META[subject];
-      const text = day.tasks[subject];
+      const text = planTaskText(day, subject, selectedPlanWeek);
       if (text === null) {
         return `
         <div class="plan-task-row">
@@ -2045,7 +2000,6 @@ function renderSummary() {
   document.getElementById('stat-clean').textContent  = today.filter(r=>r.type==='clean').length;
   document.getElementById('stat-exercise').textContent = today.filter(r=>r.type==='exercise').length;
   document.getElementById('stat-water').textContent   = today.filter(r=>r.type==='water').length;
-  document.getElementById('stat-drink').textContent   = today.filter(r=>r.type==='drink').length;
   document.getElementById('stat-trash').textContent   = today.filter(r=>r.type==='trash').length;
   document.getElementById('stat-ielts-writing').textContent   = today.filter(r=>r.type==='ielts-writing').length;
   document.getElementById('stat-ielts-speaking').textContent  = today.filter(r=>r.type==='ielts-speaking').length;
@@ -2071,7 +2025,7 @@ function renderSummary() {
 }
 
 function typeIcon(t) {
-  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'💧':t==='drink'?'🥤':t==='trash'?'🗑️':t==='ielts-writing'?'✍️':t==='ielts-speaking'?'🗣️':t==='ielts-listening'?'🎧':t==='ielts-reading'?'📖':'🧹';
+  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'💧':t==='trash'?'🗑️':t==='ielts-writing'?'✍️':t==='ielts-speaking'?'🗣️':t==='ielts-listening'?'🎧':t==='ielts-reading'?'📖':'🧹';
 }
 
 function recordTitle(r) {
@@ -2101,15 +2055,9 @@ function recordTitle(r) {
   }
   if (r.type==='water') {
     const parts = [];
-    if (r.source) parts.push(r.source);
-    if (r.volume) parts.push(r.volume);
-    return parts.join(' · ') || '打水';
-  }
-  if (r.type==='drink') {
-    const parts = [];
     if (r.kind) parts.push(r.kind);
     if (r.volume) parts.push(r.volume);
-    return parts.join(' · ') || '饮品';
+    return parts.join(' · ') || '接水';
   }
   if (r.type==='trash') {
     const parts = [];
@@ -2179,10 +2127,6 @@ function openSheet(name) {
     document.querySelectorAll('#sheet-water .chip').forEach(c=>c.classList.remove('active'));
     setTimeNow('water-time');
   }
-  if (name==='drink') {
-    document.querySelectorAll('#sheet-drink .chip').forEach(c=>c.classList.remove('active'));
-    setTimeNow('drink-time');
-  }
   if (name==='trash') {
     document.querySelectorAll('#sheet-trash .chip').forEach(c=>c.classList.remove('active'));
     document.getElementById('trash-note').value = '';
@@ -2224,7 +2168,7 @@ function closeSheet() {
     document.getElementById('sheet-'+currentSheet).classList.remove('visible');
   }
   // also close detail, export, import
-  ['detail','export','import','shower','clean','exercise','water','drink','trash','ielts-writing','ielts-speaking','ielts-listening','ielts-reading'].forEach(n => {
+  ['detail','export','import','shower','clean','exercise','water','trash','ielts-writing','ielts-speaking','ielts-listening','ielts-reading'].forEach(n => {
     const el = document.getElementById('sheet-'+n);
     if (el) el.classList.remove('visible');
   });
@@ -2375,14 +2319,7 @@ function saveRecord(type) {
     const t = document.getElementById('water-time').value;
     if (t) rec.timestamp = new Date(t).getTime();
     rec.volume = document.querySelector('#water-volume .chip.active')?.dataset.val || '';
-    rec.source = document.querySelector('#water-source .chip.active')?.dataset.val || '';
-  }
-
-  if (type==='drink') {
-    const t = document.getElementById('drink-time').value;
-    if (t) rec.timestamp = new Date(t).getTime();
-    rec.volume = document.querySelector('#drink-volume .chip.active')?.dataset.val || '';
-    rec.kind   = document.querySelector('#drink-kind .chip.active')?.dataset.val || '';
+    rec.kind   = document.querySelector('#water-kind .chip.active')?.dataset.val || '';
   }
 
   if (type==='trash') {
@@ -2446,7 +2383,7 @@ function saveRecord(type) {
     if (document.getElementById('screen-plan').style.display !== 'none') renderPlan();
   }
 
-  const toastMsg = type==='coffee'?'☕ 咖啡已记录':type==='drink'?'🥤 饮品已记录':type==='bowel'?'💩 排便已记录':type==='shower'?'🚿 洗澡已记录':type==='exercise'?'🏃 运动已记录':type==='water'?'💧 打水已记录':type==='trash'?'🗑️ 扔垃圾已记录':type==='ielts-writing'?'✍️ 雅思写作已记录':type==='ielts-speaking'?'🗣️ 雅思口语已记录':type==='ielts-listening'?'🎧 雅思听力已记录':type==='ielts-reading'?'📖 雅思阅读已记录':'🧹 清洁已记录';
+  const toastMsg = type==='coffee'?'☕ 咖啡已记录':type==='bowel'?'💩 排便已记录':type==='shower'?'🚿 洗澡已记录':type==='exercise'?'🏃 运动已记录':type==='water'?'💧 接水已记录':type==='trash'?'🗑️ 扔垃圾已记录':type==='ielts-writing'?'✍️ 雅思写作已记录':type==='ielts-speaking'?'🗣️ 雅思口语已记录':type==='ielts-listening'?'🎧 雅思听力已记录':type==='ielts-reading'?'📖 雅思阅读已记录':'🧹 清洁已记录';
   showToast(toastMsg);
   if (navigator.vibrate) navigator.vibrate(10);
 }
@@ -2495,11 +2432,6 @@ function showDetail(id) {
   }
 
   if (r.type==='water') {
-    if (r.source) html += `<div class="detail-field"><div class="detail-key">水源</div><div class="detail-val">${r.source}</div></div>`;
-    if (r.volume) html += `<div class="detail-field"><div class="detail-key">容量</div><div class="detail-val">${r.volume}</div></div>`;
-  }
-
-  if (r.type==='drink') {
     if (r.kind)   html += `<div class="detail-field"><div class="detail-key">饮品类型</div><div class="detail-val">${r.kind}</div></div>`;
     if (r.volume) html += `<div class="detail-field"><div class="detail-key">容量</div><div class="detail-val">${r.volume}</div></div>`;
   }
@@ -2693,15 +2625,14 @@ function renderLifeHeatmap() {
   if (!canvas) return;
 
   const records = getRecords();
-  const lifeTypes = ['coffee','drink','bowel','shower','clean','exercise'];
-  const lifeLabels = { coffee:'咖啡', bowel:'排便', shower:'洗澡', clean:'清洁', exercise:'运动', drink:'饮品' };
+  const lifeTypes = ['coffee','bowel','shower','clean','exercise'];
+  const lifeLabels = { coffee:'咖啡', bowel:'排便', shower:'洗澡', clean:'清洁', exercise:'运动' };
   const lifeColors = {
     coffee:   ['#F5EDE8','#C8A08A','#A6836D','#6B4F3A'],
     bowel:    ['#FFF8D6','#FFE680','#FFD60A','#B89500'],
     shower:   ['#E5F6FE','#8DDCF7','#5AC8FA','#1A8AB5'],
     clean:    ['#E3F9EC','#7DDBA0','#34C759','#1A7A36'],
     exercise: ['#FFF0EB','#FFAA88','#FF6B35','#C04010'],
-    drink:    ['#F1ECFE','#C9B3F5','#A78BFA','#6B46C1'],
   };
 
   const WEEKS = 12;
@@ -3035,9 +2966,9 @@ function renderIeltsHeatmap() {
 
 function renderSummaryStats() {
   const records = getRecords();
-  const types = ['coffee','drink','bowel','shower','clean','exercise','ielts-writing','ielts-speaking','ielts-listening','ielts-reading'];
-  const names = { coffee:'咖啡', drink:'饮品', bowel:'排便', shower:'洗澡', clean:'清洁', exercise:'运动', 'ielts-writing':'雅思写作', 'ielts-speaking':'雅思口语', 'ielts-listening':'雅思听力', 'ielts-reading':'雅思阅读' };
-  const colors = { coffee:'#A6836D', drink:'#A78BFA', bowel:'#FFD60A', shower:'#5AC8FA', clean:'#34C759', exercise:'#FF6B35', 'ielts-writing':'#5E5CE6', 'ielts-speaking':'#FF6B6B', 'ielts-listening':'#32ADE6', 'ielts-reading':'#30D158' };
+  const types = ['coffee','bowel','shower','clean','exercise','ielts-writing','ielts-speaking','ielts-listening','ielts-reading'];
+  const names = { coffee:'咖啡', bowel:'排便', shower:'洗澡', clean:'清洁', exercise:'运动', 'ielts-writing':'雅思写作', 'ielts-speaking':'雅思口语', 'ielts-listening':'雅思听力', 'ielts-reading':'雅思阅读' };
+  const colors = { coffee:'#A6836D', bowel:'#FFD60A', shower:'#5AC8FA', clean:'#34C759', exercise:'#FF6B35', 'ielts-writing':'#5E5CE6', 'ielts-speaking':'#FF6B6B', 'ielts-listening':'#32ADE6', 'ielts-reading':'#30D158' };
   const total = records.length || 1;
   const counts = {};
   types.forEach(t => counts[t]=records.filter(r=>r.type===t).length);
@@ -3080,7 +3011,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeNow('shower-time');
   setTimeNow('clean-time');
   setTimeNow('exercise-time');
-  setTimeNow('drink-time');
   setTimeNow('ielts-reading-time');
 
   // Cloud sync on startup
