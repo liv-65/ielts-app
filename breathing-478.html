@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4-7-8 呼吸引导</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f8f7f4;
+    --surface: #ffffff;
+    --border: rgba(0,0,0,0.1);
+    --border-strong: rgba(0,0,0,0.18);
+    --text-primary: #1a1a18;
+    --text-secondary: #5f5e5a;
+    --text-muted: #999890;
+    --radius: 8px;
+    --ring-bg: rgba(0,0,0,0.07);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #18181a;
+      --surface: #222224;
+      --border: rgba(255,255,255,0.1);
+      --border-strong: rgba(255,255,255,0.18);
+      --text-primary: #f0efe8;
+      --text-secondary: #a0a09a;
+      --text-muted: #666660;
+      --ring-bg: rgba(255,255,255,0.07);
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 2rem;
+    gap: 1.5rem;
+    max-width: 420px;
+    width: 100%;
+  }
+
+  h1 {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: .02em;
+  }
+
+  .phase-label {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--text-primary);
+    min-height: 34px;
+    transition: opacity .4s;
+  }
+
+  .sub-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    min-height: 22px;
+    transition: opacity .4s;
+  }
+
+  .ring-wrap {
+    position: relative;
+    width: 240px;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ring-svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  .ring-bg { fill: none; stroke: var(--ring-bg); stroke-width: 8; }
+
+  .ring-prog {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke: #378ADD;
+    stroke-dasharray: 659;
+    stroke-dashoffset: 659;
+    transition: stroke .6s;
+  }
+
+  .inner-circle {
+    width: 174px;
+    height: 174px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .count-num {
+    font-size: 52px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+
+  .count-sec {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .rounds-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .rounds-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    border: 0.5px solid var(--border-strong);
+    background: transparent;
+    transition: background .4s;
+  }
+
+  .dot.done { background: #378ADD; border-color: #378ADD; }
+
+  .btn {
+    padding: 11px 32px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border-strong);
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 15px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .18s, transform .1s;
+  }
+
+  .btn:hover { background: var(--surface); }
+  .btn:active { transform: scale(.97); }
+
+  .tip {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.7;
+    max-width: 300px;
+  }
+
+  .phase-inhale .ring-prog { stroke: #378ADD; }
+  .phase-hold   .ring-prog { stroke: #1D9E75; }
+  .phase-exhale .ring-prog { stroke: #7F77DD; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <h1>4-7-8 呼吸法</h1>
+  <div class="phase-label" id="phaseLabel">准备好了吗？</div>
+  <div class="sub-label"   id="subLabel">点击开始，跟着节奏呼吸</div>
+
+  <div class="ring-wrap">
+    <svg class="ring-svg" viewBox="0 0 240 240">
+      <circle class="ring-bg"   cx="120" cy="120" r="105"/>
+      <circle class="ring-prog" id="ringProg" cx="120" cy="120" r="105"/>
+    </svg>
+    <div class="inner-circle">
+      <span class="count-num" id="countNum">—</span>
+      <span class="count-sec" id="countSec"></span>
+    </div>
+  </div>
+
+  <div class="rounds-row">
+    <span class="rounds-label">轮次</span>
+    <div class="dot" id="d0"></div>
+    <div class="dot" id="d1"></div>
+    <div class="dot" id="d2"></div>
+    <div class="dot" id="d3"></div>
+  </div>
+
+  <button class="btn" id="mainBtn" onclick="toggle()">开始</button>
+
+  <p class="tip" id="tipText">
+    建议做 4 轮，约 1 分钟。<br>
+    鼻子吸气，嘴巴呼气效果最好。
+  </p>
+</div>
+
+<script>
+const PHASES = [
+  { name: "吸气", sub: "用鼻子缓缓吸气",    sec: 4, type: "inhale" },
+  { name: "屏气", sub: "轻轻憋住，不要紧张", sec: 7, type: "hold"   },
+  { name: "呼气", sub: "用嘴缓缓呼出",      sec: 8, type: "exhale" }
+];
+const TOTAL_ROUNDS = 4;
+const CIRCUM = 2 * Math.PI * 105;
+
+let running = false, phaseIdx = 0, roundIdx = 0, ticker = null;
+
+const phaseLabel = document.getElementById('phaseLabel');
+const subLabel   = document.getElementById('subLabel');
+const countNum   = document.getElementById('countNum');
+const countSec   = document.getElementById('countSec');
+const ringProg   = document.getElementById('ringProg');
+const mainBtn    = document.getElementById('mainBtn');
+const tipText    = document.getElementById('tipText');
+const app        = document.getElementById('app');
+
+ringProg.style.strokeDasharray  = CIRCUM;
+ringProg.style.strokeDashoffset = CIRCUM;
+
+function setRing(frac, type) {
+  ringProg.style.strokeDashoffset = CIRCUM * (1 - frac);
+  app.className = 'wrap phase-' + type;
+}
+
+function updateDots() {
+  for (let i = 0; i < TOTAL_ROUNDS; i++) {
+    document.getElementById('d' + i).classList.toggle('done', i < roundIdx);
+  }
+}
+
+function startPhase() {
+  const ph = PHASES[phaseIdx];
+  phaseLabel.textContent = ph.name;
+  subLabel.textContent   = ph.sub;
+  countNum.textContent   = ph.sec;
+  countSec.textContent   = '秒';
+  setRing(0, ph.type);
+
+  const total = ph.sec;
+  let elapsed = 0;
+  const step  = 0.05;
+
+  clearInterval(ticker);
+  ticker = setInterval(() => {
+    elapsed += step;
+    setRing(Math.min(elapsed / total, 1), ph.type);
+    const secs = Math.max(Math.ceil(total - elapsed), 1);
+    if (secs !== parseInt(countNum.textContent)) countNum.textContent = secs;
+
+    if (elapsed >= total) {
+      clearInterval(ticker);
+      nextPhase();
+    }
+  }, step * 1000);
+}
+
+function nextPhase() {
+  phaseIdx++;
+  if (phaseIdx >= PHASES.length) {
+    phaseIdx = 0;
+    roundIdx++;
+    updateDots();
+    if (roundIdx >= TOTAL_ROUNDS) { finish(); return; }
+  }
+  startPhase();
+}
+
+function finish() {
+  running = false;
+  phaseLabel.textContent = '做得很好！';
+  subLabel.textContent   = '可以安心闭眼了 ✨';
+  countNum.textContent   = '';
+  countSec.textContent   = '';
+  setRing(1, 'inhale');
+  mainBtn.textContent    = '再来一轮';
+  tipText.textContent    = '4-7-8 呼吸能激活副交感神经，帮助身体放松入睡。';
+  roundIdx = TOTAL_ROUNDS;
+  updateDots();
+}
+
+function reset() {
+  phaseIdx = 0; roundIdx = 0;
+  updateDots();
+  phaseLabel.textContent = '准备好了吗？';
+  subLabel.textContent   = '点击开始，跟着节奏呼吸';
+  countNum.textContent   = '—';
+  countSec.textContent   = '';
+  setRing(0, 'inhale');
+  app.className = 'wrap';
+}
+
+function toggle() {
+  if (running) {
+    clearInterval(ticker);
+    running = false;
+    mainBtn.textContent = '继续';
+  } else {
+    running = true;
+    if (roundIdx >= TOTAL_ROUNDS) reset();
+    mainBtn.textContent = '暂停';
+    startPhase();
+  }
+}
+</script>
+</body>
+</html>
