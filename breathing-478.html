@@ -6,177 +6,108 @@
 <title>4-7-8 呼吸引导</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #f8f7f4;
-    --surface: #ffffff;
-    --border: rgba(0,0,0,0.1);
-    --border-strong: rgba(0,0,0,0.18);
-    --text-primary: #1a1a18;
-    --text-secondary: #5f5e5a;
-    --text-muted: #999890;
-    --radius: 8px;
-    --ring-bg: rgba(0,0,0,0.07);
+    --bg: #f8f7f4; --surface: #ffffff;
+    --border: rgba(0,0,0,0.1); --border-strong: rgba(0,0,0,0.18);
+    --text-primary: #1a1a18; --text-secondary: #5f5e5a; --text-muted: #999890;
+    --radius: 8px; --ring-bg: rgba(0,0,0,0.07);
   }
-
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #18181a;
-      --surface: #222224;
-      --border: rgba(255,255,255,0.1);
-      --border-strong: rgba(255,255,255,0.18);
-      --text-primary: #f0efe8;
-      --text-secondary: #a0a09a;
-      --text-muted: #666660;
+      --bg: #18181a; --surface: #222224;
+      --border: rgba(255,255,255,0.1); --border-strong: rgba(255,255,255,0.18);
+      --text-primary: #f0efe8; --text-secondary: #a0a09a; --text-muted: #666660;
       --ring-bg: rgba(255,255,255,0.07);
     }
   }
-
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: var(--bg);
-    color: var(--text-primary);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: var(--bg); color: var(--text-primary);
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
   }
-
   .wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 3rem 2rem;
-    gap: 1.5rem;
-    max-width: 420px;
-    width: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 2.5rem 2rem 2rem; gap: 1.3rem; max-width: 420px; width: 100%;
   }
-
-  h1 {
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    letter-spacing: .02em;
-  }
-
-  .phase-label {
-    font-size: 24px;
-    font-weight: 500;
-    color: var(--text-primary);
-    min-height: 34px;
-    transition: opacity .4s;
-  }
-
-  .sub-label {
-    font-size: 14px;
-    color: var(--text-secondary);
-    min-height: 22px;
-    transition: opacity .4s;
-  }
+  h1 { font-size: 18px; font-weight: 500; color: var(--text-secondary); letter-spacing:.02em; }
+  .phase-label { font-size: 26px; font-weight: 500; color: var(--text-primary); min-height: 36px; }
+  .sub-label   { font-size: 14px; color: var(--text-secondary); min-height: 22px; }
 
   .ring-wrap {
-    position: relative;
-    width: 240px;
-    height: 240px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative; width: 240px; height: 240px;
+    display: flex; align-items: center; justify-content: center;
   }
-
-  .ring-svg {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    transform: rotate(-90deg);
-  }
-
-  .ring-bg { fill: none; stroke: var(--ring-bg); stroke-width: 8; }
-
+  .ring-svg { position:absolute; top:0; left:0; width:100%; height:100%; transform:rotate(-90deg); }
+  .ring-bg  { fill:none; stroke:var(--ring-bg); stroke-width:8; }
   .ring-prog {
-    fill: none;
-    stroke-width: 8;
-    stroke-linecap: round;
-    stroke: #378ADD;
-    stroke-dasharray: 659;
-    stroke-dashoffset: 659;
-    transition: stroke .6s;
+    fill:none; stroke-width:8; stroke-linecap:round; stroke:#378ADD;
+    stroke-dasharray:659; stroke-dashoffset:659; transition:stroke .6s;
   }
-
   .inner-circle {
-    width: 174px;
-    height: 174px;
-    border-radius: 50%;
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    position: relative;
-    z-index: 1;
+    width:174px; height:174px; border-radius:50%;
+    background:var(--surface); border:.5px solid var(--border);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:4px; position:relative; z-index:1;
   }
+  .count-num { font-size:52px; font-weight:500; color:var(--text-primary); line-height:1; }
+  .count-sec { font-size:14px; color:var(--text-secondary); }
 
-  .count-num {
-    font-size: 52px;
-    font-weight: 500;
-    color: var(--text-primary);
-    line-height: 1;
-  }
+  .rounds-row { display:flex; gap:10px; align-items:center; }
+  .rounds-label { font-size:13px; color:var(--text-secondary); }
+  .dot { width:11px; height:11px; border-radius:50%; border:.5px solid var(--border-strong); background:transparent; transition:background .4s; }
+  .dot.done { background:#378ADD; border-color:#378ADD; }
 
-  .count-sec {
-    font-size: 14px;
-    color: var(--text-secondary);
-  }
-
-  .rounds-row {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-
-  .rounds-label {
-    font-size: 13px;
-    color: var(--text-secondary);
-  }
-
-  .dot {
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    border: 0.5px solid var(--border-strong);
-    background: transparent;
-    transition: background .4s;
-  }
-
-  .dot.done { background: #378ADD; border-color: #378ADD; }
-
+  .controls { display:flex; gap:10px; align-items:center; }
   .btn {
-    padding: 11px 32px;
-    border-radius: var(--radius);
-    border: 0.5px solid var(--border-strong);
-    background: transparent;
-    color: var(--text-primary);
-    font-size: 15px;
-    font-family: inherit;
-    cursor: pointer;
-    transition: background .18s, transform .1s;
+    padding:10px 28px; border-radius:var(--radius); border:.5px solid var(--border-strong);
+    background:transparent; color:var(--text-primary); font-size:15px; font-family:inherit;
+    cursor:pointer; transition:background .18s, transform .1s;
+  }
+  .btn:hover { background:var(--surface); }
+  .btn:active { transform:scale(.97); }
+
+  .icon-btn {
+    width:40px; height:40px; border-radius:50%;
+    border:.5px solid var(--border-strong); background:transparent;
+    color:var(--text-secondary); font-size:18px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .18s, opacity .2s;
+  }
+  .icon-btn:hover { background:var(--surface); }
+  .icon-btn.off   { opacity:.35; }
+
+  .voice-row {
+    display:flex; align-items:center; gap:8px;
+    font-size:13px; color:var(--text-secondary);
+  }
+  .voice-select {
+    font-size:13px; font-family:inherit; color:var(--text-primary);
+    background:var(--surface); border:.5px solid var(--border-strong);
+    border-radius:6px; padding:4px 8px; cursor:pointer; max-width:200px;
   }
 
-  .btn:hover { background: var(--surface); }
-  .btn:active { transform: scale(.97); }
+  /* music volume row */
+  .music-row {
+    display:flex; align-items:center; gap:10px;
+    font-size:13px; color:var(--text-secondary);
+  }
+  input[type=range] {
+    -webkit-appearance:none; width:100px; height:3px;
+    border-radius:2px; background:var(--border-strong); outline:none; cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance:none; width:14px; height:14px;
+    border-radius:50%; background:#378ADD; cursor:pointer;
+  }
 
   .tip {
-    font-size: 13px;
-    color: var(--text-muted);
-    text-align: center;
-    line-height: 1.7;
-    max-width: 300px;
+    font-size:13px; color:var(--text-muted);
+    text-align:center; line-height:1.7; max-width:300px;
   }
 
-  .phase-inhale .ring-prog { stroke: #378ADD; }
-  .phase-hold   .ring-prog { stroke: #1D9E75; }
-  .phase-exhale .ring-prog { stroke: #7F77DD; }
+  .phase-inhale .ring-prog { stroke:#378ADD; }
+  .phase-hold   .ring-prog { stroke:#1D9E75; }
+  .phase-exhale .ring-prog { stroke:#7F77DD; }
 </style>
 </head>
 <body>
@@ -198,39 +129,52 @@
 
   <div class="rounds-row">
     <span class="rounds-label">轮次</span>
-    <div class="dot" id="d0"></div>
-    <div class="dot" id="d1"></div>
-    <div class="dot" id="d2"></div>
-    <div class="dot" id="d3"></div>
+    <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
+    <div class="dot" id="d2"></div><div class="dot" id="d3"></div>
   </div>
 
-  <button class="btn" id="mainBtn" onclick="toggle()">开始</button>
+  <div class="controls">
+    <button class="btn"      id="mainBtn"  onclick="toggle()">开始</button>
+    <button class="icon-btn" id="voiceBtn" title="语音开关"  onclick="toggleMute()">🔊</button>
+    <button class="icon-btn" id="musicBtn" title="音乐开关"  onclick="toggleMusic()">🎵</button>
+  </div>
 
-  <p class="tip" id="tipText">
-    建议做 4 轮，约 1 分钟。<br>
-    鼻子吸气，嘴巴呼气效果最好。
-  </p>
+  <div class="voice-row" id="voiceRow" style="display:none">
+    <span>语音</span>
+    <select class="voice-select" id="voiceSelect"></select>
+  </div>
+
+  <div class="music-row" id="musicRow" style="display:none">
+    <span>音量</span>
+    <input type="range" id="volSlider" min="0" max="100" value="40" oninput="setMusicVol(this.value)">
+    <span id="volVal">40</span>
+  </div>
+
+  <p class="tip" id="tipText">建议做 4 轮，约 1 分钟。<br>鼻子吸气，嘴巴呼气效果最好。</p>
 </div>
 
 <script>
+/* ═══════════════════════════════
+   BREATHING LOGIC
+═══════════════════════════════ */
 const PHASES = [
-  { name: "吸气", sub: "用鼻子缓缓吸气",    sec: 4, type: "inhale" },
-  { name: "屏气", sub: "轻轻憋住，不要紧张", sec: 7, type: "hold"   },
-  { name: "呼气", sub: "用嘴缓缓呼出",      sec: 8, type: "exhale" }
+  { name:"吸气", sub:"用鼻子缓缓吸气",    speech:"吸气，用鼻子缓缓吸气",    sec:4, type:"inhale" },
+  { name:"屏气", sub:"轻轻憋住，不要紧张", speech:"屏气，轻轻憋住，不要紧张", sec:7, type:"hold"   },
+  { name:"呼气", sub:"用嘴缓缓呼出",      speech:"呼气，用嘴缓缓呼出",      sec:8, type:"exhale" }
 ];
 const TOTAL_ROUNDS = 4;
 const CIRCUM = 2 * Math.PI * 105;
 
-let running = false, phaseIdx = 0, roundIdx = 0, ticker = null;
+let running=false, phaseIdx=0, roundIdx=0, ticker=null;
 
-const phaseLabel = document.getElementById('phaseLabel');
-const subLabel   = document.getElementById('subLabel');
-const countNum   = document.getElementById('countNum');
-const countSec   = document.getElementById('countSec');
-const ringProg   = document.getElementById('ringProg');
-const mainBtn    = document.getElementById('mainBtn');
-const tipText    = document.getElementById('tipText');
-const app        = document.getElementById('app');
+const phaseLabel  = document.getElementById('phaseLabel');
+const subLabel    = document.getElementById('subLabel');
+const countNum    = document.getElementById('countNum');
+const countSec    = document.getElementById('countSec');
+const ringProg    = document.getElementById('ringProg');
+const mainBtn     = document.getElementById('mainBtn');
+const tipText     = document.getElementById('tipText');
+const app         = document.getElementById('app');
 
 ringProg.style.strokeDasharray  = CIRCUM;
 ringProg.style.strokeDashoffset = CIRCUM;
@@ -239,13 +183,10 @@ function setRing(frac, type) {
   ringProg.style.strokeDashoffset = CIRCUM * (1 - frac);
   app.className = 'wrap phase-' + type;
 }
-
 function updateDots() {
-  for (let i = 0; i < TOTAL_ROUNDS; i++) {
-    document.getElementById('d' + i).classList.toggle('done', i < roundIdx);
-  }
+  for (let i=0;i<TOTAL_ROUNDS;i++)
+    document.getElementById('d'+i).classList.toggle('done', i<roundIdx);
 }
-
 function startPhase() {
   const ph = PHASES[phaseIdx];
   phaseLabel.textContent = ph.name;
@@ -253,70 +194,203 @@ function startPhase() {
   countNum.textContent   = ph.sec;
   countSec.textContent   = '秒';
   setRing(0, ph.type);
+  speak(ph.speech);
 
-  const total = ph.sec;
-  let elapsed = 0;
-  const step  = 0.05;
-
+  const total=ph.sec; let elapsed=0, lastSec=ph.sec; const step=0.05;
   clearInterval(ticker);
-  ticker = setInterval(() => {
+  ticker = setInterval(()=>{
     elapsed += step;
-    setRing(Math.min(elapsed / total, 1), ph.type);
-    const secs = Math.max(Math.ceil(total - elapsed), 1);
-    if (secs !== parseInt(countNum.textContent)) countNum.textContent = secs;
-
-    if (elapsed >= total) {
-      clearInterval(ticker);
-      nextPhase();
-    }
-  }, step * 1000);
+    setRing(Math.min(elapsed/total,1), ph.type);
+    const secs = Math.max(Math.ceil(total-elapsed),1);
+    if (secs !== lastSec) { lastSec=secs; countNum.textContent=secs; if(secs<=3) speak(String(secs)); }
+    if (elapsed>=total) { clearInterval(ticker); nextPhase(); }
+  }, step*1000);
 }
-
 function nextPhase() {
   phaseIdx++;
   if (phaseIdx >= PHASES.length) {
-    phaseIdx = 0;
-    roundIdx++;
-    updateDots();
-    if (roundIdx >= TOTAL_ROUNDS) { finish(); return; }
+    phaseIdx=0; roundIdx++; updateDots();
+    if (roundIdx>=TOTAL_ROUNDS) { finish(); return; }
+    speak('第'+(roundIdx+1)+'轮，开始');
+    setTimeout(startPhase, 900); return;
   }
   startPhase();
 }
-
 function finish() {
-  running = false;
-  phaseLabel.textContent = '做得很好！';
-  subLabel.textContent   = '可以安心闭眼了 ✨';
-  countNum.textContent   = '';
-  countSec.textContent   = '';
-  setRing(1, 'inhale');
-  mainBtn.textContent    = '再来一轮';
-  tipText.textContent    = '4-7-8 呼吸能激活副交感神经，帮助身体放松入睡。';
-  roundIdx = TOTAL_ROUNDS;
-  updateDots();
+  running=false;
+  phaseLabel.textContent='做得很好！'; subLabel.textContent='可以安心闭眼了 ✨';
+  countNum.textContent=''; countSec.textContent='';
+  setRing(1,'inhale'); mainBtn.textContent='再来一轮';
+  tipText.textContent='4-7-8 呼吸能激活副交感神经，帮助身体放松入睡。';
+  roundIdx=TOTAL_ROUNDS; updateDots();
+  speak('做得很好，可以安心闭眼休息了');
 }
-
-function reset() {
-  phaseIdx = 0; roundIdx = 0;
-  updateDots();
-  phaseLabel.textContent = '准备好了吗？';
-  subLabel.textContent   = '点击开始，跟着节奏呼吸';
-  countNum.textContent   = '—';
-  countSec.textContent   = '';
-  setRing(0, 'inhale');
-  app.className = 'wrap';
+function resetBreath() {
+  phaseIdx=0; roundIdx=0; updateDots();
+  phaseLabel.textContent='准备好了吗？'; subLabel.textContent='点击开始，跟着节奏呼吸';
+  countNum.textContent='—'; countSec.textContent='';
+  setRing(0,'inhale'); app.className='wrap';
 }
-
 function toggle() {
   if (running) {
-    clearInterval(ticker);
-    running = false;
-    mainBtn.textContent = '继续';
+    clearInterval(ticker); window.speechSynthesis && window.speechSynthesis.cancel();
+    running=false; mainBtn.textContent='继续';
   } else {
-    running = true;
-    if (roundIdx >= TOTAL_ROUNDS) reset();
-    mainBtn.textContent = '暂停';
-    startPhase();
+    running=true;
+    if (roundIdx>=TOTAL_ROUNDS) resetBreath();
+    mainBtn.textContent='暂停';
+    if (phaseIdx===0 && roundIdx===0) { speak('好，开始第一轮'); setTimeout(startPhase,800); }
+    else startPhase();
+  }
+}
+
+/* ═══════════════════════════════
+   TTS
+═══════════════════════════════ */
+let muted=false, voices=[], preferredVoice=null;
+const voiceBtn    = document.getElementById('voiceBtn');
+const voiceRow    = document.getElementById('voiceRow');
+const voiceSelect = document.getElementById('voiceSelect');
+const synth       = window.speechSynthesis;
+
+function loadVoices() {
+  voices = synth.getVoices(); if (!voices.length) return;
+  const zh = voices.filter(v=>v.lang.startsWith('zh'));
+  const pool = zh.length ? zh : voices;
+  voiceSelect.innerHTML='';
+  pool.forEach((v,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=v.name+' ('+v.lang+')'; voiceSelect.appendChild(o); });
+  preferredVoice=pool[0]; voiceRow.style.display='flex';
+  voiceSelect.onchange=()=>{ preferredVoice=pool[parseInt(voiceSelect.value)]; };
+}
+if (synth) { loadVoices(); if (synth.onvoiceschanged!==undefined) synth.onvoiceschanged=loadVoices; }
+function speak(text) {
+  if (!synth||muted) return; synth.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=preferredVoice?preferredVoice.lang:'zh-CN'; u.rate=0.88; u.pitch=1;
+  if (preferredVoice) u.voice=preferredVoice; synth.speak(u);
+}
+function toggleMute() {
+  muted=!muted; voiceBtn.textContent=muted?'🔇':'🔊';
+  voiceBtn.classList.toggle('off',muted); if (muted&&synth) synth.cancel();
+}
+
+/* ═══════════════════════════════
+   AMBIENT MUSIC  (Web Audio API)
+═══════════════════════════════ */
+let actx=null, masterGain=null, musicOn=false, melodyTimer=null;
+const musicBtn  = document.getElementById('musicBtn');
+const musicRow  = document.getElementById('musicRow');
+const volSlider = document.getElementById('volSlider');
+const volVal    = document.getElementById('volVal');
+
+// D major pentatonic: D4 E4 F#4 A4 B4 D5
+const PENTA = [293.66, 329.63, 369.99, 440.00, 493.88, 587.33];
+// Melody sequence (indices into PENTA) — gentle ascending/descending pattern
+const MELODY = [0,2,4,5,4,3,2,0,1,3,4,2,1,0,2,3,5,4,2,1];
+let melIdx=0;
+
+function makeReverb(ctx, sec) {
+  const conv = ctx.createConvolver();
+  const len  = Math.floor(ctx.sampleRate * sec);
+  const buf  = ctx.createBuffer(2, len, ctx.sampleRate);
+  for (let c=0;c<2;c++) {
+    const ch=buf.getChannelData(c);
+    for (let i=0;i<len;i++) ch[i]=(Math.random()*2-1)*Math.pow(1-i/len,1.8);
+  }
+  conv.buffer=buf; return conv;
+}
+
+function makePad(ctx, dest, reverb) {
+  // Warm sustained chord: D3 A3 D4 F#4 — perfect fifth + major third
+  const freqs   = [146.83, 220.00, 293.66, 369.99];
+  const detunes = [-4, 4, -3, 3];
+  freqs.forEach((f,i)=>{
+    const osc=ctx.createOscillator(), g=ctx.createGain();
+    osc.type='sine'; osc.frequency.value=f; osc.detune.value=detunes[i];
+    g.gain.value=0;
+    g.gain.setValueAtTime(0, ctx.currentTime);
+    g.gain.linearRampToValueAtTime(0.055, ctx.currentTime+3);
+    // Slow tremolo
+    const lfo=ctx.createOscillator(), lg=ctx.createGain();
+    lfo.frequency.value=0.12+i*0.02; lg.gain.value=0.008;
+    lfo.connect(lg); lg.connect(g.gain); lfo.start();
+    osc.connect(g); g.connect(dest); g.connect(reverb); osc.start();
+  });
+}
+
+function scheduleMelody(ctx, dest, reverb) {
+  if (!musicOn) return;
+  const freq = PENTA[MELODY[melIdx % MELODY.length]];
+  melIdx++;
+
+  const dur  = 2.8 + Math.random()*1.8;   // 2.8 – 4.6 s per note
+  const now  = ctx.currentTime;
+  const osc  = ctx.createOscillator();
+  const env  = ctx.createGain();
+
+  osc.type='sine'; osc.frequency.value=freq;
+  env.gain.setValueAtTime(0, now);
+  env.gain.linearRampToValueAtTime(0.10, now+0.9);
+  env.gain.setValueAtTime(0.10, now+dur-1.1);
+  env.gain.linearRampToValueAtTime(0, now+dur);
+
+  osc.connect(env); env.connect(dest); env.connect(reverb);
+  osc.start(now); osc.stop(now+dur+0.05);
+
+  melodyTimer = setTimeout(()=>scheduleMelody(ctx,dest,reverb), (dur-0.6)*1000);
+}
+
+function startMusic() {
+  if (!actx) {
+    actx = new (window.AudioContext||window.webkitAudioContext)();
+
+    masterGain = actx.createGain();
+    masterGain.gain.value = 0;
+    masterGain.connect(actx.destination);
+
+    const reverb = makeReverb(actx, 3.5);
+    const rvGain = actx.createGain(); rvGain.gain.value=0.45;
+    reverb.connect(rvGain); rvGain.connect(masterGain);
+
+    const lpf = actx.createBiquadFilter();
+    lpf.type='lowpass'; lpf.frequency.value=1800;
+    lpf.connect(masterGain);
+
+    makePad(actx, lpf, reverb);
+    scheduleMelody(actx, lpf, reverb);
+  } else {
+    actx.resume();
+    scheduleMelody(actx,
+      actx.destination, // fallback — reverb node no longer accessible, but pad still plays
+      {connect:()=>{}}  // dummy — melody will connect directly
+    );
+  }
+  const vol = parseInt(volSlider.value)/100 * 0.6;
+  masterGain.gain.cancelScheduledValues(actx.currentTime);
+  masterGain.gain.linearRampToValueAtTime(vol, actx.currentTime+1.5);
+}
+
+function stopMusic() {
+  if (!masterGain) return;
+  masterGain.gain.cancelScheduledValues(actx.currentTime);
+  masterGain.gain.linearRampToValueAtTime(0, actx.currentTime+1.5);
+  clearTimeout(melodyTimer);
+}
+
+function toggleMusic() {
+  musicOn = !musicOn;
+  musicBtn.textContent = musicOn ? '🎵' : '🎵';
+  musicBtn.classList.toggle('off', !musicOn);
+  musicRow.style.display = musicOn ? 'flex' : 'none';
+  if (musicOn) startMusic(); else stopMusic();
+}
+
+function setMusicVol(v) {
+  volVal.textContent = v;
+  if (masterGain && musicOn) {
+    const vol = parseInt(v)/100 * 0.6;
+    masterGain.gain.cancelScheduledValues(actx.currentTime);
+    masterGain.gain.setValueAtTime(vol, actx.currentTime);
   }
 }
 </script>
