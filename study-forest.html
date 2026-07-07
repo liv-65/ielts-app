@@ -407,6 +407,7 @@ function App() {
   const [syncStatus, setSyncStatus] = useState('checking'); // checking | synced | offline
   const intervalRef = useRef(null);
   const startedAtRef = useRef(null);
+  const totalSecondsRef = useRef(duration * 60);
   const supabaseRef = useRef(null);
 
   // load trees: try Supabase first, fall back to local cache if unreachable
@@ -466,20 +467,32 @@ function App() {
   }, [duration]);
 
   useEffect(() => {
-    if (running) {
-      intervalRef.current = setInterval(() => {
-        setSecondsLeft(s => {
-          if (s <= 1) {
-            setPhase('overtime');
-            return 0;
-          }
-          return s - 1;
-        });
-      }, 1000);
-    } else {
+    if (!running) {
       clearInterval(intervalRef.current);
+      return;
     }
-    return () => clearInterval(intervalRef.current);
+    const tick = () => {
+      const elapsed = Math.floor((Date.now() - startedAtRef.current) / 1000);
+      const remaining = totalSecondsRef.current - elapsed;
+      if (remaining <= 0) {
+        setSecondsLeft(0);
+        setPhase('overtime');
+      } else {
+        setSecondsLeft(remaining);
+      }
+    };
+    tick(); // sync immediately, don't wait for the first tick
+    intervalRef.current = setInterval(tick, 1000);
+
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') tick();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+
+    return () => {
+      clearInterval(intervalRef.current);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, [running]);
 
   const format = (s) => {
@@ -490,6 +503,7 @@ function App() {
 
   const start = () => {
     startedAtRef.current = Date.now();
+    totalSecondsRef.current = duration * 60;
     setPhase('focus');
     setRunning(true);
   };
