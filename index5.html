@@ -282,6 +282,7 @@
   .plan-summary-pct { font-size:13px; color:var(--label); font-weight:600; }
   .plan-progress-track { height:8px; border-radius:4px; background:#E5E5EA; overflow:hidden; }
   .plan-progress-fill { height:100%; background:var(--ielts-writing); border-radius:4px; transition:width .2s; }
+  .plan-summary-tip { font-size:11.5px; color:var(--label); margin-top:10px; line-height:1.4; }
 
   .plan-week-scroll { display:flex; gap:8px; overflow-x:auto; padding: 4px 2px 10px; -webkit-overflow-scrolling:touch; }
   .plan-week-scroll::-webkit-scrollbar { display:none; }
@@ -318,6 +319,7 @@
   .plan-task-text { flex:1; font-size:13.5px; line-height:1.4; color:var(--text); }
   .plan-task-text.done { color:var(--label); text-decoration: line-through; }
   .plan-task-off { flex:1; font-size:13.5px; color:var(--label); font-style:italic; padding-top:2px; }
+  .plan-day-note { margin-top:10px; padding-top:8px; border-top:0.5px solid var(--separator); font-size:12px; color:var(--label); line-height:1.45; }
   .plan-task-check {
     width:22px; height:22px; border-radius:50%;
     border:1.5px solid var(--separator);
@@ -957,6 +959,7 @@
           <div class="plan-summary-pct" id="plan-overall-pct">0/0 · 0%</div>
         </div>
         <div class="plan-progress-track"><div class="plan-progress-fill" id="plan-overall-fill" style="width:0%"></div></div>
+        <div class="plan-summary-tip">完成比完美更重要 · 断一天不可怕，别因为没做完美就连续多天不碰</div>
       </div>
     </div>
 
@@ -1684,43 +1687,43 @@ const PLAN_BOOK_BY_WEEK = ['剑11', '剑12', '剑13', '剑14', '剑15', '剑16',
 // 每周任务结构相同，只有听力/阅读的具体真题册号不同，
 // 用 {{book}} 占位符表示，渲染时按 PLAN_BOOK_BY_WEEK[week-1] 替换。
 const PLAN_DAY_TEMPLATE = [
-  { day: '周一', tag: null, tasks: {
+  { day: '周一', tag: null, note: '🔋 状态不好时：以上四项任选一项，只做10-15分钟就算完成今天的打卡', tasks: {
       listening: '精听：{{book}} Test1 Section1，听写+标注错误类型（连读/弱读/生词）',
       reading:   '阅读：{{book}} Test1 Passage1，限时练习+核心词汇整理',
       writing:   'Task1练习：图表描述（20分钟计时）',
       speaking:  '跟读模仿30分钟（BBC/TED片段），录音自评',
   }},
-  { day: '周二', tag: null, tasks: {
+  { day: '周二', tag: null, note: '🔋 状态不好时：以上四项任选一项，只做10-15分钟就算完成今天的打卡', tasks: {
       listening: '真题一套：{{book}} Test2 全套听力（严格计时）+ 错题复盘',
       reading:   '专项练习：{{book}} Test2 阅读（判断题/段落匹配，按薄弱题型定）',
       writing:   'Task2思路整理：一种题型的框架搭建',
       speaking:  'Part1话题练习：3个话题，录音后自听纠音',
   }},
-  { day: '周三', tag: null, tasks: {
+  { day: '周三', tag: null, note: '🔋 状态不好时：以上四项任选一项，只做10-15分钟就算完成今天的打卡', tasks: {
       listening: '精听：{{book}} Test1 Section2，跟读模仿语音语调',
       reading:   '阅读：{{book}} Test1 Passage2，限时练习，总结同义替换规律',
       writing:   'Task1批改复盘 + 重写薄弱部分',
       speaking:  'Part2话题练习：2分钟陈述+复盘逻辑框架',
   }},
-  { day: '周四', tag: null, tasks: {
+  { day: '周四', tag: null, note: '🔋 状态不好时：以上四项任选一项，只做10-15分钟就算完成今天的打卡', tasks: {
       listening: '真题一套：{{book}} Test3 全套听力（严格计时）+ 归类错误原因',
       reading:   '生词复习30分钟 + {{book}} Test3 阅读（限时练习）',
       writing:   'Task2完整写作（40分钟计时）',
       speaking:  'Part3话题练习：观点表达，录音自评发音',
   }},
-  { day: '周五', tag: null, tasks: {
+  { day: '周五', tag: null, note: '🔋 状态不好时：以上四项任选一项，只做10-15分钟就算完成今天的打卡', tasks: {
       listening: '精听：{{book}} Test1 Section3+Section4，跟读30分钟，巩固弱项题型',
       reading:   '阅读：{{book}} Test1 Passage3，查漏补缺薄弱题型',
       writing:   'Task2批改复盘 + 积累好句/连接词',
       speaking:  '话题库整理：补充新素材，练习过渡衔接',
   }},
-  { day: '周六', tag: '模考日', tasks: {
+  { day: '周六', tag: '模考日', note: '🔋 一次性完成有困难时：可拆成两段——上午听力+阅读，晚上或次日写作', tasks: {
       listening: '全真模考：{{book}} Test4 听力部分（严格计时）',
       reading:   '全真模考：{{book}} Test4 阅读部分（严格计时）',
       writing:   '模考后写一篇Task2（40分钟计时，可用{{book}} Test4作文题）',
       speaking:  null,
   }},
-  { day: '周日', tag: '复盘日', tasks: {
+  { day: '周日', tag: '复盘日', note: '🔋 机动补课：本周若有漏掉的任务，优先补1-2项最重要的即可，不必全部补齐', tasks: {
       listening: '复盘本周（{{book}}）听力错题，整理错误类型',
       reading:   '整理本周（{{book}}）生词表，滚动复习',
       writing:   '复盘本周作文，检查是否重复犯错',
@@ -1864,6 +1867,7 @@ function renderPlan() {
         ${day.tag ? `<div class="plan-day-tag">${day.tag}</div>` : ''}
       </div>
       ${taskRows}
+      ${day.note ? `<div class="plan-day-note">${day.note}</div>` : ''}
     </div>`;
   }).join('');
 }
