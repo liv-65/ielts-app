@@ -1,0 +1,2663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F3F5FC">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,600;0,700;0,800;1,700;1,800;1,900&display=swap" rel="stylesheet">
+<title>LifeLog</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F3F5FC;
+    --card: rgba(255,255,255,0.62);
+    --label: #6B7099;
+    --separator: rgba(10,14,36,0.10);
+    --text: #14162E;
+    --text2: #454A72;
+    --blue: #4D6FFF;
+    --red: #FF453A;
+    --green: #2FE6A5;
+
+    /* semantic */
+    --coffee: #D89B6A;
+    --bowel: #FFD60A;
+    --shower: #64D2FF;
+    --clean: #2FE6A5;
+    --exercise: #FF8552;
+    --water: #40C8E0;
+    --trash: #9DA3C7;
+
+    --breakfast: #FFB37B;
+    --lunch: #C6E86B;
+    --dinner: #A985FF;
+
+    --radius: 16px;
+    --tab-h: 83px;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --font-display: 'Archivo', -apple-system, sans-serif;
+  }
+
+  html, body {
+    height: 100%;
+    background:
+      radial-gradient(ellipse 140% 46% at 50% -6%, rgba(108,124,255,.18), transparent 58%),
+      repeating-linear-gradient(115deg,
+        #F3F5FC 0px, #F3F5FC 86px,
+        #E8ECFA 86px, #E8ECFA 92px,
+        #F3F5FC 92px, #F3F5FC 172px,
+        #DDE3FA 172px, #DDE3FA 176px,
+        #F3F5FC 176px, #F3F5FC 260px,
+        #ECEFFA 260px, #ECEFFA 264px);
+    background-attachment: fixed;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    color: var(--text);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+  }
+
+  /* ===== LAYOUT ===== */
+  #app { height: 100vh; display: flex; flex-direction: column; max-width: 430px; margin: 0 auto; position: relative; }
+
+  .screen {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(var(--tab-h) + var(--safe-bottom));
+    scroll-behavior: smooth;
+  }
+
+  /* ===== NAV HEADER ===== */
+  .nav-header {
+    background: rgba(243,245,252,0.72);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 52px 20px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 0.5px solid var(--separator);
+  }
+  .nav-header h1 {
+    font-family: var(--font-display);
+    font-size: 34px;
+    font-weight: 800;
+    font-style: italic;
+    letter-spacing: -0.5px;
+    background: linear-gradient(100deg, #14162E 55%, #4D6FFF 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .nav-header .nav-sub { font-size: 13px; color: var(--label); margin-top: 4px; }
+
+  /* ===== TAB BAR ===== */
+  .tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    height: var(--tab-h);
+    background: rgba(246,247,253,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 0.5px solid var(--separator);
+    display: flex;
+    align-items: flex-start;
+    padding-top: 10px;
+    z-index: 100;
+  }
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: opacity .15s;
+  }
+  .tab-item:active { opacity: .6; }
+  .tab-icon { font-size: 22px; line-height: 1; }
+  .tab-label { font-size: 10px; font-weight: 500; color: var(--label); }
+  .tab-item.active .tab-label { color: var(--blue); }
+  .tab-item.active .tab-icon { filter: none; }
+  .tab-dot { width: 4px; height: 10px; border-radius: 2px; background: var(--blue); opacity: 0; margin-top: -4px; transform: skewX(-20deg); box-shadow: 0 0 8px rgba(77,111,255,.8); }
+  .tab-item.active .tab-dot { opacity: 1; }
+
+  /* ===== SECTION ===== */
+  .section { padding: 0 16px; margin-top: 8px; }
+  .section-label {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    font-style: italic;
+    color: var(--label);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 0 4px;
+    margin-bottom: 8px;
+  }
+
+  /* ===== CARD ===== */
+  .card {
+    background: var(--card);
+    border: 0.5px solid rgba(10,14,36,0.08);
+    border-radius: var(--radius);
+    overflow: hidden;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+  .card-row {
+    display: flex;
+    align-items: center;
+    padding: 13px 16px;
+    border-bottom: 0.5px solid var(--separator);
+    cursor: pointer;
+    transition: background .12s;
+    gap: 12px;
+  }
+  .card-row:last-child { border-bottom: none; }
+  .card-row:active { background: rgba(10,14,36,0.08); }
+
+  /* ===== GLASS SURFACE (unified glass surface) ===== */
+  .quick-btn, .stat-card, .checkin-card, .plan-summary-card, .plan-week-chip,
+  .plan-day-card, .chart-wrap, .toggle-row, .time-edit, .conflict-row,
+  textarea.import-area, input[type="datetime-local"], select, input[type="text"] {
+    border: 0.5px solid rgba(10,14,36,0.08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  /* ===== QUICK RECORD BUTTONS ===== */
+  .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .quick-btn {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 18px 12px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: transform .1s, opacity .1s;
+    position: relative;
+    overflow: hidden;
+  }
+  .quick-btn:active { transform: scale(.96); opacity: .8; }
+  .quick-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+  }
+  .quick-btn.coffee::before { background: var(--coffee); }
+  .quick-btn.bowel::before  { background: var(--bowel); }
+  .quick-btn.shower::before { background: var(--shower); }
+  .quick-btn.clean::before  { background: var(--clean); }
+  .quick-btn.exercise::before { background: var(--exercise); }
+  .quick-btn.water::before    { background: var(--water); }
+  .quick-btn.trash::before    { background: var(--trash); }
+  .quick-btn.breakfast::before { background: var(--breakfast); }
+  .quick-btn.lunch::before     { background: var(--lunch); }
+  .quick-btn.dinner::before    { background: var(--dinner); }
+  .quick-btn .q-icon { font-size: 28px; }
+  .quick-btn .q-label { font-size: 13px; font-weight: 600; color: var(--text); }
+  .quick-btn .q-sub   { font-size: 11px; color: var(--label); }
+
+  /* ===== TODAY STATS ===== */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .stat-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 14px 14px 12px;
+  }
+  .stat-val { font-family: var(--font-display); font-size: 32px; font-weight: 800; font-style: italic; letter-spacing: -1px; line-height: 1; }
+  .stat-val.coffee { color: #A9713E; }
+  .stat-val.bowel  { color: #A8790A; }
+  .stat-val.shower { color: #0B8FD4; }
+  .stat-val.clean  { color: #0E9F6E; }
+  .stat-val.exercise { color: #E2622E; }
+  .stat-val.water    { color: #0A93B0; }
+  .stat-val.trash    { color: #6B7099; }
+  .stat-val.breakfast { color: #C97A3E; }
+  .stat-val.lunch     { color: #7C9A2E; }
+  .stat-val.dinner    { color: #7A54E0; }
+  .stat-name { font-size: 11px; color: var(--label); margin-top: 4px; }
+
+  /* ===== RECENT LIST ===== */
+  .record-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .record-icon.coffee { background: rgba(216,155,106,.16); }
+  .record-icon.bowel  { background: rgba(255,214,10,.16); }
+  .record-icon.shower { background: rgba(100,210,255,.16); }
+  .record-icon.clean  { background: rgba(47,230,165,.16); }
+  .record-icon.exercise { background: rgba(255,133,82,.16); }
+  .record-icon.water    { background: rgba(64,200,224,.16); }
+  .record-icon.trash    { background: rgba(157,163,199,.16); }
+  .record-icon.breakfast { background: rgba(255,179,123,.16); }
+  .record-icon.lunch     { background: rgba(198,232,107,.16); }
+  .record-icon.dinner    { background: rgba(169,133,255,.16); }
+  .record-info { flex: 1; min-width: 0; }
+  .record-title { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .record-time  { font-size: 12px; color: var(--label); margin-top: 1px; }
+  .record-chevron { color: var(--separator); font-size: 14px; }
+
+  /* ===== LIMITED-TIME CHECK-IN ===== */
+  :root {
+    --effort: #FFB020;
+    --sleep: #6C7CFF;
+  }
+  .checkin-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background .12s, transform .1s;
+    width: 100%;
+    text-align: left;
+  }
+  .checkin-card:active { transform: scale(.98); background: rgba(10,14,36,0.07); }
+  .checkin-card + .checkin-card { margin-top: 10px; }
+  .checkin-icon {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .checkin-card.effort .checkin-icon { background: rgba(255,176,32,.16); }
+  .checkin-card.sleep  .checkin-icon { background: rgba(108,124,255,.16); }
+  .checkin-info { flex: 1; min-width: 0; }
+  .checkin-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .checkin-sub { font-size: 12px; color: var(--label); margin-top: 2px; }
+  .checkin-check {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid var(--separator);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+    color: transparent;
+    transition: background .12s, border-color .12s, color .12s;
+  }
+  .checkin-card.effort.done .checkin-check { background: var(--effort); border-color: var(--effort); color: #fff; }
+  .checkin-card.sleep.done  .checkin-check { background: var(--sleep);  border-color: var(--sleep);  color: #fff; }
+
+  /* ===== DOT MATRIX CHART ===== */
+  .chart-wrap {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px;
+    position: relative;
+  }
+  .chart-controls {
+    display: flex;
+    background: rgba(10,14,36,0.06);
+    border-radius: 9px;
+    padding: 2px;
+    gap: 2px;
+    margin-bottom: 16px;
+  }
+  .chart-ctrl {
+    flex: 1;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 5px 0;
+    border-radius: 7px;
+    cursor: pointer;
+    color: var(--label);
+    transition: all .2s;
+  }
+  .chart-ctrl.active {
+    background: rgba(10,14,36,0.14);
+    color: var(--text);
+    font-weight: 600;
+    box-shadow: 0 1px 6px rgba(77,111,255,.35);
+  }
+  .chart-grid {
+    position: relative;
+    overflow-x: auto;
+  }
+  canvas#dotChart {
+    display: block;
+    width: 100%;
+    height: 180px;
+  }
+  .chart-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 0.5px solid var(--separator);
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .legend-label { font-size: 12px; color: var(--label); }
+
+  /* ===== STATS SUMMARY ===== */
+  .summary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 16px;
+    border-bottom: 0.5px solid var(--separator);
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-left { display: flex; align-items: center; gap: 10px; }
+  .summary-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .summary-name { font-size: 15px; }
+  .summary-count { font-size: 15px; font-weight: 600; color: var(--text2); }
+  .summary-bar-wrap { height: 4px; background: rgba(10,14,36,0.08); border-radius: 2px; margin: 0 16px 12px; overflow: hidden; }
+  .summary-bar { height: 100%; border-radius: 2px; transition: width .6s ease; }
+
+  /* ===== HALF-SHEET DRAWER ===== */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .28s ease;
+  }
+  .overlay.visible { opacity: 1; pointer-events: all; }
+
+  .sheet {
+    position: fixed;
+    bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
+    width: 100%; max-width: 430px;
+    background: #FBFCFF;
+    border-radius: 20px 20px 0 0;
+    z-index: 201;
+    transition: transform .32s cubic-bezier(.32,1,.5,1);
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: var(--safe-bottom);
+  }
+  .sheet.visible { transform: translateX(-50%) translateY(0); }
+
+  .sheet-handle {
+    width: 36px; height: 4px;
+    background: rgba(10,14,36,0.25);
+    border-radius: 2px;
+    margin: 10px auto 4px;
+    flex-shrink: 0;
+  }
+  .sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 20px 14px;
+    flex-shrink: 0;
+  }
+  .sheet-title { font-size: 17px; font-weight: 600; }
+  .sheet-close {
+    font-size: 15px;
+    color: var(--blue);
+    cursor: pointer;
+    padding: 4px 0;
+  }
+  .sheet-body {
+    overflow-y: auto;
+    flex: 1;
+    padding: 0 16px 24px;
+  }
+
+  /* ===== FORM ELEMENTS ===== */
+  .form-section { margin-bottom: 16px; }
+  .form-label { font-size: 13px; font-weight: 600; color: var(--label); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 8px; padding: 0 4px; }
+
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 7px 14px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 500;
+    background: rgba(10,14,36,0.08);
+    color: var(--text);
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all .15s;
+  }
+  .chip.active { border-color: currentColor; background: rgba(0,0,0,.04); }
+  .chip.coffee-chip.active  { color: #A9713E; border-color: var(--coffee); background: rgba(216,155,106,.18); }
+  .chip.bowel-chip.active   { color: #A8790A; border-color: #FFD60A; background: rgba(255,214,10,.18); }
+  .chip.shower-chip.active  { color: #0B8FD4; border-color: var(--shower); background: rgba(100,210,255,.18); }
+  .chip.clean-chip.active   { color: #0E9F6E; border-color: var(--clean); background: rgba(47,230,165,.18); }
+  .chip.generic.active      { color: var(--blue); border-color: var(--blue); background: rgba(77,111,255,.18); }
+  .chip.exercise-chip.active { color: #E2622E; border-color: var(--exercise); background: rgba(255,133,82,.18); }
+  .chip.water-chip.active    { color: #0A93B0; border-color: var(--water);    background: rgba(64,200,224,.18); }
+  .chip.trash-chip.active    { color: #6B7099; border-color: var(--trash);    background: rgba(157,163,199,.18); }
+  .chip.breakfast-chip.active { color: #C97A3E; border-color: var(--breakfast); background: rgba(255,179,123,.18); }
+  .chip.lunch-chip.active     { color: #7C9A2E; border-color: var(--lunch);     background: rgba(198,232,107,.18); }
+  .chip.dinner-chip.active    { color: #7A54E0; border-color: var(--dinner);    background: rgba(169,133,255,.18); }
+
+  .bristol-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 6px; }
+  .bristol-btn {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    background: rgba(10,14,36,0.08);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all .15s;
+    font-size: 18px;
+  }
+  .bristol-num { font-size: 10px; font-weight: 700; color: var(--label); margin-top: 1px; }
+  .bristol-btn.active { border-color: var(--bowel); background: rgba(255,214,10,.18); }
+  .bristol-btn.active .bristol-num { color: #A8790A; }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 13px 16px;
+  }
+  .toggle-label { font-size: 15px; }
+  .toggle {
+    width: 51px; height: 31px;
+    background: rgba(10,14,36,0.14);
+    border-radius: 100px;
+    position: relative;
+    cursor: pointer;
+    transition: background .2s;
+    flex-shrink: 0;
+  }
+  .toggle.on { background: var(--green); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 27px; height: 27px;
+    border-radius: 50%;
+    background: white;
+    top: 2px; left: 2px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.2);
+    transition: transform .2s;
+  }
+  .toggle.on::after { transform: translateX(20px); }
+
+  .time-edit {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 13px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+  .time-edit-val { font-size: 15px; color: var(--blue); }
+
+  .save-btn {
+    width: 100%;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    padding: 15px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: opacity .15s;
+  }
+  .save-btn:active { opacity: .75; }
+
+  input[type="datetime-local"], select, input[type="text"] {
+    width: 100%;
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 13px 16px;
+    font-size: 15px;
+    color: var(--text);
+    outline: none;
+    font-family: inherit;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* ===== MANAGE TAB ===== */
+  .manage-section { padding: 0 16px; margin-top: 16px; }
+
+  /* ===== DETAIL SHEET ===== */
+  .detail-field { margin-bottom: 14px; }
+  .detail-key { font-size: 12px; color: var(--label); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+  .detail-val { font-size: 15px; }
+
+  /* ===== IMPORT PREVIEW ===== */
+  .conflict-row {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border-left: 3px solid var(--blue);
+  }
+  .conflict-row.new { border-color: var(--green); }
+  .conflict-row.update { border-color: #FFB020; }
+  .conflict-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+  }
+  .conflict-badge.new    { background: rgba(47,230,165,.18); color: #0E9F6E; }
+  .conflict-badge.update { background: rgba(255,176,32,.18); color: #B5720A; }
+  .conflict-desc { font-size: 13px; color: var(--text2); }
+
+  .import-actions { display: flex; gap: 8px; margin-bottom: 16px; }
+  .import-action-btn {
+    flex: 1;
+    padding: 11px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .import-action-btn:active { opacity: .7; }
+  .btn-skip    { background: rgba(10,14,36,0.10); color: var(--text); }
+  .btn-overwrite { background: rgba(255,176,32,.18); color: #B5720A; }
+  .btn-commit  { background: var(--blue); color: white; }
+
+  .toast {
+    position: fixed;
+    bottom: calc(var(--tab-h) + 16px);
+    left: 50%; transform: translateX(-50%) translateY(20px);
+    background: #1C2350;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 300;
+    opacity: 0;
+    transition: all .3s ease;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--label);
+  }
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 15px; line-height: 1.5; }
+
+  /* ===== SYNC BADGE ===== */
+  .sync-badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 100px;
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .sync-badge.syncing { opacity: 1; background: rgba(10,14,36,0.08); color: var(--label); }
+  .sync-badge.ok      { opacity: 1; background: rgba(47,230,165,.18); color: #0E9F6E; }
+  .sync-badge.error   { opacity: 1; background: rgba(255,69,58,.18); color: var(--red); }
+
+  /* animations */
+  @keyframes pop { 0%{transform:scale(.8);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+  .pop { animation: pop .25s ease forwards; }
+
+  textarea.import-area {
+    width: 100%;
+    height: 160px;
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 13px 16px;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    resize: none;
+    font-family: 'SF Mono', Menlo, monospace;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .export-area {
+    width: 100%;
+    height: 120px;
+    background: #08080c;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 11px;
+    font-family: 'SF Mono', Menlo, monospace;
+    color: #A9B4D6;
+    overflow: auto;
+    word-break: break-all;
+    cursor: text;
+    margin-top: 12px;
+    border: 1px solid var(--separator);
+    user-select: all;
+    -webkit-user-select: all;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- ====== SUMMARY TAB ====== -->
+  <div class="screen" id="screen-summary" style="display:block">
+    <div class="nav-header">
+      <div style="display:flex;align-items:baseline;justify-content:space-between">
+        <h1>Summary</h1>
+        <span id="sync-badge" class="sync-badge"></span>
+      </div>
+      <div class="nav-sub" id="today-label"></div>
+    </div>
+
+    <div class="section" style="margin-top:16px">
+      <div class="section-label">Quick Log</div>
+      <div class="quick-grid">
+        <button class="quick-btn coffee" onclick="openSheet('coffee')">
+          <span class="q-icon">☕</span>
+          <span class="q-label">Coffee</span>
+          <span class="q-sub">Log a cup</span>
+        </button>
+        <button class="quick-btn bowel" onclick="openSheet('bowel')">
+          <span class="q-icon">💩</span>
+          <span class="q-label">Bowel</span>
+          <span class="q-sub">Bristol scale</span>
+        </button>
+        <button class="quick-btn shower" onclick="openSheet('shower')">
+          <span class="q-icon">🚿</span>
+          <span class="q-label">Shower</span>
+          <span class="q-sub">Log Shower</span>
+        </button>
+        <button class="quick-btn clean" onclick="openSheet('clean')">
+          <span class="q-icon">🧹</span>
+          <span class="q-label">Clean</span>
+          <span class="q-sub">Log cleaning</span>
+        </button>
+        <button class="quick-btn exercise" onclick="openSheet('exercise')">
+          <span class="q-icon">🏃</span>
+          <span class="q-label">Exercise</span>
+          <span class="q-sub">Log a workout</span>
+        </button>
+        <button class="quick-btn water" onclick="openSheet('water')">
+          <span class="q-icon">💧</span>
+          <span class="q-label">Water</span>
+          <span class="q-sub">Log water intake</span>
+        </button>
+        <button class="quick-btn trash" onclick="openSheet('trash')">
+          <span class="q-icon">🗑️</span>
+          <span class="q-label">Trash</span>
+          <span class="q-sub">Log trash-out</span>
+        </button>
+        <button class="quick-btn breakfast" onclick="openSheet('breakfast')">
+          <span class="q-icon">🍳</span>
+          <span class="q-label">Breakfast</span>
+          <span class="q-sub">Log Breakfast</span>
+        </button>
+        <button class="quick-btn lunch" onclick="openSheet('lunch')">
+          <span class="q-icon">🍱</span>
+          <span class="q-label">Lunch</span>
+          <span class="q-sub">Log Lunch</span>
+        </button>
+        <button class="quick-btn dinner" onclick="openSheet('dinner')">
+          <span class="q-icon">🍜</span>
+          <span class="q-label">Dinner</span>
+          <span class="q-sub">Log Dinner</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="section" id="checkin-section" style="margin-top:20px;display:none">
+      <div class="section-label">Limited-Time Check-ins</div>
+      <div id="checkin-list"></div>
+    </div>
+
+    <div class="section" style="margin-top:20px">
+      <div class="section-label">Today</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-val coffee" id="stat-coffee">0</div>
+          <div class="stat-name">Coffee</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val bowel" id="stat-bowel">0</div>
+          <div class="stat-name">Bowel</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val shower" id="stat-shower">0</div>
+          <div class="stat-name">Shower</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val clean" id="stat-clean">0</div>
+          <div class="stat-name">Clean</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val exercise" id="stat-exercise">0</div>
+          <div class="stat-name">Exercise</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val water" id="stat-water">0</div>
+          <div class="stat-name">Water</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val trash" id="stat-trash">0</div>
+          <div class="stat-name">Trash</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val breakfast" id="stat-breakfast">0</div>
+          <div class="stat-name">Breakfast</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val lunch" id="stat-lunch">0</div>
+          <div class="stat-name">Lunch</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val dinner" id="stat-dinner">0</div>
+          <div class="stat-name">Dinner</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top:20px">
+      <div class="section-label">Recent</div>
+      <div class="card" id="recent-list">
+        <div class="empty-state" style="padding:24px">
+          <div class="empty-icon">📋</div>
+          <p>No records yet<br>Tap a button above to start</p>
+        </div>
+      </div>
+    </div>
+    <div style="height:16px"></div>
+  </div>
+
+  <!-- ====== CHART TAB ====== -->
+  <div class="screen" id="screen-chart" style="display:none">
+    <div class="nav-header">
+      <h1>Charts</h1>
+    </div>
+
+    <div class="section" style="margin-top:16px">
+      <div class="section-label">Life Habits Heatmap</div>
+      <div class="chart-wrap">
+        <div class="chart-controls">
+          <div class="chart-ctrl active" id="heatmap-mode-week" onclick="setHeatmapMode('week')">Week</div>
+          <div class="chart-ctrl" id="heatmap-mode-month" onclick="setHeatmapMode('month')">Month</div>
+        </div>
+        <div class="heatmap-legend" style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--coffee)"></div><span class="legend-label">Coffee</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--bowel)"></div><span class="legend-label">Bowel</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--shower)"></div><span class="legend-label">Shower</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--clean)"></div><span class="legend-label">Clean</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--exercise)"></div><span class="legend-label">Exercise</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--breakfast)"></div><span class="legend-label">Breakfast</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--lunch)"></div><span class="legend-label">Lunch</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--dinner)"></div><span class="legend-label">Dinner</span></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:4px">
+            <span style="font-size:11px;color:var(--label)">Less</span>
+            <div style="display:flex;gap:2px">
+              <div style="width:12px;height:12px;border-radius:3px;background:rgba(10,14,36,0.08)"></div>
+              <div style="width:12px;height:12px;border-radius:3px;background:rgba(77,111,255,.35)"></div>
+              <div style="width:12px;height:12px;border-radius:3px;background:rgba(77,111,255,.7)"></div>
+              <div style="width:12px;height:12px;border-radius:3px;background:#4D6FFF"></div>
+            </div>
+            <span style="font-size:11px;color:var(--label)">More</span>
+          </div>
+        </div>
+        <canvas id="lifeHeatmap" style="display:block;width:100%;"></canvas>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top:16px">
+      <div class="section-label">Water Check-in</div>
+      <div class="chart-wrap">
+        <div class="water-checkin-summary" style="display:flex;gap:12px;margin-bottom:12px;">
+          <div style="flex:1;background:rgba(64,200,224,.16);border-radius:12px;padding:10px 12px;">
+            <div style="font-size:11px;color:var(--label)">Total check-ins</div>
+            <div id="water-total-count" style="font-size:20px;font-weight:600;color:var(--water)">0 times</div>
+          </div>
+          <div style="flex:1;background:rgba(64,200,224,.16);border-radius:12px;padding:10px 12px;">
+            <div style="font-size:11px;color:var(--label)">Last one</div>
+            <div id="water-last-time" style="font-size:14px;font-weight:600;color:var(--water)">--</div>
+          </div>
+        </div>
+        <canvas id="waterCheckinChart" style="display:block;width:100%;"></canvas>
+      </div>
+    </div>
+
+    <div style="height:16px"></div>
+  </div>
+
+  <!-- ====== MANAGE TAB ====== -->
+  <div class="screen" id="screen-manage" style="display:none">
+    <div class="nav-header">
+      <h1>Manage</h1>
+    </div>
+
+    <div class="manage-section">
+      <div class="section-label">Cloud Sync</div>
+      <div class="card">
+        <div class="card-row" onclick="syncFromCloud().then(()=>renderAllRecords())">
+          <div style="flex:1">
+            <div style="font-size:15px;font-weight:500">☁️ Sync from cloud</div>
+            <div style="font-size:12px;color:var(--label);margin-top:2px">Pull the latest data from all devices</div>
+          </div>
+          <div class="record-chevron">›</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="manage-section" style="margin-top:16px">
+      <div class="section-label">Export Data</div>
+      <div class="card">
+        <div class="card-row" onclick="showExportSheet()">
+          <div style="flex:1">
+            <div style="font-size:15px;font-weight:500">Export JSON</div>
+            <div style="font-size:12px;color:var(--label);margin-top:2px">Choose a date range and export</div>
+          </div>
+          <div class="record-chevron">›</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="manage-section" style="margin-top:16px">
+      <div class="section-label">Import Data</div>
+      <div class="card">
+        <div class="card-row" onclick="showImportSheet()">
+          <div style="flex:1">
+            <div style="font-size:15px;font-weight:500">Import JSON</div>
+            <div style="font-size:12px;color:var(--label);margin-top:2px">Incremental import with conflict preview</div>
+          </div>
+          <div class="record-chevron">›</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="manage-section" style="margin-top:16px">
+      <div class="section-label">All Records</div>
+      <div class="card" id="all-records-list"></div>
+    </div>
+    <div style="height:16px"></div>
+  </div>
+
+  <!-- ====== TAB BAR ====== -->
+  <div class="tab-bar">
+    <div class="tab-item active" id="tab-summary" onclick="switchTab('summary')">
+      <span class="tab-icon">❤️</span>
+      <span class="tab-label">Summary</span>
+      <div class="tab-dot"></div>
+    </div>
+    <div class="tab-item" id="tab-chart" onclick="switchTab('chart')">
+      <span class="tab-icon">📊</span>
+      <span class="tab-label">Charts</span>
+      <div class="tab-dot"></div>
+    </div>
+    <div class="tab-item" id="tab-manage" onclick="switchTab('manage')">
+      <span class="tab-icon">📁</span>
+      <span class="tab-label">Manage</span>
+      <div class="tab-dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== OVERLAY ====== -->
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+
+<!-- ====== COFFEE SHEET ====== -->
+<div class="sheet" id="sheet-coffee">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">☕ Log Coffee</div>
+    <div class="sheet-close" onclick="closeSheet()">Done</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">Capsule</div>
+      <select id="coffee-capsule" style="margin-bottom:0">
+        <option value="">Choose a capsule</option>
+        <option value="Ristretto">Ristretto</option>
+        <option value="Espresso">Espresso</option>
+        <option value="Lungo">Lungo</option>
+        <option value="Volluto">Volluto</option>
+        <option value="Livanto">Livanto</option>
+        <option value="Capriccio">Capriccio</option>
+        <option value="Fortissio Lungo">Fortissio Lungo</option>
+        <option value="Custom">Custom</option>
+      </select>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Options</div>
+      <div class="chip-row" id="coffee-options">
+        <div class="chip coffee-chip" data-val="Hot" onclick="toggleChip(this)">Hot</div>
+        <div class="chip coffee-chip" data-val="Iced" onclick="toggleChip(this)">Iced</div>
+        <div class="chip coffee-chip" data-val="Milk" onclick="toggleChip(this)">Milk</div>
+        <div class="chip coffee-chip" data-val="Americano" onclick="toggleChip(this)">Americano</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Time</div>
+      <div class="time-edit" onclick="editTime('coffee-time')">
+        <span>Log time</span>
+        <span class="time-edit-val" id="coffee-time-display"></span>
+      </div>
+      <input type="datetime-local" id="coffee-time" style="display:none" onchange="updateTimeDisplay('coffee-time')">
+    </div>
+    <button class="save-btn" onclick="saveRecord('coffee')">Save</button>
+  </div>
+</div>
+
+<!-- ====== BOWEL SHEET ====== -->
+<div class="sheet" id="sheet-bowel">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">💩 Log Bowel Movement</div>
+    <div class="sheet-close" onclick="closeSheet()">Done</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">Bristol scale</div>
+      <div class="bristol-grid" id="bristol-grid">
+        <div class="bristol-btn" data-val="1" onclick="selectBristol(1)"><span>🪨</span><span class="bristol-num">1</span></div>
+        <div class="bristol-btn" data-val="2" onclick="selectBristol(2)"><span>🌰</span><span class="bristol-num">2</span></div>
+        <div class="bristol-btn" data-val="3" onclick="selectBristol(3)"><span>🌭</span><span class="bristol-num">3</span></div>
+        <div class="bristol-btn" data-val="4" onclick="selectBristol(4)"><span>🍌</span><span class="bristol-num">4</span></div>
+        <div class="bristol-btn" data-val="5" onclick="selectBristol(5)"><span>🫘</span><span class="bristol-num">5</span></div>
+        <div class="bristol-btn" data-val="6" onclick="selectBristol(6)"><span>💧</span><span class="bristol-num">6</span></div>
+        <div class="bristol-btn" data-val="7" onclick="selectBristol(7)"><span>🌊</span><span class="bristol-num">7</span></div>
+      </div>
+      <div style="display:flex;gap:4px;margin-top:6px;justify-content:space-between;padding:0 2px">
+        <span style="font-size:10px;color:var(--label)">Very dry</span>
+        <span style="font-size:10px;color:var(--label)">Normal</span>
+        <span style="font-size:10px;color:var(--label)">Very loose</span>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Color</div>
+      <div class="chip-row" id="bowel-color">
+        <div class="chip bowel-chip" data-val="Brown" onclick="toggleChipExclusive(this,'bowel-color')">Brown</div>
+        <div class="chip bowel-chip" data-val="Yellow" onclick="toggleChipExclusive(this,'bowel-color')">Yellow</div>
+        <div class="chip bowel-chip" data-val="Green" onclick="toggleChipExclusive(this,'bowel-color')">Green</div>
+        <div class="chip bowel-chip" data-val="Black" onclick="toggleChipExclusive(this,'bowel-color')">Black</div>
+        <div class="chip bowel-chip" data-val="Red" onclick="toggleChipExclusive(this,'bowel-color')">Red</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Symptoms</div>
+      <div class="chip-row" id="bowel-symptoms">
+        <div class="chip generic" data-val="Cramps" onclick="toggleChip(this)">Cramps</div>
+        <div class="chip generic" data-val="Bloating" onclick="toggleChip(this)">Bloating</div>
+        <div class="chip generic" data-val="Blood" onclick="toggleChip(this)">Blood</div>
+        <div class="chip generic" data-val="Difficulty" onclick="toggleChip(this)">Difficulty</div>
+        <div class="chip generic" data-val="Urgency" onclick="toggleChip(this)">Urgency</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Smell</div>
+      <div class="chip-row" id="bowel-smell">
+        <div class="chip generic" data-val="Mild" onclick="toggleChipExclusive(this,'bowel-smell')">Mild</div>
+        <div class="chip generic" data-val="Strong" onclick="toggleChipExclusive(this,'bowel-smell')">Strong</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="toggle-row">
+        <span class="toggle-label">Sticky</span>
+        <div class="toggle" id="sticky-toggle" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Time</div>
+      <div class="time-edit" onclick="editTime('bowel-time')">
+        <span>Log time</span>
+        <span class="time-edit-val" id="bowel-time-display"></span>
+      </div>
+      <input type="datetime-local" id="bowel-time" style="display:none" onchange="updateTimeDisplay('bowel-time')">
+    </div>
+    <button class="save-btn" onclick="saveRecord('bowel')">Save</button>
+  </div>
+</div>
+
+<!-- ====== SHOWER SHEET ====== -->
+<div class="sheet" id="sheet-shower">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">🚿 Log Shower</div>
+    <div class="sheet-close" onclick="closeSheet()">Done</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">Hair wash</div>
+      <div class="chip-row" id="shower-hair">
+        <div class="chip shower-chip" data-val="Hair wash" onclick="toggleChipExclusive(this,'shower-hair')">💆 Hair wash</div>
+        <div class="chip shower-chip" data-val="No hair wash" onclick="toggleChipExclusive(this,'shower-hair')">🚿 No hair wash</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Time</div>
+      <div class="time-edit" onclick="editTime('shower-time')">
+        <span>Log time</span>
+        <span class="time-edit-val" id="shower-time-display"></span>
+      </div>
+      <input type="datetime-local" id="shower-time" style="display:none" onchange="updateTimeDisplay('shower-time')">
+    </div>
+    <button class="save-btn" style="background:var(--shower)" onclick="saveRecord('shower')">Save</button>
+  </div>
+</div>
+
+<!-- ====== CLEAN SHEET ====== -->
+<div class="sheet" id="sheet-clean">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">🧹 Log Cleaning</div>
+    <div class="sheet-close" onclick="closeSheet()">Done</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">Area</div>
+      <div class="chip-row" id="clean-areas">
+        <div class="chip clean-chip" data-val="Bedroom" onclick="toggleChip(this)">Bedroom</div>
+        <div class="chip clean-chip" data-val="Living room" onclick="toggleChip(this)">Living room</div>
+        <div class="chip clean-chip" data-val="Kitchen" onclick="toggleChip(this)">Kitchen</div>
+        <div class="chip clean-chip" data-val="Bathroom" onclick="toggleChip(this)">Bathroom</div>
+        <div class="chip clean-chip" data-val="Balcony" onclick="toggleChip(this)">Balcony</div>
+        <div class="chip clean-chip" data-val="Whole house" onclick="toggleChip(this)">Whole house</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Method</div>
+      <div class="chip-row" id="clean-methods">
+        <div class="chip generic" data-val="Sweep" onclick="toggleChip(this)">Sweep</div>
+        <div class="chip generic" data-val="Mop" onclick="toggleChip(this)">Mop</div>
+        <div class="chip generic" data-val="Vacuum" onclick="toggleChip(this)">Vacuum</div>
+        <div class="chip generic" data-val="Wipe surfaces" onclick="toggleChip(this)">Wipe surfaces</div>
+        <div class="chip generic" data-val="Tidy up" onclick="toggleChip(this)">Tidy up</div>
+        <div class="chip generic" data-val="Wash curtains" onclick="toggleChip(this)">Wash curtains</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Note</div>
+      <input type="text" id="clean-note" placeholder="Optional note…">
+    </div>
+    <div class="form-section">
+      <div class="form-label">Time</div>
+      <div class="time-edit" onclick="editTime('clean-time')">
+        <span>Log time</span>
+        <span class="time-edit-val" id="clean-time-display"></span>
+      </div>
+      <input type="datetime-local" id="clean-time" style="display:none" onchange="updateTimeDisplay('clean-time')">
+    </div>
+    <button class="save-btn" style="background:var(--clean)" onclick="saveRecord('clean')">Save</button>
+  </div>
+</div>
+
+<!-- ====== EXERCISE SHEET ====== -->
+<div class="sheet" id="sheet-exercise">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">🏃 Log Exercise</div>
+    <div class="sheet-close" onclick="closeSheet()">Done</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">Type</div>
+      <div class="chip-row" id="exercise-type">
+        <div class="chip exercise-chip" data-val="Run" onclick="toggleChipExclusive(this,'exercise-type')">🏃 Run</div>
+        <div class="chip exercise-chip" data-val="Cycle" onclick="toggleChipExclusive(this,'exercise-type')">🚴 Cycle</div>
+        <div class="chip exercise-chip" data-val="Swim" onclick="toggleChipExclusive(this,'exercise-type')">🏊 Swim</div>
+        <div class="chip exercise-chip" data-val="Gym" onclick="toggleChipExclusive(this,'exercise-type')">🏋️ Gym</div>
+        <div class="chip exercise-chip" data-val="Yoga" onclick="toggleChipExclusive(this,'exercise-type')">🧘 Yoga</div>
+        <div class="chip exercise-chip" data-val="Ball sport" onclick="toggleChipExclusive(this,'exercise-type')">⚽ Ball sport</div>
+        <div class="chip exercise-chip" data-val="Walk" onclick="toggleChipExclusive(this,'exercise-type')">🚶 Walk</div>
+        <div class="chip exercise-chip" data-val="Other" onclick="toggleChipExclusive(this,'exercise-type')">Other</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Duration (min)</div>
+      <div class="chip-row" id="exercise-duration-chips">
+        <div class="chip generic" data-val="15" onclick="selectDuration(this)">15</div>
+        <div class="chip generic" data-val="30" onclick="selectDuration(this)">30</div>
+        <div class="chip generic" data-val="45" onclick="selectDuration(this)">45</div>
+        <div class="chip generic" data-val="60" onclick="selectDuration(this)">60</div>
+        <div class="chip generic" data-val="90" onclick="selectDuration(this)">90</div>
+      </div>
+      <input type="number" id="exercise-duration-input" placeholder="or enter minutes manually…" min="1" max="999" style="margin-top:8px" oninput="onDurationInput(this)">
+    </div>
+    <div class="form-section">
+      <div class="form-label">Intensity</div>
+      <div class="chip-row" id="exercise-intensity">
+        <div class="chip generic" data-val="Easy" onclick="toggleChipExclusive(this,'exercise-intensity')">🟢 Easy</div>
+        <div class="chip generic" data-val="Moderate" onclick="toggleChipExclusive(this,'exercise-intensity')">🟡 Moderate</div>
+        <div class="chip generic" data-val="Intense" onclick="toggleChipExclusive(this,'exercise-intensity')">🔴 Intense</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Note</div>
+      <input type="text" id="exercise-note" placeholder="Distance, pace, how it felt…">
+    </div>
+    <div class="form-section">
+      <div class="form-label">Time</div>
+      <div class="time-edit" onclick="editTime('exercise-time')">
+        <span>Log time</span>
+        <span class="time-edit-val" id="exercise-time-display"></span>
+      </div>
+      <input type="datetime-local" id="exercise-time" style="display:none" onchange="updateTimeDisplay('exercise-time')">
+    </div>
+    <button class="save-btn" style="background:var(--exercise)" onclick="saveRecord('exercise')">Save</button>
+  </div>
+</div>
+
+<!-- ====== WATER SHEET ====== -->
+<div class="sheet" id="sheet-water">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">💧 Log Water</div>
+    <div class="sheet-close" onclick="closeSheet()">Done</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">Volume</div>
+      <div class="chip-row" id="water-volume">
+        <div class="chip water-chip" data-val="150ml" onclick="toggleChipExclusive(this,'water-volume')">150ml</div>
+        <div class="chip water-chip" data-val="250ml" onclick="toggleChipExclusive(this,'water-volume')">250ml</div>
+        <div class="chip water-chip" data-val="350ml" onclick="toggleChipExclusive(this,'water-volume')">350ml</div>
+        <div class="chip water-chip" data-val="500ml" onclick="toggleChipExclusive(this,'water-volume')">500ml</div>
+        <div class="chip water-chip" data-val="750ml" onclick="toggleChipExclusive(this,'water-volume')">750ml</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Drink</div>
+      <div class="chip-row" id="water-kind">
+        <div class="chip generic" data-val="Plain water" onclick="toggleChipExclusive(this,'water-kind')">Plain water</div>
+        <div class="chip generic" data-val="Warm water" onclick="toggleChipExclusive(this,'water-kind')">Warm water</div>
+        <div class="chip generic" data-val="Green tea" onclick="toggleChipExclusive(this,'water-kind')">Green tea</div>
+        <div class="chip generic" data-val="Herbal tea" onclick="toggleChipExclusive(this,'water-kind')">Herbal tea</div>
+        <div class="chip generic" data-val="Juice" onclick="toggleChipExclusive(this,'water-kind')">Juice</div>
+        <div class="chip generic" data-val="Other" onclick="toggleChipExclusive(this,'water-kind')">Other</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Time</div>
+      <div class="time-edit" onclick="editTime('water-time')">
+        <span>Log time</span>
+        <span class="time-edit-val" id="water-time-display"></span>
+      </div>
+      <input type="datetime-local" id="water-time" style="display:none" onchange="updateTimeDisplay('water-time')">
+    </div>
+    <button class="save-btn" style="background:var(--water)" onclick="saveRecord('water')">Save</button>
+  </div>
+</div>
+
+<!-- ====== TRASH SHEET ====== -->
+<div class="sheet" id="sheet-trash">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">🗑️ Log Trash</div>
+    <div class="sheet-close" onclick="closeSheet()">Done</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">Type</div>
+      <div class="chip-row" id="trash-type">
+        <div class="chip trash-chip" data-val="Dry" onclick="toggleChip(this)">🗂️ Dry waste</div>
+        <div class="chip trash-chip" data-val="Wet" onclick="toggleChip(this)">🥦 Wet waste</div>
+        <div class="chip trash-chip" data-val="Recyclable" onclick="toggleChip(this)">♻️ Recyclable</div>
+        <div class="chip trash-chip" data-val="Hazardous" onclick="toggleChip(this)">☣️ Hazardous</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Bags</div>
+      <div class="chip-row" id="trash-bags">
+        <div class="chip generic" data-val="1" onclick="toggleChipExclusive(this,'trash-bags')">1 bag</div>
+        <div class="chip generic" data-val="2" onclick="toggleChipExclusive(this,'trash-bags')">2 bags</div>
+        <div class="chip generic" data-val="3" onclick="toggleChipExclusive(this,'trash-bags')">3 bags</div>
+        <div class="chip generic" data-val="4+" onclick="toggleChipExclusive(this,'trash-bags')">4+ bags</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Note</div>
+      <input type="text" id="trash-note" placeholder="Optional note…">
+    </div>
+    <div class="form-section">
+      <div class="form-label">Time</div>
+      <div class="time-edit" onclick="editTime('trash-time')">
+        <span>Log time</span>
+        <span class="time-edit-val" id="trash-time-display"></span>
+      </div>
+      <input type="datetime-local" id="trash-time" style="display:none" onchange="updateTimeDisplay('trash-time')">
+    </div>
+    <button class="save-btn" style="background:var(--trash)" onclick="saveRecord('trash')">Save</button>
+  </div>
+</div>
+
+<!-- ====== BREAKFAST SHEET ====== -->
+<div class="sheet" id="sheet-breakfast">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">🍳 Log Breakfast</div>
+    <div class="sheet-close" onclick="closeSheet()">Done</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">What did you eat</div>
+      <input type="text" id="breakfast-food" placeholder="Type freely, e.g. milk + whole-wheat toast…">
+    </div>
+    <div class="form-section">
+      <div class="form-label">Tags (optional)</div>
+      <div class="chip-row" id="breakfast-tags">
+        <div class="chip breakfast-chip" data-val="Homemade" onclick="toggleChip(this)">Homemade</div>
+        <div class="chip breakfast-chip" data-val="Delivery" onclick="toggleChip(this)">Delivery</div>
+        <div class="chip breakfast-chip" data-val="Simple" onclick="toggleChip(this)">Simple</div>
+        <div class="chip breakfast-chip" data-val="Big meal" onclick="toggleChip(this)">Big meal</div>
+        <div class="chip breakfast-chip" data-val="Skipped" onclick="toggleChip(this)">Skipped</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Time</div>
+      <div class="time-edit" onclick="editTime('breakfast-time')">
+        <span>Log time</span>
+        <span class="time-edit-val" id="breakfast-time-display"></span>
+      </div>
+      <input type="datetime-local" id="breakfast-time" style="display:none" onchange="updateTimeDisplay('breakfast-time')">
+    </div>
+    <button class="save-btn" style="background:var(--breakfast);color:#08122b" onclick="saveRecord('breakfast')">Save</button>
+  </div>
+</div>
+
+<!-- ====== LUNCH SHEET ====== -->
+<div class="sheet" id="sheet-lunch">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">🍱 Log Lunch</div>
+    <div class="sheet-close" onclick="closeSheet()">Done</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">What did you eat</div>
+      <input type="text" id="lunch-food" placeholder="Type freely, e.g. tomato & eggs + rice…">
+    </div>
+    <div class="form-section">
+      <div class="form-label">Tags (optional)</div>
+      <div class="chip-row" id="lunch-tags">
+        <div class="chip lunch-chip" data-val="Homemade" onclick="toggleChip(this)">Homemade</div>
+        <div class="chip lunch-chip" data-val="Delivery" onclick="toggleChip(this)">Delivery</div>
+        <div class="chip lunch-chip" data-val="Simple" onclick="toggleChip(this)">Simple</div>
+        <div class="chip lunch-chip" data-val="Big meal" onclick="toggleChip(this)">Big meal</div>
+        <div class="chip lunch-chip" data-val="Skipped" onclick="toggleChip(this)">Skipped</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Time</div>
+      <div class="time-edit" onclick="editTime('lunch-time')">
+        <span>Log time</span>
+        <span class="time-edit-val" id="lunch-time-display"></span>
+      </div>
+      <input type="datetime-local" id="lunch-time" style="display:none" onchange="updateTimeDisplay('lunch-time')">
+    </div>
+    <button class="save-btn" style="background:var(--lunch);color:#08122b" onclick="saveRecord('lunch')">Save</button>
+  </div>
+</div>
+
+<!-- ====== DINNER SHEET ====== -->
+<div class="sheet" id="sheet-dinner">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">🍜 Log Dinner</div>
+    <div class="sheet-close" onclick="closeSheet()">Done</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">What did you eat</div>
+      <input type="text" id="dinner-food" placeholder="Type freely, e.g. stir-fried veggies + multigrain rice…">
+    </div>
+    <div class="form-section">
+      <div class="form-label">Tags (optional)</div>
+      <div class="chip-row" id="dinner-tags">
+        <div class="chip dinner-chip" data-val="Homemade" onclick="toggleChip(this)">Homemade</div>
+        <div class="chip dinner-chip" data-val="Delivery" onclick="toggleChip(this)">Delivery</div>
+        <div class="chip dinner-chip" data-val="Simple" onclick="toggleChip(this)">Simple</div>
+        <div class="chip dinner-chip" data-val="Big meal" onclick="toggleChip(this)">Big meal</div>
+        <div class="chip dinner-chip" data-val="Skipped" onclick="toggleChip(this)">Skipped</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Time</div>
+      <div class="time-edit" onclick="editTime('dinner-time')">
+        <span>Log time</span>
+        <span class="time-edit-val" id="dinner-time-display"></span>
+      </div>
+      <input type="datetime-local" id="dinner-time" style="display:none" onchange="updateTimeDisplay('dinner-time')">
+    </div>
+    <button class="save-btn" style="background:var(--dinner);color:#08122b" onclick="saveRecord('dinner')">Save</button>
+  </div>
+</div>
+
+<!-- ====== EXPORT SHEET ====== -->
+<div class="sheet" id="sheet-export">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">Export Data</div>
+    <div class="sheet-close" onclick="closeSheet()">Close</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">Start date</div>
+      <input type="date" id="export-start">
+    </div>
+    <div class="form-section">
+      <div class="form-label">End date</div>
+      <input type="date" id="export-end">
+    </div>
+    <button class="save-btn" onclick="doExport()">Generate JSON</button>
+    <div class="export-area" id="export-output" style="display:none"></div>
+    <button class="save-btn" id="copy-btn" style="display:none;background:#2FE6A5;color:#08122b;margin-top:8px" onclick="copyExport()">Copy all · long-press to select all</button>
+  </div>
+</div>
+
+<!-- ====== IMPORT SHEET ====== -->
+<div class="sheet" id="sheet-import">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">Import Data</div>
+    <div class="sheet-close" onclick="closeSheet()">Close</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">Paste JSON</div>
+      <textarea class="import-area" id="import-text" placeholder='{"version":1,"records":[...]}'></textarea>
+    </div>
+    <button class="save-btn" onclick="parseImport()">Parse & Preview</button>
+    <div id="import-preview" style="margin-top:16px;display:none">
+      <div class="form-label" style="margin-bottom:10px">Import Preview</div>
+      <div class="import-actions">
+        <button class="import-action-btn btn-skip" onclick="commitImport('skip')">Skip conflicts</button>
+        <button class="import-action-btn btn-overwrite" onclick="commitImport('overwrite')">Overwrite conflicts</button>
+        <button class="import-action-btn btn-commit" onclick="commitImport('new-only')">New only</button>
+      </div>
+      <div id="conflict-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== DETAIL SHEET ====== -->
+<div class="sheet" id="sheet-detail">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title" id="detail-title">Details</div>
+    <div class="sheet-close" onclick="closeSheet()">Close</div>
+  </div>
+  <div class="sheet-body" id="detail-body"></div>
+</div>
+
+<!-- ====== TOAST ====== -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// SUPABASE CONFIG
+// ============================================================
+const SUPABASE_URL = 'https://olndbldkugwjyfmhvdqr.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_5wu37z5HXj51nxJrfRkc7A_Tf0U97hc';
+
+async function sbFetch(path, options = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': options.prefer || '',
+      ...(options.headers || {})
+    }
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err);
+  }
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+// ============================================================
+// DATA LAYER  (localStorage cache + Supabase cloud)
+// ============================================================
+const SCHEMA_VERSION = 1;
+const STORAGE_KEY = 'lifelog_v1';
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { version: SCHEMA_VERSION, records: [] };
+    const d = JSON.parse(raw);
+    if (!d.records) d.records = [];
+    return d;
+  } catch(e) { return { version: SCHEMA_VERSION, records: [] }; }
+}
+
+function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function getRecords() { return loadData().records; }
+
+// ============================================================
+// LIMITED-TIME CHECK-IN CAMPAIGNS
+// ============================================================
+// end 为End date（含当天可打卡），过后自动从列表隐藏
+const CHECKIN_CAMPAIGNS = [
+  { id: 'effort', icon: '🔥', name: 'Effective Effort', sub: 'Daily check-in', end: '2026-07-21' },
+  { id: 'sleep',  icon: '😴', name: 'Sleep Routine', sub: 'Daily check-in', end: '2026-07-23' },
+];
+const CHECKIN_STORAGE_KEY = 'lifelog_checkins_v1';
+
+function loadCheckins() {
+  try {
+    const raw = localStorage.getItem(CHECKIN_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch(e) { return {}; }
+}
+function saveCheckins(data) {
+  localStorage.setItem(CHECKIN_STORAGE_KEY, JSON.stringify(data));
+}
+function todayDateStr() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+}
+function isCampaignActive(c) {
+  // 结束日当天仍可打卡，第二天起自动隐藏
+  return todayDateStr() <= c.end;
+}
+function toggleCheckin(id) {
+  const data = loadCheckins();
+  const today = todayDateStr();
+  if (!data[id]) data[id] = {};
+  data[id][today] = !data[id][today];
+  saveCheckins(data);
+  renderCheckins();
+}
+function renderCheckins() {
+  const section = document.getElementById('checkin-section');
+  const list = document.getElementById('checkin-list');
+  if (!section || !list) return;
+  const active = CHECKIN_CAMPAIGNS.filter(isCampaignActive);
+  const data = loadCheckins();
+  const today = todayDateStr();
+  // Today已Done的卡片要从列表里整个移除，而不Yes显示"已Done"的勾选态占位
+  const pending = active.filter(c => !(data[c.id] && data[c.id][today]));
+  if (!pending.length) {
+    section.style.display = 'none';
+    list.innerHTML = '';
+    return;
+  }
+  section.style.display = 'block';
+  list.innerHTML = pending.map(c => {
+    return `
+    <button class="checkin-card ${c.id}" onclick="toggleCheckin('${c.id}')">
+      <div class="checkin-icon">${c.icon}</div>
+      <div class="checkin-info">
+        <div class="checkin-title">${c.name}</div>
+        <div class="checkin-sub">${c.sub} · until ${c.end.slice(5).replace('-','/')}</div>
+      </div>
+      <div class="checkin-check">✓</div>
+    </button>`;
+  }).join('');
+}
+
+// Pull all records from Supabase and merge into localStorage
+async function syncFromCloud() {
+  try {
+    showSyncBadge('syncing');
+    const rows = await sbFetch('records?select=*&order=timestamp.desc');
+    if (!rows) return;
+    // Convert cloud rows → local record format
+    const cloudRecords = rows.map(row => ({ id: row.id, type: row.type, timestamp: row.timestamp, ...row.data }));
+    // Merge: cloud wins on conflict
+    const local = loadData();
+    const idMap = new Map(cloudRecords.map(r => [r.id, r]));
+    local.records.forEach(r => { if (!idMap.has(r.id)) idMap.set(r.id, r); });
+    const merged = [...idMap.values()].sort((a,b) => b.timestamp - a.timestamp);
+    local.records = merged;
+    saveData(local);
+    renderSummary();
+    if (document.getElementById('screen-chart').style.display !== 'none') renderChart();
+    if (document.getElementById('screen-manage').style.display !== 'none') renderAllRecords();
+    showSyncBadge('ok');
+  } catch(e) {
+    console.error('Sync failed', e);
+    showSyncBadge('error');
+  }
+}
+
+// Push a single record to Supabase
+async function pushToCloud(rec) {
+  const { id, type, timestamp, ...rest } = rec;
+  try {
+    await sbFetch('records', {
+      method: 'POST',
+      prefer: 'resolution=merge-duplicates',
+      body: JSON.stringify({ id, type, timestamp, data: rest })
+    });
+    showSyncBadge('ok');
+  } catch(e) {
+    console.error('Push failed', e);
+    showSyncBadge('error');
+  }
+}
+
+// Delete a record from Supabase
+async function deleteFromCloud(id) {
+  try {
+    await sbFetch(`records?id=eq.${id}`, { method: 'DELETE' });
+  } catch(e) {
+    console.error('Delete failed', e);
+  }
+}
+
+function addRecord(rec) {
+  const data = loadData();
+  data.records.unshift(rec);
+  saveData(data);
+  pushToCloud(rec); // async, don't await
+}
+
+function deleteRecord(id) {
+  const data = loadData();
+  data.records = data.records.filter(r => r.id !== id);
+  saveData(data);
+  deleteFromCloud(id); // async
+}
+
+// 判断两个时间戳YesNo为本地同一天（用于"零点后不可删除/仅当天可改时间"的判断）
+function isSameLocalDay(ts1, ts2) {
+  const d1 = new Date(ts1), d2 = new Date(ts2);
+  return d1.getFullYear() === d2.getFullYear() &&
+         d1.getMonth() === d2.getMonth() &&
+         d1.getDate() === d2.getDate();
+}
+
+// 更新某条记录的时间戳（仅限当天记录调用），并同步到云端（upsert）
+function updateRecordTime(id, newTimestamp) {
+  const data = loadData();
+  const rec = data.records.find(r => r.id === id);
+  if (!rec) return null;
+  rec.timestamp = newTimestamp;
+  saveData(data);
+  pushToCloud(rec); // async upsert, don't await
+  return rec;
+}
+
+// ---- Sync badge in nav header ----
+function showSyncBadge(state) {
+  let el = document.getElementById('sync-badge');
+  if (!el) return;
+  el.className = 'sync-badge ' + state;
+  el.textContent = state === 'syncing' ? 'Syncing…' : state === 'ok' ? '✓ Synced' : '⚠ Sync failed';
+}
+
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+}
+
+function formatTs(ts) {
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getMonth()+1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function toDatetimeLocal(ts) {
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+// ============================================================
+// STATE
+// ============================================================
+let currentSheet = null;
+let currentPeriod = 'week';
+let pendingImport = null; // { toAdd:[], toUpdate:[] }
+
+// ============================================================
+// TAB NAV
+// ============================================================
+function switchTab(name) {
+  ['summary','chart','manage'].forEach(t => {
+    document.getElementById('screen-'+t).style.display = t===name ? 'block' : 'none';
+    document.getElementById('tab-'+t).classList.toggle('active', t===name);
+  });
+  if (name === 'chart') { renderLifeHeatmap(); renderWaterCheckin(); }
+  if (name === 'manage') renderAllRecords();
+  if (name === 'summary') renderSummary();
+}
+
+// ============================================================
+// SUMMARY
+// ============================================================
+function renderSummary() {
+  renderCheckins();
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  document.getElementById('today-label').textContent =
+    now.toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
+
+  const records = getRecords();
+  const today = records.filter(r => {
+    const d = new Date(r.timestamp);
+    const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    return ds === todayStr;
+  });
+
+  document.getElementById('stat-coffee').textContent = today.filter(r=>r.type==='coffee').length;
+  document.getElementById('stat-bowel').textContent  = today.filter(r=>r.type==='bowel').length;
+  document.getElementById('stat-shower').textContent = today.filter(r=>r.type==='shower').length;
+  document.getElementById('stat-clean').textContent  = today.filter(r=>r.type==='clean').length;
+  document.getElementById('stat-exercise').textContent = today.filter(r=>r.type==='exercise').length;
+  document.getElementById('stat-water').textContent   = today.filter(r=>r.type==='water').length;
+  document.getElementById('stat-trash').textContent   = today.filter(r=>r.type==='trash').length;
+  document.getElementById('stat-breakfast').textContent = today.filter(r=>r.type==='breakfast').length;
+  document.getElementById('stat-lunch').textContent     = today.filter(r=>r.type==='lunch').length;
+  document.getElementById('stat-dinner').textContent    = today.filter(r=>r.type==='dinner').length;
+
+  // recent list
+  const list = document.getElementById('recent-list');
+  const recent = records.slice(0,8);
+  if (!recent.length) {
+    list.innerHTML = `<div class="empty-state" style="padding:24px"><div class="empty-icon">📋</div><p>No records yet<br>Tap a button above to start</p></div>`;
+    return;
+  }
+  list.innerHTML = recent.map(r => `
+    <div class="card-row" onclick="showDetail('${r.id}')">
+      <div class="record-icon ${r.type}">${typeIcon(r.type)}</div>
+      <div class="record-info">
+        <div class="record-title">${recordTitle(r)}</div>
+        <div class="record-time">${formatTs(r.timestamp)}</div>
+      </div>
+      <div class="record-chevron">›</div>
+    </div>`).join('');
+}
+
+function typeIcon(t) {
+  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'💧':t==='trash'?'🗑️':t==='breakfast'?'🍳':t==='lunch'?'🍱':t==='dinner'?'🍜':'🧹';
+}
+
+function recordTitle(r) {
+  if (r.type==='coffee') {
+    const parts = [];
+    if (r.capsule) parts.push(r.capsule);
+    if (r.options && r.options.length) parts.push(r.options.join('·'));
+    return parts.join(' — ') || 'Coffee';
+  }
+  if (r.type==='bowel') {
+    const labels = ['','Separate hard lumps','Lumpy sausage','Cracked sausage','Smooth soft snake','Soft blobs','Mushy','Watery'];
+    return `Bristol ${r.bristol} — ${labels[r.bristol]||''}`;
+  }
+  if (r.type==='shower') return r.hair ? `Shower · ${r.hair}` : 'Shower';
+  if (r.type==='clean') {
+    const parts = [];
+    if (r.areas && r.areas.length) parts.push(r.areas.join('·'));
+    if (r.methods && r.methods.length) parts.push(r.methods.join('·'));
+    return parts.join(' — ') || 'Cleaning';
+  }
+  if (r.type==='exercise') {
+    const parts = [];
+    if (r.exerciseType) parts.push(r.exerciseType);
+    if (r.duration) parts.push(r.duration + ' min');
+    if (r.intensity) parts.push(r.intensity);
+    return parts.join(' · ') || 'Exercise';
+  }
+  if (r.type==='water') {
+    const parts = [];
+    if (r.kind) parts.push(r.kind);
+    if (r.volume) parts.push(r.volume);
+    return parts.join(' · ') || 'Water';
+  }
+  if (r.type==='trash') {
+    const parts = [];
+    if (r.trashTypes && r.trashTypes.length) parts.push(r.trashTypes.join('·'));
+    if (r.bags) parts.push(r.bags + ' bags');
+    return parts.join(' — ') || 'Trash';
+  }
+  if (r.type==='breakfast' || r.type==='lunch' || r.type==='dinner') {
+    const mealName = r.type==='breakfast'?'Breakfast':r.type==='lunch'?'Lunch':'Dinner';
+    const parts = [];
+    if (r.food) parts.push(r.food);
+    if (r.tags && r.tags.length) parts.push(r.tags.join('·'));
+    return parts.join(' · ') || mealName;
+  }
+  return 'Record';
+}
+
+// ============================================================
+// SHEETS
+// ============================================================
+function openSheet(name) {
+  // reset form
+  if (name==='coffee') {
+    document.querySelectorAll('#sheet-coffee .chip').forEach(c=>c.classList.remove('active'));
+    document.getElementById('coffee-capsule').value='';
+    setTimeNow('coffee-time');
+  }
+  if (name==='bowel') {
+    document.querySelectorAll('#sheet-bowel .chip').forEach(c=>c.classList.remove('active'));
+    document.querySelectorAll('#bristol-grid .bristol-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('sticky-toggle').classList.remove('on');
+    setTimeNow('bowel-time');
+  }
+  if (name==='shower') {
+    document.querySelectorAll('#sheet-shower .chip').forEach(c=>c.classList.remove('active'));
+    setTimeNow('shower-time');
+  }
+  if (name==='clean') {
+    document.querySelectorAll('#sheet-clean .chip').forEach(c=>c.classList.remove('active'));
+    document.getElementById('clean-note').value = '';
+    setTimeNow('clean-time');
+  }
+  if (name==='exercise') {
+    document.querySelectorAll('#sheet-exercise .chip').forEach(c=>c.classList.remove('active'));
+    document.getElementById('exercise-duration-input').value = '';
+    document.getElementById('exercise-note').value = '';
+    setTimeNow('exercise-time');
+  }
+  if (name==='water') {
+    document.querySelectorAll('#sheet-water .chip').forEach(c=>c.classList.remove('active'));
+    setTimeNow('water-time');
+  }
+  if (name==='trash') {
+    document.querySelectorAll('#sheet-trash .chip').forEach(c=>c.classList.remove('active'));
+    document.getElementById('trash-note').value = '';
+    setTimeNow('trash-time');
+  }
+  if (name==='breakfast') {
+    document.querySelectorAll('#sheet-breakfast .chip').forEach(c=>c.classList.remove('active'));
+    document.getElementById('breakfast-food').value = '';
+    setTimeNow('breakfast-time');
+  }
+  if (name==='lunch') {
+    document.querySelectorAll('#sheet-lunch .chip').forEach(c=>c.classList.remove('active'));
+    document.getElementById('lunch-food').value = '';
+    setTimeNow('lunch-time');
+  }
+  if (name==='dinner') {
+    document.querySelectorAll('#sheet-dinner .chip').forEach(c=>c.classList.remove('active'));
+    document.getElementById('dinner-food').value = '';
+    setTimeNow('dinner-time');
+  }
+  currentSheet = name;
+  document.getElementById('sheet-'+name).classList.add('visible');
+  document.getElementById('overlay').classList.add('visible');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSheet() {
+  if (currentSheet) {
+    document.getElementById('sheet-'+currentSheet).classList.remove('visible');
+  }
+  // also close detail, export, import
+  ['detail','export','import','shower','clean','exercise','water','trash','breakfast','lunch','dinner'].forEach(n => {
+    const el = document.getElementById('sheet-'+n);
+    if (el) el.classList.remove('visible');
+  });
+  document.getElementById('overlay').classList.remove('visible');
+  document.body.style.overflow = '';
+  currentSheet = null;
+}
+
+function showExportSheet() {
+  const now = new Date();
+  const pad = n=>String(n).padStart(2,'0');
+  const today = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  const monthAgo = new Date(now); monthAgo.setDate(monthAgo.getDate()-30);
+  const ma = `${monthAgo.getFullYear()}-${pad(monthAgo.getMonth()+1)}-${pad(monthAgo.getDate())}`;
+  document.getElementById('export-start').value = ma;
+  document.getElementById('export-end').value = today;
+  document.getElementById('export-output').style.display = 'none';
+  document.getElementById('copy-btn').style.display = 'none';
+  currentSheet = 'export';
+  document.getElementById('sheet-export').classList.add('visible');
+  document.getElementById('overlay').classList.add('visible');
+}
+
+function showImportSheet() {
+  document.getElementById('import-text').value = '';
+  document.getElementById('import-preview').style.display = 'none';
+  pendingImport = null;
+  currentSheet = 'import';
+  document.getElementById('sheet-import').classList.add('visible');
+  document.getElementById('overlay').classList.add('visible');
+}
+
+// ============================================================
+// FORM HELPERS
+// ============================================================
+function setTimeNow(id) {
+  const el = document.getElementById(id);
+  el.value = toDatetimeLocal(Date.now());
+  updateTimeDisplay(id);
+}
+
+// 用于「Study Plan」打卡：把 Sheet 的Time字段设为指定日期（保留当前时分），
+// 而不YesSimple的"Now"，这样记录会落在任务对应的那一天而不Yes永远Yes今天
+function setTimeForDate(id, date) {
+  const el = document.getElementById(id);
+  const now = new Date();
+  const combined = new Date(date.getFullYear(), date.getMonth(), date.getDate(), now.getHours(), now.getMinutes());
+  el.value = toDatetimeLocal(combined.getTime());
+  updateTimeDisplay(id);
+}
+
+function editTime(id) {
+  const el = document.getElementById(id);
+  el.showPicker ? el.showPicker() : el.click();
+}
+
+function updateTimeDisplay(id) {
+  const el = document.getElementById(id);
+  const display = document.getElementById(id+'-display');
+  if (!el.value) { display.textContent='Now'; return; }
+  display.textContent = formatTs(new Date(el.value).getTime());
+}
+
+function toggleChip(el) {
+  el.classList.toggle('active');
+}
+
+function toggleChipExclusive(el, groupId) {
+  const group = document.getElementById(groupId) || el.closest('.chip-row');
+  group.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+let selectedBristol = null;
+function selectBristol(n) {
+  selectedBristol = n;
+  document.querySelectorAll('#bristol-grid .bristol-btn').forEach(b=>{
+    b.classList.toggle('active', parseInt(b.dataset.val)===n);
+  });
+}
+
+function selectDuration(el) {
+  document.querySelectorAll('#exercise-duration-chips .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('exercise-duration-input').value = '';
+}
+
+function onDurationInput(el) {
+  if (el.value) {
+    document.querySelectorAll('#exercise-duration-chips .chip').forEach(c=>c.classList.remove('active'));
+  }
+}
+
+// ============================================================
+// SAVE RECORDS
+// ============================================================
+function saveRecord(type) {
+  let rec = { id: genId(), type, timestamp: Date.now() };
+
+  if (type==='coffee') {
+    const t = document.getElementById('coffee-time').value;
+    if (t) rec.timestamp = new Date(t).getTime();
+    rec.capsule = document.getElementById('coffee-capsule').value;
+    rec.options = [...document.querySelectorAll('#coffee-options .chip.active')].map(c=>c.dataset.val);
+  }
+
+  if (type==='bowel') {
+    if (!selectedBristol) { showToast('Please choose a Bristol type'); return; }
+    const t = document.getElementById('bowel-time').value;
+    if (t) rec.timestamp = new Date(t).getTime();
+    rec.bristol = selectedBristol;
+    rec.color = document.querySelector('#bowel-color .chip.active')?.dataset.val || '';
+    rec.symptoms = [...document.querySelectorAll('#bowel-symptoms .chip.active')].map(c=>c.dataset.val);
+    rec.smell = document.querySelector('#bowel-smell .chip.active')?.dataset.val || '';
+    rec.sticky = document.getElementById('sticky-toggle').classList.contains('on');
+    selectedBristol = null;
+  }
+
+  if (type==='shower') {
+    const t = document.getElementById('shower-time').value;
+    if (t) rec.timestamp = new Date(t).getTime();
+    rec.hair = document.querySelector('#shower-hair .chip.active')?.dataset.val || '';
+  }
+
+  if (type==='clean') {
+    const t = document.getElementById('clean-time').value;
+    if (t) rec.timestamp = new Date(t).getTime();
+    rec.areas   = [...document.querySelectorAll('#clean-areas .chip.active')].map(c=>c.dataset.val);
+    rec.methods = [...document.querySelectorAll('#clean-methods .chip.active')].map(c=>c.dataset.val);
+    rec.note    = document.getElementById('clean-note').value.trim();
+  }
+
+  if (type==='exercise') {
+    const exType = document.querySelector('#exercise-type .chip.active')?.dataset.val || '';
+    if (!exType) { showToast('Please choose an exercise type'); return; }
+    const t = document.getElementById('exercise-time').value;
+    if (t) rec.timestamp = new Date(t).getTime();
+    rec.exerciseType = exType;
+    const chipDur = document.querySelector('#exercise-duration-chips .chip.active')?.dataset.val;
+    const inputDur = document.getElementById('exercise-duration-input').value;
+    rec.duration = parseInt(chipDur || inputDur) || 0;
+    rec.intensity = document.querySelector('#exercise-intensity .chip.active')?.dataset.val || '';
+    rec.note = document.getElementById('exercise-note').value.trim();
+  }
+
+  if (type==='water') {
+    const t = document.getElementById('water-time').value;
+    if (t) rec.timestamp = new Date(t).getTime();
+    rec.volume = document.querySelector('#water-volume .chip.active')?.dataset.val || '';
+    rec.kind   = document.querySelector('#water-kind .chip.active')?.dataset.val || '';
+  }
+
+  if (type==='trash') {
+    const t = document.getElementById('trash-time').value;
+    if (t) rec.timestamp = new Date(t).getTime();
+    rec.trashTypes = [...document.querySelectorAll('#trash-type .chip.active')].map(c=>c.dataset.val);
+    rec.bags = document.querySelector('#trash-bags .chip.active')?.dataset.val || '';
+    rec.note = document.getElementById('trash-note').value.trim();
+  }
+
+  if (type==='breakfast' || type==='lunch' || type==='dinner') {
+    const t = document.getElementById(type+'-time').value;
+    if (t) rec.timestamp = new Date(t).getTime();
+    rec.food = document.getElementById(type+'-food').value.trim();
+    rec.tags = [...document.querySelectorAll('#'+type+'-tags .chip.active')].map(c=>c.dataset.val);
+  }
+
+  addRecord(rec);
+  closeSheet();
+  renderSummary();
+
+  const toastMsg = type==='coffee'?'☕ Coffee logged':type==='bowel'?'💩 Bowel logged':type==='shower'?'🚿 Shower logged':type==='exercise'?'🏃 Exercise logged':type==='water'?'💧 Water logged':type==='trash'?'🗑️ Trash logged':type==='breakfast'?'🍳 Breakfast logged':type==='lunch'?'🍱 Lunch logged':type==='dinner'?'🍜 Dinner logged':'🧹 Cleaning logged';
+  showToast(toastMsg);
+  if (navigator.vibrate) navigator.vibrate(10);
+}
+
+// ============================================================
+// DETAIL
+// ============================================================
+function showDetail(id) {
+  const records = getRecords();
+  const r = records.find(x=>x.id===id);
+  if (!r) return;
+
+  document.getElementById('detail-title').textContent = typeIcon(r.type)+' '+recordTitle(r);
+  let html = '';
+
+  const isToday = isSameLocalDay(r.timestamp, Date.now());
+
+  if (isToday) {
+    html += `<div class="form-section">
+      <div class="form-label">Time</div>
+      <div class="time-edit" onclick="editTime('detail-time-input')">
+        <span>Log time</span>
+        <span class="time-edit-val" id="detail-time-input-display"></span>
+      </div>
+      <input type="datetime-local" id="detail-time-input" style="display:none" onchange="updateDetailTime('${r.id}')">
+    </div>`;
+  } else {
+    html += `<div class="detail-field"><div class="detail-key">Time</div><div class="detail-val">${new Date(r.timestamp).toLocaleString('zh-CN')}</div></div>`;
+  }
+
+  if (r.type==='coffee') {
+    if (r.capsule) html += `<div class="detail-field"><div class="detail-key">Capsule</div><div class="detail-val">${r.capsule}</div></div>`;
+    if (r.options?.length) html += `<div class="detail-field"><div class="detail-key">Options</div><div class="detail-val">${r.options.join('、')}</div></div>`;
+  }
+  if (r.type==='bowel') {
+    const labels=['','Separate hard lumps','Lumpy sausage','Cracked sausage','Smooth soft snake','Soft blobs','Mushy','Watery'];
+    html += `<div class="detail-field"><div class="detail-key">Bristol</div><div class="detail-val">${r.bristol} — ${labels[r.bristol]||''}</div></div>`;
+    if (r.color) html += `<div class="detail-field"><div class="detail-key">Color</div><div class="detail-val">${r.color}</div></div>`;
+    if (r.symptoms?.length) html += `<div class="detail-field"><div class="detail-key">Symptoms</div><div class="detail-val">${r.symptoms.join('、')}</div></div>`;
+    if (r.smell) html += `<div class="detail-field"><div class="detail-key">Smell</div><div class="detail-val">${r.smell}</div></div>`;
+    html += `<div class="detail-field"><div class="detail-key">Sticky</div><div class="detail-val">${r.sticky?'Yes':'No'}</div></div>`;
+  }
+
+  if (r.type==='clean') {
+    if (r.areas?.length)   html += `<div class="detail-field"><div class="detail-key">Area</div><div class="detail-val">${r.areas.join('、')}</div></div>`;
+    if (r.methods?.length) html += `<div class="detail-field"><div class="detail-key">Method</div><div class="detail-val">${r.methods.join('、')}</div></div>`;
+    if (r.note)            html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${r.note}</div></div>`;
+  }
+
+  if (r.type==='shower') {
+    if (r.hair) html += `<div class="detail-field"><div class="detail-key">Hair wash</div><div class="detail-val">${r.hair}</div></div>`;
+  }
+
+  if (r.type==='exercise') {
+    if (r.exerciseType) html += `<div class="detail-field"><div class="detail-key">Type</div><div class="detail-val">${r.exerciseType}</div></div>`;
+    if (r.duration)     html += `<div class="detail-field"><div class="detail-key">Duration</div><div class="detail-val">${r.duration} min</div></div>`;
+    if (r.intensity)    html += `<div class="detail-field"><div class="detail-key">Intensity</div><div class="detail-val">${r.intensity}</div></div>`;
+    if (r.note)         html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${r.note}</div></div>`;
+  }
+
+  if (r.type==='water') {
+    if (r.kind)   html += `<div class="detail-field"><div class="detail-key">Drink</div><div class="detail-val">${r.kind}</div></div>`;
+    if (r.volume) html += `<div class="detail-field"><div class="detail-key">Volume</div><div class="detail-val">${r.volume}</div></div>`;
+  }
+
+  if (r.type==='trash') {
+    if (r.trashTypes?.length) html += `<div class="detail-field"><div class="detail-key">Type</div><div class="detail-val">${r.trashTypes.join('、')}</div></div>`;
+    if (r.bags)  html += `<div class="detail-field"><div class="detail-key">Count</div><div class="detail-val">${r.bags} bags</div></div>`;
+    if (r.note)  html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${r.note}</div></div>`;
+  }
+
+  if (r.type==='breakfast' || r.type==='lunch' || r.type==='dinner') {
+    if (r.food)        html += `<div class="detail-field"><div class="detail-key">What did you eat</div><div class="detail-val">${r.food}</div></div>`;
+    if (r.tags?.length) html += `<div class="detail-field"><div class="detail-key">Tags</div><div class="detail-val">${r.tags.join('、')}</div></div>`;
+  }
+
+  if (isToday) {
+    html += `<button class="save-btn" style="background:var(--red);margin-top:24px" onclick="deleteFromDetail('${r.id}')">Delete Record</button>`;
+  } else {
+    html += `<div style="font-size:12px;color:var(--label);text-align:center;margin-top:24px;line-height:1.4">Records from previous days can no longer be edited or deleted</div>`;
+  }
+
+  document.getElementById('detail-body').innerHTML = html;
+  currentSheet = 'detail';
+  document.getElementById('sheet-detail').classList.add('visible');
+  document.getElementById('overlay').classList.add('visible');
+
+  if (isToday) {
+    const timeInput = document.getElementById('detail-time-input');
+    timeInput.value = toDatetimeLocal(r.timestamp);
+    updateTimeDisplay('detail-time-input');
+  }
+}
+
+function updateDetailTime(id) {
+  const el = document.getElementById('detail-time-input');
+  if (!el || !el.value) return;
+  const original = getRecords().find(r => r.id === id);
+  if (!original) return;
+  // 只允许把时间改到今天以内，防止意外挪到别的日期后绕过"零点后不可删除"的限制
+  const newTs = new Date(el.value).getTime();
+  if (!isSameLocalDay(newTs, Date.now())) {
+    showToast('Time can only be changed within today');
+    el.value = toDatetimeLocal(original.timestamp);
+    updateTimeDisplay('detail-time-input');
+    return;
+  }
+  updateRecordTime(id, newTs);
+  updateTimeDisplay('detail-time-input');
+  renderSummary();
+  if (document.getElementById('screen-manage').style.display!=='none') renderAllRecords();
+  if (document.getElementById('screen-chart').style.display!=='none') renderChart();
+  showToast('Time updated');
+}
+
+function deleteFromDetail(id) {
+  const r = getRecords().find(x=>x.id===id);
+  if (!r || !isSameLocalDay(r.timestamp, Date.now())) {
+    showToast('Records from previous days can no longer be deleted');
+    return;
+  }
+  if (!confirm('Delete this record?')) return;
+  deleteRecord(id);
+  closeSheet();
+  renderSummary();
+  if (document.getElementById('screen-manage').style.display!=='none') renderAllRecords();
+  if (document.getElementById('screen-chart').style.display!=='none') renderChart();
+  showToast('Deleted');
+}
+
+// ============================================================
+// ALL RECORDS (MANAGE TAB)
+// ============================================================
+function renderAllRecords() {
+  const list = document.getElementById('all-records-list');
+  const records = getRecords();
+  if (!records.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📂</div><p>No records yet</p></div>`;
+    return;
+  }
+  list.innerHTML = records.map(r => `
+    <div class="card-row" onclick="showDetail('${r.id}')">
+      <div class="record-icon ${r.type}">${typeIcon(r.type)}</div>
+      <div class="record-info">
+        <div class="record-title">${recordTitle(r)}</div>
+        <div class="record-time">${formatTs(r.timestamp)}</div>
+      </div>
+      <div class="record-chevron">›</div>
+    </div>`).join('');
+}
+
+// ============================================================
+// EXPORT
+// ============================================================
+function doExport() {
+  const start = document.getElementById('export-start').value;
+  const end   = document.getElementById('export-end').value;
+  const records = getRecords().filter(r => {
+    if (!start && !end) return true;
+    const d = new Date(r.timestamp);
+    const ds = d.toISOString().slice(0,10);
+    if (start && ds < start) return false;
+    if (end   && ds > end)   return false;
+    return true;
+  });
+
+  const payload = { version: SCHEMA_VERSION, exportedAt: new Date().toISOString(), records };
+  const json = JSON.stringify(payload, null, 2);
+  const el = document.getElementById('export-output');
+  el.textContent = json;
+  el.style.display = 'block';
+  document.getElementById('copy-btn').style.display = 'block';
+  showToast(`Generated ${records.length} records`);
+}
+
+function copyExport() {
+  const text = document.getElementById('export-output').textContent;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(()=>showToast('Copied to clipboard')).catch(()=>showToast('Please long-press to copy manually'));
+  } else {
+    showToast('Please long-press the text area to copy manually');
+  }
+}
+
+// ============================================================
+// IMPORT
+// ============================================================
+function parseImport() {
+  const raw = document.getElementById('import-text').value.trim();
+  if (!raw) { showToast('Please paste JSON data'); return; }
+
+  let parsed;
+  try { parsed = JSON.parse(raw); }
+  catch(e) { showToast('JSON parse error: ' + e.message); return; }
+
+  // schema validation
+  if (!parsed.version) { showToast("Missing 'version' field"); return; }
+  if (!Array.isArray(parsed.records)) { showToast("Missing 'records' array"); return; }
+  if (parsed.version > SCHEMA_VERSION) { showToast(`Version mismatch (file v${parsed.version}, current v${SCHEMA_VERSION})`); return; }
+
+  const existing = getRecords();
+  const existingIds = new Map(existing.map(r=>[r.id, r]));
+
+  const toAdd = [], toUpdate = [];
+  for (const r of parsed.records) {
+    if (!r.id || !r.type || !r.timestamp) continue; // skip malformed
+    if (!existingIds.has(r.id)) {
+      toAdd.push(r);
+    } else {
+      const cur = existingIds.get(r.id);
+      if (JSON.stringify(cur) !== JSON.stringify(r)) toUpdate.push(r);
+    }
+  }
+
+  pendingImport = { toAdd, toUpdate, allIncoming: parsed.records };
+
+  const preview = document.getElementById('import-preview');
+  const list    = document.getElementById('conflict-list');
+  preview.style.display = 'block';
+
+  if (!toAdd.length && !toUpdate.length) {
+    list.innerHTML = `<div style="text-align:center;color:var(--label);padding:16px;font-size:14px">No new data to import</div>`;
+    return;
+  }
+
+  let html = '';
+  toAdd.slice(0,20).forEach(r => {
+    html += `<div class="conflict-row new">
+      <div class="conflict-badge new">New</div>
+      <div class="conflict-desc">${typeIcon(r.type)} ${recordTitle(r)} · ${formatTs(r.timestamp)}</div>
+    </div>`;
+  });
+  if (toAdd.length > 20) html += `<div style="color:var(--label);font-size:13px;padding:4px 4px 8px">…and ${toAdd.length-20} more new</div>`;
+
+  toUpdate.slice(0,10).forEach(r => {
+    html += `<div class="conflict-row update">
+      <div class="conflict-badge update">Conflict</div>
+      <div class="conflict-desc">${typeIcon(r.type)} ${recordTitle(r)} · ${formatTs(r.timestamp)}</div>
+    </div>`;
+  });
+  if (toUpdate.length > 10) html += `<div style="color:var(--label);font-size:13px;padding:4px 4px 8px">…and ${toUpdate.length-10} more conflicting</div>`;
+
+  list.innerHTML = html;
+}
+
+function commitImport(mode) {
+  if (!pendingImport) return;
+  const { toAdd, toUpdate } = pendingImport;
+
+  const data = loadData();
+  const idMap = new Map(data.records.map(r=>[r.id,r]));
+
+  // always add new
+  toAdd.forEach(r => { if (!idMap.has(r.id)) { data.records.push(r); idMap.set(r.id,r); } });
+
+  if (mode === 'overwrite') {
+    toUpdate.forEach(r => {
+      const idx = data.records.findIndex(x=>x.id===r.id);
+      if (idx>-1) data.records[idx] = r;
+    });
+  }
+  // mode 'skip' or 'new-only' → don't touch conflicts
+
+  // sort by timestamp desc
+  data.records.sort((a,b)=>b.timestamp-a.timestamp);
+  saveData(data);
+
+  // push imported records to cloud
+  const toPush = [...toAdd, ...(mode==='overwrite'?toUpdate:[])];
+  toPush.forEach(r => pushToCloud(r));
+
+  closeSheet();
+  renderSummary();
+  renderAllRecords();
+  if (document.getElementById('screen-chart').style.display!=='none') renderChart();
+
+  const added = toAdd.length + (mode==='overwrite'?toUpdate.length:0);
+  showToast(`Imported ${added} records`);
+  pendingImport = null;
+}
+
+// ============================================================
+// LIFE HABITS HEATMAP  (Coffee/Bowel/Shower/Clean/Exercise)
+// ============================================================
+const LIFE_TYPES = ['coffee','bowel','shower','clean','exercise','breakfast','lunch','dinner'];
+const LIFE_LABELS = { coffee:'Coffee', bowel:'Bowel', shower:'Shower', clean:'Clean', exercise:'Exercise', breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner' };
+const LIFE_COLORS = {
+  coffee:   ['rgba(216,155,106,.12)','rgba(216,155,106,.4)','rgba(216,155,106,.7)','#D89B6A'],
+  bowel:    ['rgba(255,214,10,.12)','rgba(255,214,10,.4)','rgba(255,214,10,.7)','#FFD60A'],
+  shower:   ['rgba(100,210,255,.12)','rgba(100,210,255,.4)','rgba(100,210,255,.7)','#64D2FF'],
+  clean:    ['rgba(47,230,165,.12)','rgba(47,230,165,.4)','rgba(47,230,165,.7)','#2FE6A5'],
+  exercise: ['rgba(255,133,82,.12)','rgba(255,133,82,.4)','rgba(255,133,82,.7)','#FF8552'],
+  breakfast:['rgba(255,179,123,.12)','rgba(255,179,123,.4)','rgba(255,179,123,.7)','#FFB37B'],
+  lunch:    ['rgba(198,232,107,.12)','rgba(198,232,107,.4)','rgba(198,232,107,.7)','#C6E86B'],
+  dinner:   ['rgba(169,133,255,.12)','rgba(169,133,255,.4)','rgba(169,133,255,.7)','#A985FF'],
+};
+
+let heatmapMode = 'week';
+function setHeatmapMode(mode) {
+  if (heatmapMode === mode) return;
+  heatmapMode = mode;
+  const wBtn = document.getElementById('heatmap-mode-week');
+  const mBtn = document.getElementById('heatmap-mode-month');
+  if (wBtn) wBtn.classList.toggle('active', mode === 'week');
+  if (mBtn) mBtn.classList.toggle('active', mode === 'month');
+  renderLifeHeatmap();
+}
+
+function renderLifeHeatmap() {
+  if (heatmapMode === 'month') renderLifeHeatmapMonthly();
+  else renderLifeHeatmapWeekly();
+}
+
+function renderLifeHeatmapWeekly() {
+  const canvas = document.getElementById('lifeHeatmap');
+  if (!canvas) return;
+
+  const records = getRecords();
+  const lifeTypes = LIFE_TYPES;
+  const lifeLabels = LIFE_LABELS;
+  const lifeColors = LIFE_COLORS;
+
+  // 本周(周一到周日)
+  const today = new Date(); today.setHours(0,0,0,0);
+  const dow = today.getDay(); // 0=周日 ... 6=周六
+  const mondayOffset = (dow === 0) ? -6 : 1 - dow;
+  const weekStart = new Date(today);
+  weekStart.setDate(weekStart.getDate() + mondayOffset);
+
+  const DAYS = 7;
+  const weekdayLabels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const dayDates = [];
+  for (let i = 0; i < DAYS; i++) {
+    const d = new Date(weekStart);
+    d.setDate(d.getDate() + i);
+    dayDates.push(d);
+  }
+  const todayIdx = Math.round((today - weekStart) / 86400000);
+
+  const counts = {};
+  lifeTypes.forEach(t => counts[t] = Array(DAYS).fill(0));
+  records.forEach(r => {
+    if (!lifeTypes.includes(r.type)) return;
+    const d = new Date(r.timestamp);
+    const dd = new Date(d); dd.setHours(0,0,0,0);
+    const idx = Math.round((dd - weekStart) / 86400000);
+    if (idx >= 0 && idx < DAYS) counts[r.type][idx]++;
+  });
+
+  const dpr = window.devicePixelRatio || 1;
+  const containerW = canvas.parentElement.clientWidth - 32;
+
+  const ROWS = lifeTypes.length;
+  const LABEL_W = 32;
+  const CELL_GAP = 6;
+  const availW = containerW - LABEL_W;
+  const CELL = Math.floor((availW - CELL_GAP * (DAYS - 1)) / DAYS);
+  const ROW_H = CELL + CELL_GAP;
+  const TOP_PAD = 30;
+  const BOTTOM_PAD = 4;
+  const totalH = TOP_PAD + ROWS * ROW_H + BOTTOM_PAD;
+
+  canvas.width = containerW * dpr;
+  canvas.height = totalH * dpr;
+  canvas.style.width = containerW + 'px';
+  canvas.style.height = totalH + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  ctx.clearRect(0, 0, containerW, totalH);
+  ctx.fillStyle = '#FBFCFF';
+  ctx.fillRect(0, 0, containerW, totalH);
+
+  // 星期 + 日期 双行表头
+  ctx.textAlign = 'center';
+  for (let i = 0; i < DAYS; i++) {
+    const x = LABEL_W + i * (CELL + CELL_GAP) + CELL / 2;
+    const isToday = i === todayIdx;
+
+    if (isToday) {
+      ctx.fillStyle = 'rgba(77,111,255,.12)';
+      ctx.beginPath();
+      ctx.roundRect(x - CELL / 2, 2, CELL, TOP_PAD - 6, 6);
+      ctx.fill();
+    }
+
+    ctx.fillStyle = isToday ? '#4D6FFF' : '#6B7099';
+    ctx.font = isToday ? `bold 10px -apple-system, sans-serif` : `10px -apple-system, sans-serif`;
+    ctx.fillText(weekdayLabels[i], x, TOP_PAD - 18);
+
+    ctx.fillStyle = isToday ? '#4D6FFF' : '#3A3D5C';
+    ctx.font = isToday ? `bold 10px -apple-system, sans-serif` : `10px -apple-system, sans-serif`;
+    ctx.fillText(`${dayDates[i].getMonth()+1}/${dayDates[i].getDate()}`, x, TOP_PAD - 6);
+  }
+
+  lifeTypes.forEach((type, ri) => {
+    const rowTop = TOP_PAD + ri * ROW_H;
+    ctx.fillStyle = '#3A3D5C';
+    ctx.font = `14px -apple-system, "Apple Color Emoji", "Segoe UI Emoji", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(typeIcon(type), LABEL_W / 2, rowTop + CELL * 0.68);
+
+    const palette = lifeColors[type];
+
+    for (let i = 0; i < DAYS; i++) {
+      const cnt = counts[type][i];
+      let shade;
+      if (cnt === 0) shade = 'rgba(10,14,36,0.05)';
+      else if (cnt === 1) shade = palette[1];
+      else if (cnt === 2) shade = palette[2];
+      else shade = palette[3];
+
+      const x = LABEL_W + i * (CELL + CELL_GAP);
+      ctx.fillStyle = shade;
+      ctx.beginPath();
+      ctx.roundRect(x, rowTop, CELL, CELL, 4);
+      ctx.fill();
+
+      if (cnt > 0) {
+        ctx.fillStyle = (cnt >= 3) ? '#FFFFFF' : 'rgba(10,14,36,0.6)';
+        ctx.font = `10px -apple-system, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText(String(cnt), x + CELL / 2, rowTop + CELL / 2 + 3.5);
+      }
+    }
+  });
+
+  // 今天所在列的高亮描边
+  if (todayIdx >= 0 && todayIdx < DAYS) {
+    const x = LABEL_W + todayIdx * (CELL + CELL_GAP) - 1;
+    ctx.strokeStyle = 'rgba(77,111,255,.6)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(x, TOP_PAD - 2, CELL + 2, ROWS * ROW_H - CELL_GAP + 2);
+  }
+}
+
+function renderLifeHeatmapMonthly() {
+  const canvas = document.getElementById('lifeHeatmap');
+  if (!canvas) return;
+
+  const records = getRecords();
+  const lifeTypes = LIFE_TYPES;
+  const lifeLabels = LIFE_LABELS;
+  const lifeColors = LIFE_COLORS;
+
+  // 本月(1号到月末)
+  const today = new Date();
+  const year = today.getFullYear(), month = today.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const monthStart = new Date(year, month, 1);
+
+  const DAYS = daysInMonth;
+  const dayDates = [];
+  for (let i = 0; i < DAYS; i++) {
+    const d = new Date(monthStart);
+    d.setDate(d.getDate() + i);
+    dayDates.push(d);
+  }
+
+  const counts = {};
+  lifeTypes.forEach(t => counts[t] = Array(DAYS).fill(0));
+  records.forEach(r => {
+    if (!lifeTypes.includes(r.type)) return;
+    const d = new Date(r.timestamp);
+    if (d.getFullYear() === year && d.getMonth() === month) {
+      counts[r.type][d.getDate() - 1]++;
+    }
+  });
+
+  const dpr = window.devicePixelRatio || 1;
+  const containerW = canvas.parentElement.clientWidth - 32;
+
+  const ROWS = lifeTypes.length;
+  const LABEL_W = 32;
+  const CELL_GAP = 2;
+  const availW = containerW - LABEL_W;
+  const CELL = Math.floor((availW - CELL_GAP * (DAYS - 1)) / DAYS);
+  const ROW_H = CELL + CELL_GAP;
+  const TOP_PAD = 20;
+  const BOTTOM_PAD = 4;
+  const totalH = TOP_PAD + ROWS * ROW_H + BOTTOM_PAD;
+
+  canvas.width = containerW * dpr;
+  canvas.height = totalH * dpr;
+  canvas.style.width = containerW + 'px';
+  canvas.style.height = totalH + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  ctx.clearRect(0, 0, containerW, totalH);
+  ctx.fillStyle = '#FBFCFF';
+  ctx.fillRect(0, 0, containerW, totalH);
+
+  // 日期标签(隔几天显示一次,避免拥挤;今天必定显示且加粗强调)
+  const labelStep = DAYS > 20 ? 5 : 2;
+  const todayIdx = (today.getFullYear() === year && today.getMonth() === month) ? today.getDate() - 1 : -1;
+  ctx.textAlign = 'center';
+  for (let i = 0; i < DAYS; i++) {
+    const isToday = i === todayIdx;
+    if (i % labelStep === 0 || isToday) {
+      const x = LABEL_W + i * (CELL + CELL_GAP) + CELL / 2;
+      ctx.fillStyle = isToday ? '#4D6FFF' : '#6B7099';
+      ctx.font = isToday ? `bold 9px -apple-system, sans-serif` : `9px -apple-system, sans-serif`;
+      ctx.fillText(String(dayDates[i].getDate()), x, TOP_PAD - 6);
+    }
+  }
+
+  lifeTypes.forEach((type, ri) => {
+    const rowTop = TOP_PAD + ri * ROW_H;
+    ctx.fillStyle = '#3A3D5C';
+    ctx.font = `13px -apple-system, "Apple Color Emoji", "Segoe UI Emoji", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(typeIcon(type), LABEL_W / 2, rowTop + CELL * 0.72);
+
+    const palette = lifeColors[type];
+
+    for (let i = 0; i < DAYS; i++) {
+      const cnt = counts[type][i];
+      let shade;
+      if (cnt === 0) shade = 'rgba(10,14,36,0.05)';
+      else if (cnt === 1) shade = palette[1];
+      else if (cnt === 2) shade = palette[2];
+      else shade = palette[3];
+
+      const x = LABEL_W + i * (CELL + CELL_GAP);
+      ctx.fillStyle = shade;
+      ctx.beginPath();
+      ctx.roundRect(x, rowTop, CELL, CELL, 2);
+      ctx.fill();
+    }
+  });
+
+  // 今天所在列的高亮描边
+  if (todayIdx >= 0) {
+    const x = LABEL_W + todayIdx * (CELL + CELL_GAP) - 0.5;
+    ctx.strokeStyle = 'rgba(77,111,255,.6)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(x, TOP_PAD - 2, CELL + 1, ROWS * ROW_H - CELL_GAP + 2);
+  }
+}
+
+function renderWaterCheckin() {
+  const canvas = document.getElementById('waterCheckinChart');
+  if (!canvas) return;
+
+  const records = getRecords().filter(r => r.type === 'water')
+    .sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+  const totalEl = document.getElementById('water-total-count');
+  const lastEl = document.getElementById('water-last-time');
+  if (totalEl) totalEl.textContent = records.length + ' times';
+  if (lastEl) {
+    if (records.length) {
+      const last = new Date(records[records.length - 1].timestamp);
+      lastEl.textContent = `${last.getMonth()+1}/${last.getDate()} ${String(last.getHours()).padStart(2,'0')}:${String(last.getMinutes()).padStart(2,'0')}`;
+    } else {
+      lastEl.textContent = '--';
+    }
+  }
+
+  // 周期性打卡Time线：展示最近若干次打卡的日期分布，而非按天的Hot力图
+  const dpr = window.devicePixelRatio || 1;
+  const containerW = canvas.parentElement.clientWidth - 32;
+  const PAD_L = 10, PAD_R = 10, TOP_PAD = 20, ROW_H = 28, BOTTOM_PAD = 6;
+  const totalH = TOP_PAD + ROW_H + BOTTOM_PAD;
+
+  canvas.width = containerW * dpr;
+  canvas.height = totalH * dpr;
+  canvas.style.width = containerW + 'px';
+  canvas.style.height = totalH + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, containerW, totalH);
+  ctx.fillStyle = '#FBFCFF';
+  ctx.fillRect(0, 0, containerW, totalH);
+
+  const RANGE_DAYS = 30;
+  const today = new Date(); today.setHours(23,59,59,999);
+  const rangeStart = new Date(today);
+  rangeStart.setDate(rangeStart.getDate() - (RANGE_DAYS - 1));
+  rangeStart.setHours(0,0,0,0);
+
+  const recent = records.filter(r => new Date(r.timestamp) >= rangeStart);
+
+  // axis labels
+  ctx.fillStyle = '#6B7099';
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(`${rangeStart.getMonth()+1}/${rangeStart.getDate()}`, PAD_L, TOP_PAD - 6);
+  ctx.textAlign = 'right';
+  ctx.fillText(`${today.getMonth()+1}/${today.getDate()}`, containerW - PAD_R, TOP_PAD - 6);
+
+  // baseline
+  const lineY = TOP_PAD + ROW_H / 2;
+  ctx.strokeStyle = 'rgba(10,14,36,0.08)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(PAD_L, lineY);
+  ctx.lineTo(containerW - PAD_R, lineY);
+  ctx.stroke();
+
+  const availW = containerW - PAD_L - PAD_R;
+  recent.forEach(r => {
+    const d = new Date(r.timestamp);
+    const frac = (d - rangeStart) / (today - rangeStart);
+    const x = PAD_L + Math.max(0, Math.min(1, frac)) * availW;
+    ctx.fillStyle = '#40C8E0';
+    ctx.beginPath();
+    ctx.arc(x, lineY, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(10,14,36,0.10)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  });
+
+  if (!recent.length) {
+    ctx.fillStyle = 'rgba(10,14,36,0.25)';
+    ctx.font = '12px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('No check-ins in the last 30 days', containerW / 2, lineY + 4);
+  }
+}
+
+function renderChart() {
+  renderLifeHeatmap();
+  renderWaterCheckin();
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 2000);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  renderSummary();
+  setTimeNow('coffee-time');
+  setTimeNow('bowel-time');
+  setTimeNow('shower-time');
+  setTimeNow('clean-time');
+  setTimeNow('exercise-time');
+  setTimeNow('breakfast-time');
+  setTimeNow('lunch-time');
+  setTimeNow('dinner-time');
+
+  // Cloud sync on startup
+  syncFromCloud();
+
+  // prevent pull-to-refresh on iOS
+  document.body.addEventListener('touchmove', e=>{
+    if (e.target.closest('.sheet-body,.screen')) return;
+    e.preventDefault();
+  }, { passive:false });
+});
+
+window.addEventListener('resize', ()=>{
+  if (document.getElementById('screen-chart').style.display!=='none') {
+    renderLifeHeatmap();
+    renderWaterCheckin();
+  }
+});
+</script>
+</body>
+</html>
