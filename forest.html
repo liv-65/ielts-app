@@ -144,6 +144,7 @@
   @media (prefers-reduced-motion: reduce) {
     .toast-pop { animation: none; opacity: 1; }
     .burst-emoji { display: none; }
+    .rainbow-fill { animation: none; }
   }
   .timer-num {
     font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
@@ -321,6 +322,130 @@
   }
   .tree-new { animation: pop .45s ease-out; }
 
+  /* study plan card */
+  .plan-card { max-width: 420px; width: 100%; }
+  .plan-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+  }
+  .plan-head h2 {
+    font-family: 'Georgia', serif;
+    font-size: 15px;
+    margin: 0;
+  }
+  .plan-stats { font-size: 12px; color: var(--pine); opacity: 0.75; }
+
+  .rainbow-track {
+    position: relative;
+    height: 16px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.08);
+    overflow: hidden;
+    margin-bottom: 16px;
+    border: 1px solid var(--line);
+  }
+  .rainbow-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #FF453A, #FF9F0A, #FFD60A, #32D74B, #64D2FF, #5E5CE6, #DA70FF);
+    background-size: 200% 100%;
+    animation: rainbowShift 6s linear infinite;
+    transition: width 0.5s ease;
+  }
+  @keyframes rainbowShift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+  .rainbow-pct {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  }
+
+  .week-row {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    margin-bottom: 16px;
+    scrollbar-width: thin;
+  }
+  .week-chip {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    border: 1.5px solid var(--line);
+    background: transparent;
+    border-radius: 12px;
+    padding: 7px 11px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .week-chip.active {
+    background: var(--pine-deep);
+    border-color: var(--pine-deep);
+    color: var(--paper);
+  }
+  .week-chip-pct { font-size: 10px; opacity: 0.75; font-weight: 600; }
+
+  .week-detail-head {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 14px;
+  }
+  .week-detail-head strong { font-size: 14px; }
+  .week-detail-head span { font-size: 11.5px; color: var(--pine); opacity: 0.75; }
+
+  .plan-cat { margin-bottom: 16px; }
+  .plan-cat:last-child { margin-bottom: 0; }
+  .plan-cat-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    opacity: 0.85;
+  }
+  .plan-cat-head .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  .plan-task {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    line-height: 1.45;
+    padding: 5px 0;
+    cursor: pointer;
+  }
+  .plan-task input {
+    margin-top: 3px;
+    accent-color: var(--pine-deep);
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .plan-task span { transition: opacity 0.15s ease; }
+  .plan-task.done span { opacity: 0.48; text-decoration: line-through; }
+  .plan-task.locked { cursor: default; }
+  .plan-task input:disabled { cursor: not-allowed; opacity: 0.55; }
+  .lock-badge { font-size: 11px; margin-left: auto; opacity: 0.55; flex-shrink: 0; }
+
   @media (prefers-reduced-motion: reduce) {
     .tree-new { animation: none; }
   }
@@ -332,6 +457,8 @@
     .timer-num { font-size: 26px; }
     .btn { padding: 12px 16px; font-size: 14px; }
     .dur-chip { font-size: 11px; padding: 6px 8px; min-width: 38px; }
+    .plan-task { font-size: 12.5px; }
+    .week-chip { padding: 6px 9px; font-size: 11px; }
   }
 </style>
 
@@ -341,6 +468,7 @@ const { useState, useEffect, useRef, useCallback } = React;
 const SUPABASE_URL = 'https://qhxodrovsruyqpwjbxqx.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_to_Ogr1hdbajSLBIjR6TJA_JRccD-oS';
 const TABLE = 'forest_trees';
+const PLAN_TABLE = 'ielts_plan_progress';
 
 let supabaseClientPromise = null;
 function getSupabase() {
@@ -360,6 +488,99 @@ const TASKS = [
 ];
 
 const DURATIONS = [10, 15, 25, 45];
+
+/* ---- IELTS 8-week plan data ---- */
+const LISTENING_TPL = [
+  '精听：{B} Test1 Section1，听写+标注错误类型（连读/弱读/生词）',
+  '精听：{B} Test1 Section2，跟读模仿语音语调',
+  '精听：{B} Test1 Section3+4，跟读30分钟，巩固弱项题型',
+  '真题套题：{B} Test2 全套听力（严格计时）+ 错题复盘',
+  '真题套题：{B} Test3 全套听力（严格计时）+ 归类错误原因',
+];
+const READING_TPL = [
+  '{B} Test1 Passage1，限时练习+核心词汇整理',
+  '{B} Test1 Passage2，限时练习，总结同义替换规律',
+  '{B} Test1 Passage3，查漏补缺薄弱题型',
+  '{B} Test2 阅读，专项练习（判断题/段落匹配）',
+  '{B} Test3 阅读（限时练习）+ 生词复习30分钟',
+];
+const WRITING_TPL = [
+  'Task1练习：图表描述（20分钟计时）',
+  'Task1批改复盘+重写薄弱部分',
+  'Task2思路整理：框架搭建',
+  'Task2完整写作（40分钟计时）',
+  'Task2批改复盘+积累好句/连接词',
+];
+const SPEAKING_TPL = [
+  '跟读模仿30分钟（BBC/TED片段），录音自评',
+  'Part1话题练习：3个话题，录音后自听纠音',
+  'Part2话题练习：2分钟陈述+复盘逻辑框架',
+  'Part3话题练习：观点表达，录音自评发音',
+  '话题库整理：补充新素材，练习过渡衔接',
+];
+const MOCK_TPL = [
+  '模考听力：{B} Test4 听力部分（严格计时）',
+  '模考阅读：{B} Test4 阅读部分（严格计时）',
+  '模考写作：Test4 Task2一篇（40分钟计时）',
+];
+const PLAN_CAT_DEFS = [
+  { key: 'listening', label: '听力', color: '#38D6D0', tpl: LISTENING_TPL },
+  { key: 'reading',   label: '阅读', color: '#E23B8B', tpl: READING_TPL },
+  { key: 'writing',   label: '写作', color: '#F2B705', tpl: WRITING_TPL },
+  { key: 'speaking',  label: '口语', color: '#9B8CFF', tpl: SPEAKING_TPL },
+  { key: 'mock',      label: '模考', color: '#FF8A3D', tpl: MOCK_TPL },
+];
+const PLAN_WEEK_STARTS = ['2026-07-06','2026-07-13','2026-07-20','2026-07-27','2026-08-03','2026-08-10','2026-08-17','2026-08-24'];
+const PLAN_WEEK_BOOKS = ['剑11','剑12','剑13','剑14','剑15','剑16','剑17','剑18'];
+const PLAN_WEEK_PHASES = ['诊断与基础重建','诊断与基础重建','分科强化','分科强化','分科强化','模考冲刺','模考冲刺','考前调整'];
+
+function fmtCNDate(d) { return `${d.getMonth() + 1}月${d.getDate()}日`; }
+
+const PLAN_WEEKS = PLAN_WEEK_STARTS.map((s, i) => {
+  const start = new Date(`${s}T00:00:00`);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 6);
+  const book = PLAN_WEEK_BOOKS[i];
+  const categories = PLAN_CAT_DEFS.map(c => ({
+    key: c.key,
+    label: c.label,
+    color: c.color,
+    tasks: c.tpl.map(t => t.replace(/\{B\}/g, book)),
+  }));
+  return {
+    index: i,
+    book,
+    phase: PLAN_WEEK_PHASES[i],
+    range: `${fmtCNDate(start)}–${fmtCNDate(end)}`,
+    startDate: start,
+    endDate: end,
+    categories,
+  };
+});
+
+const PLAN_ALL_TASK_IDS = [];
+PLAN_WEEKS.forEach(w => w.categories.forEach(c => c.tasks.forEach((_, ti) => {
+  PLAN_ALL_TASK_IDS.push(`w${w.index}-${c.key}-${ti}`);
+})));
+
+function planWeekPercent(week, doneMap) {
+  const ids = [];
+  week.categories.forEach(c => c.tasks.forEach((_, ti) => ids.push(`w${week.index}-${c.key}-${ti}`)));
+  const done = ids.filter(id => doneMap[id]).length;
+  return ids.length ? Math.round((done / ids.length) * 100) : 0;
+}
+
+function planDefaultWeekIndex() {
+  const now = new Date();
+  let idx = PLAN_WEEKS.findIndex(w => {
+    const endOfDay = new Date(w.endDate);
+    endOfDay.setHours(23, 59, 59, 999);
+    return now >= w.startDate && now <= endOfDay;
+  });
+  if (idx === -1) idx = PLAN_WEEKS.findIndex(w => now < w.startDate);
+  if (idx === -1) idx = PLAN_WEEKS.length - 1;
+  return idx;
+}
 
 function todayStr() {
   const d = new Date();
@@ -427,10 +648,15 @@ function App() {
   const [infoId, setInfoId] = useState(null);
   const [celebration, setCelebration] = useState(null); // { msg, particles: [] }
   const [syncStatus, setSyncStatus] = useState('checking'); // checking | synced | offline
+  const [planDone, setPlanDone] = useState({}); // { [taskId]: { date } }
+  const [planLoaded, setPlanLoaded] = useState(false);
+  const [planSyncStatus, setPlanSyncStatus] = useState('checking');
+  const [selectedWeek, setSelectedWeek] = useState(planDefaultWeekIndex);
   const intervalRef = useRef(null);
   const startedAtRef = useRef(null);
   const totalSecondsRef = useRef(duration * 60);
   const supabaseRef = useRef(null);
+  const planSupabaseRef = useRef(null);
 
   // load trees: try Supabase first, fall back to local cache if unreachable
   useEffect(() => {
@@ -483,6 +709,94 @@ function App() {
       } catch (e) { console.error('local cache save failed', e); }
     })();
   }, [trees, loaded]);
+
+  // load plan checklist: try Supabase first, fall back to local cache if unreachable
+  useEffect(() => {
+    let channel;
+    (async () => {
+      try {
+        const sb = await getSupabase();
+        const { data, error } = await sb.from(PLAN_TABLE).select('*');
+        if (error) throw error;
+        planSupabaseRef.current = sb;
+        const mapped = {};
+        (data || []).forEach(r => { mapped[r.id] = { date: r.date }; });
+        setPlanDone(mapped);
+        setPlanSyncStatus('synced');
+
+        channel = sb
+          .channel('plan-progress-changes')
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: PLAN_TABLE }, (payload) => {
+            setPlanDone(prev => ({ ...prev, [payload.new.id]: { date: payload.new.date } }));
+          })
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: PLAN_TABLE }, (payload) => {
+            setPlanDone(prev => ({ ...prev, [payload.new.id]: { date: payload.new.date } }));
+          })
+          .on('postgres_changes', { event: 'DELETE', schema: 'public', table: PLAN_TABLE }, (payload) => {
+            setPlanDone(prev => {
+              const next = { ...prev };
+              delete next[payload.old.id];
+              return next;
+            });
+          })
+          .subscribe();
+      } catch (e) {
+        console.error('plan Supabase unavailable, using local cache:', e);
+        try {
+          const res = await window.storage.get('ielts-plan-progress', false);
+          if (res && res.value) setPlanDone(JSON.parse(res.value));
+        } catch (e2) { /* nothing saved yet */ }
+        setPlanSyncStatus('offline');
+      }
+      setPlanLoaded(true);
+    })();
+    return () => { if (channel) channel.unsubscribe(); };
+  }, []);
+
+  // always keep a local cache as backup, regardless of sync status
+  useEffect(() => {
+    if (!planLoaded) return;
+    (async () => {
+      try {
+        await window.storage.set('ielts-plan-progress', JSON.stringify(planDone), false);
+      } catch (e) { console.error('plan local cache save failed', e); }
+    })();
+  }, [planDone, planLoaded]);
+
+  const togglePlanTask = async (id) => {
+    const today = todayStr();
+    const existing = planDone[id];
+
+    if (existing) {
+      if (existing.date !== today) return; // locked once the day has passed
+      setPlanDone(prev => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+      if (planSupabaseRef.current) {
+        try {
+          const { error } = await planSupabaseRef.current.from(PLAN_TABLE).delete().eq('id', id);
+          if (error) throw error;
+        } catch (e) {
+          console.error('plan sync delete failed:', e);
+          setPlanSyncStatus('offline');
+        }
+      }
+    } else {
+      setPlanDone(prev => ({ ...prev, [id]: { date: today } }));
+      if (planSupabaseRef.current) {
+        try {
+          const { error } = await planSupabaseRef.current.from(PLAN_TABLE).upsert({ id, date: today });
+          if (error) throw error;
+          setPlanSyncStatus('synced');
+        } catch (e) {
+          console.error('plan sync insert failed, kept locally:', e);
+          setPlanSyncStatus('offline');
+        }
+      }
+    }
+  };
 
   useEffect(() => {
     if (!customMode) setSecondsLeft(duration * 60);
@@ -616,6 +930,11 @@ function App() {
 
   const todayTrees = trees.filter(t => t.date === todayStr());
   const totalTrees = trees.length;
+
+  const planDoneCount = PLAN_ALL_TASK_IDS.filter(id => planDone[id]).length;
+  const planTotalCount = PLAN_ALL_TASK_IDS.length;
+  const planPercent = planTotalCount ? Math.round((planDoneCount / planTotalCount) * 100) : 0;
+  const currentPlanWeek = PLAN_WEEKS[selectedWeek];
 
   const currentTaskColor = TASKS.find(t => t.id === taskId).color;
   const progress = phase === 'overtime' ? 1 : 1 - secondsLeft / (duration * 60);
@@ -766,6 +1085,68 @@ function App() {
         <p className="soft-note">
           Losing focus or getting interrupted is fine - stopping early still plants a sprout. No need to start over.
         </p>
+      </div>
+
+      <div className="card plan-card">
+        <div className="plan-head">
+          <h2>雅思备考计划 · 8周</h2>
+          <span className="plan-stats">
+            {planSyncStatus === 'synced' && '已同步 · '}
+            {planSyncStatus === 'offline' && '离线（本地保存）· '}
+            {planSyncStatus === 'checking' && '连接中... · '}
+            {planDoneCount}/{planTotalCount} 完成
+          </span>
+        </div>
+
+        <div className="rainbow-track">
+          <div className="rainbow-fill" style={{ width: `${planPercent}%` }}></div>
+          <span className="rainbow-pct">{planPercent}%</span>
+        </div>
+
+        <div className="week-row">
+          {PLAN_WEEKS.map(w => (
+            <button
+              key={w.index}
+              className={`week-chip ${selectedWeek === w.index ? 'active' : ''}`}
+              onClick={() => setSelectedWeek(w.index)}
+            >
+              <span>第{w.index + 1}周</span>
+              <span className="week-chip-pct">{planWeekPercent(w, planDone)}%</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="week-detail-head">
+          <strong>{currentPlanWeek.range}</strong>
+          <span>{currentPlanWeek.phase} · 使用：{currentPlanWeek.book}</span>
+        </div>
+
+        {currentPlanWeek.categories.map(cat => (
+          <div className="plan-cat" key={cat.key}>
+            <div className="plan-cat-head">
+              <span className="dot" style={{ background: cat.color }}></span>
+              {cat.label}
+            </div>
+            {cat.tasks.map((task, ti) => {
+              const id = `w${currentPlanWeek.index}-${cat.key}-${ti}`;
+              const entry = planDone[id];
+              const checked = !!entry;
+              const locked = checked && entry.date !== todayStr();
+              return (
+                <label key={id} className={`plan-task ${checked ? 'done' : ''} ${locked ? 'locked' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    disabled={locked}
+                    onChange={() => togglePlanTask(id)}
+                  />
+                  <span>{task}</span>
+                  {locked && <span className="lock-badge" title="已过当天，锁定不可修改">&#128274;</span>}
+                </label>
+              );
+            })}
+          </div>
+        ))}
       </div>
 
       <div className="card forest-card">
