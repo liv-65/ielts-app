@@ -645,6 +645,55 @@
   .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
   .empty-state p { font-size: 15px; line-height: 1.5; }
 
+  /* ===== INSIGHTS ===== */
+  .insight-card {
+    background: var(--card);
+    border: 0.5px solid rgba(10,14,36,0.08);
+    border-radius: var(--radius);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    padding: 14px 16px 15px;
+    display: flex;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .insight-card + .insight-card { margin-top: 10px; }
+  .insight-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 3px;
+  }
+  .insight-card.level-tip::before    { background: var(--blue); }
+  .insight-card.level-good::before   { background: var(--green); }
+  .insight-card.level-watch::before  { background: var(--bowel); }
+  .insight-card.level-warn::before   { background: var(--red); }
+  .insight-icon { font-size: 22px; line-height: 1.3; flex-shrink: 0; }
+  .insight-body { flex: 1; min-width: 0; }
+  .insight-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .insight-text { font-size: 13px; line-height: 1.5; color: var(--text2); }
+  .insight-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 100px;
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.2px;
+  }
+  .insight-card.level-tip .insight-tag   { background: rgba(77,111,255,.14); color: var(--blue); }
+  .insight-card.level-good .insight-tag  { background: rgba(47,230,165,.16); color: #0E9F6E; }
+  .insight-card.level-watch .insight-tag { background: rgba(255,214,10,.20); color: #A8790A; }
+  .insight-card.level-warn .insight-tag  { background: rgba(255,69,58,.16); color: var(--red); }
+  .insight-meta {
+    font-size: 11px;
+    color: var(--label);
+    margin-top: 6px;
+  }
+  .insight-section-gap { height: 20px; }
+
   /* ===== SYNC BADGE ===== */
   .sync-badge {
     font-size: 11px;
@@ -900,6 +949,31 @@
     <div style="height:16px"></div>
   </div>
 
+  <!-- ====== INSIGHTS TAB ====== -->
+  <div class="screen" id="screen-insights" style="display:none">
+    <div class="nav-header">
+      <h1>Insights</h1>
+      <div class="nav-sub">Based on your last 7 days</div>
+    </div>
+
+    <div class="section" style="margin-top:16px">
+      <div class="section-label">Bowel &amp; Diet</div>
+      <div id="insights-bowel"></div>
+    </div>
+
+    <div class="section" style="margin-top:20px">
+      <div class="section-label">Meals &amp; Activity</div>
+      <div id="insights-lifestyle"></div>
+    </div>
+
+    <div class="section" style="margin-top:20px">
+      <div class="insight-meta" style="padding:0 4px 4px">
+        These are general lifestyle suggestions based on your logs, not medical advice. If symptoms persist or worsen, please see a doctor.
+      </div>
+    </div>
+    <div style="height:16px"></div>
+  </div>
+
   <!-- ====== MANAGE TAB ====== -->
   <div class="screen" id="screen-manage" style="display:none">
     <div class="nav-header">
@@ -962,6 +1036,11 @@
     <div class="tab-item" id="tab-chart" onclick="switchTab('chart')">
       <span class="tab-icon">📊</span>
       <span class="tab-label">Charts</span>
+      <div class="tab-dot"></div>
+    </div>
+    <div class="tab-item" id="tab-insights" onclick="switchTab('insights')">
+      <span class="tab-icon">💡</span>
+      <span class="tab-label">Insights</span>
       <div class="tab-dot"></div>
     </div>
     <div class="tab-item" id="tab-manage" onclick="switchTab('manage')">
@@ -1468,6 +1547,19 @@
   <div class="sheet-body" id="day-detail-body"></div>
 </div>
 
+<!-- ====== DAILY REMINDER SHEET ====== -->
+<div class="sheet" id="sheet-reminder">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">💡 Today's Check-in</div>
+    <div class="sheet-close" onclick="closeSheet()">Got it</div>
+  </div>
+  <div class="sheet-body" id="reminder-body"></div>
+  <div style="padding:0 20px 20px">
+    <button class="save-btn" onclick="closeSheet(); switchTab('insights')">View all insights</button>
+  </div>
+</div>
+
 <!-- ====== TOAST ====== -->
 <div class="toast" id="toast"></div>
 
@@ -1700,13 +1792,14 @@ let pendingImport = null; // { toAdd:[], toUpdate:[] }
 // TAB NAV
 // ============================================================
 function switchTab(name) {
-  ['summary','chart','manage'].forEach(t => {
+  ['summary','chart','insights','manage'].forEach(t => {
     document.getElementById('screen-'+t).style.display = t===name ? 'block' : 'none';
     document.getElementById('tab-'+t).classList.toggle('active', t===name);
   });
   if (name === 'chart') { renderLifeHeatmap(); renderWaterCheckin(); }
   if (name === 'manage') renderAllRecords();
   if (name === 'summary') renderSummary();
+  if (name === 'insights') renderInsights();
 }
 
 // ============================================================
@@ -1872,7 +1965,7 @@ function closeSheet() {
     document.getElementById('sheet-'+currentSheet).classList.remove('visible');
   }
   // also close detail, export, import
-  ['detail','day-detail','export','import','shower','clean','exercise','water','trash','breakfast','lunch','dinner'].forEach(n => {
+  ['detail','day-detail','export','import','shower','clean','exercise','water','trash','breakfast','lunch','dinner','reminder'].forEach(n => {
     const el = document.getElementById('sheet-'+n);
     if (el) el.classList.remove('visible');
   });
@@ -2691,6 +2784,273 @@ function renderChart() {
 }
 
 // ============================================================
+// INSIGHTS (rule-based lifestyle suggestions)
+// ============================================================
+
+function daysAgo(n) {
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() - n);
+  return d;
+}
+
+function withinLastDays(ts, n) {
+  return new Date(ts) >= daysAgo(n - 1); // includes today as day 0
+}
+
+function avg(arr) { return arr.reduce((a,b)=>a+b,0) / (arr.length || 1); }
+
+function hoursOfDay(ts) {
+  const d = new Date(ts);
+  return d.getHours() + d.getMinutes() / 60;
+}
+
+function fmtHour(h) {
+  const hh = Math.floor(((h % 24) + 24) % 24);
+  const mm = Math.round((h - Math.floor(h)) * 60);
+  const period = hh < 12 ? 'AM' : 'PM';
+  let h12 = hh % 12; if (h12 === 0) h12 = 12;
+  return `${h12}:${String(mm).padStart(2,'0')} ${period}`;
+}
+
+function insightCard(level, icon, title, text, tag) {
+  return `<div class="insight-card level-${level}">
+    <div class="insight-icon">${icon}</div>
+    <div class="insight-body">
+      <div class="insight-title">${title}${tag ? `<span class="insight-tag">${tag}</span>` : ''}</div>
+      <div class="insight-text">${text}</div>
+    </div>
+  </div>`;
+}
+
+function renderInsights() {
+  const bowelEl = document.getElementById('insights-bowel');
+  const lifeEl = document.getElementById('insights-lifestyle');
+  const bowelCards = computeBowelInsights();
+  const lifeCards = computeLifestyleInsights();
+  if (bowelEl) bowelEl.innerHTML = bowelCards.map(i => insightCard(i.level, i.icon, i.title, i.text, i.tag)).join('');
+  if (lifeEl) lifeEl.innerHTML = lifeCards.length
+    ? lifeCards.map(i => insightCard(i.level, i.icon, i.title, i.text, i.tag)).join('')
+    : insightCard('good', '✅', 'All steady', 'No particular flags this week — keep up your current habits.');
+}
+
+// Returns an array of insight objects: {level, icon, title, text, tag}
+function computeBowelInsights() {
+  const RANGE = 7;
+  const all = getRecords().filter(r => r.type === 'bowel' && withinLastDays(r.timestamp, RANGE))
+    .sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+  if (all.length === 0) {
+    return [{ level: 'tip', icon: '📋', title: 'No bowel logs yet',
+      text: 'Log your bowel movements for a few days and this tab will start giving you personalized suggestions.' }];
+  }
+
+  const cards = [];
+  const freqPerDay = all.length / RANGE;
+  const bristolVals = all.filter(r => r.bristol).map(r => r.bristol);
+  const avgBristol = avg(bristolVals);
+
+  const lastTs = new Date(all[all.length - 1].timestamp);
+  const daysSinceLast = (Date.now() - lastTs.getTime()) / 86400000;
+
+  // --- Frequency ---
+  if (daysSinceLast >= 3) {
+    cards.push({ level: 'warn', icon: '⏳', title: 'No bowel movement in 3+ days',
+      text: `Your last log was ${Math.floor(daysSinceLast)} day(s) ago. Try more fiber (leafy greens, whole grains, oats), more water, and a short walk after meals. If it goes past a week, consider seeing a doctor.`, tag: 'Watch' });
+  } else if (freqPerDay < 0.5 && all.length >= 2) {
+    cards.push({ level: 'watch', icon: '🥦', title: 'Bowel movements are infrequent',
+      text: `About ${freqPerDay.toFixed(1)}/day over the last week. More vegetables, fruit, and whole grains — and less refined/processed food — usually helps.`, tag: 'Tip' });
+  } else if (freqPerDay > 3) {
+    cards.push({ level: 'watch', icon: '🍽️', title: 'Frequent bowel movements',
+      text: `About ${freqPerDay.toFixed(1)}/day this week, on the high side. Try easing up on greasy, spicy, or raw/cold food for a few days and see if it settles.`, tag: 'Tip' });
+  } else {
+    cards.push({ level: 'good', icon: '✅', title: 'Frequency looks normal',
+      text: `About ${freqPerDay.toFixed(1)}/day over the last week — within the typical range (roughly 3/week to 3/day).`, tag: 'Good' });
+  }
+
+  // --- Bristol shape ---
+  if (bristolVals.length) {
+    if (avgBristol <= 2.4) {
+      cards.push({ level: 'watch', icon: '🪨', title: 'Stools have been hard (constipation type)',
+        text: `Average Bristol type ${avgBristol.toFixed(1)}, in the "hard/lumpy" range. Try more soluble fiber (oats, apples, beans), 6-8 cups of water/day, and light daily activity. Go easy on dairy or a lot of red meat, which can slow things down.`, tag: 'Diet tip' });
+    } else if (avgBristol >= 5.6) {
+      cards.push({ level: 'watch', icon: '💧', title: 'Stools have been loose (diarrhea type)',
+        text: `Average Bristol type ${avgBristol.toFixed(1)}, in the "loose/watery" range. Ease off greasy, spicy, and raw/cold food; favor rice congee, bananas, and steamed veg. Watch dairy if you suspect lactose sensitivity, and keep sipping water to avoid dehydration.`, tag: 'Diet tip' });
+    } else {
+      cards.push({ level: 'good', icon: '💩', title: 'Stool consistency looks healthy',
+        text: `Average Bristol type ${avgBristol.toFixed(1)}, right in the well-formed range (3-5). Keep your current fiber, water, and activity habits going.`, tag: 'Good' });
+    }
+  }
+
+  // --- Trend within the week ---
+  if (bristolVals.length >= 4) {
+    const mid = Math.floor(bristolVals.length / 2);
+    const firstHalf = avg(bristolVals.slice(0, mid));
+    const secondHalf = avg(bristolVals.slice(mid));
+    const diff = secondHalf - firstHalf;
+    if (Math.abs(diff) >= 1) {
+      const dir = diff > 0 ? 'looser' : 'harder';
+      cards.push({ level: 'tip', icon: '📈', title: `Trending ${dir} through the week`,
+        text: `Stools went from averaging ${firstHalf.toFixed(1)} to ${secondHalf.toFixed(1)} on the Bristol scale. Worth checking if a recent change in diet, stress, or sleep lines up with this.` });
+    }
+  }
+
+  // --- Symptoms ---
+  const allSymptoms = all.flatMap(r => r.symptoms || []);
+  if (allSymptoms.includes('Blood')) {
+    cards.push({ level: 'warn', icon: '🚨', title: 'Blood logged in a recent entry',
+      text: `You've flagged blood in a recent bowel log. This is worth getting checked by a doctor rather than managing with diet alone, especially if it happens more than once.`, tag: 'See a doctor' });
+  }
+  const painCount = allSymptoms.filter(s => s === 'Cramps' || s === 'Bloating' || s === 'Difficulty').length;
+  if (painCount >= 2) {
+    cards.push({ level: 'watch', icon: '😖', title: 'Cramps/bloating/straining showing up often',
+      text: `Logged ${painCount} time(s) this week. This pattern often responds to more fiber + water, smaller/slower meals, and less carbonated or fried food. If it's frequent and painful, a doctor's opinion is worth it.`, tag: 'Tip' });
+  }
+
+  // --- Color ---
+  const colors = all.map(r => r.color).filter(Boolean);
+  if (colors.includes('Black') || colors.includes('Red')) {
+    cards.push({ level: 'warn', icon: '🎨', title: 'Unusual stool color logged',
+      text: `Black or red stool is sometimes from food or supplements (beets, iron, black licorice), but can also signal bleeding in the digestive tract. If it's not explained by something you ate, please check with a doctor.`, tag: 'See a doctor' });
+  }
+
+  // --- Cross-reference with dinner time ---
+  const dinners = getRecords().filter(r => r.type === 'dinner' && withinLastDays(r.timestamp, RANGE));
+  if (dinners.length >= 3 && (avgBristol <= 2.4 || daysSinceLast >= 2)) {
+    const avgDinnerHour = avg(dinners.map(r => hoursOfDay(r.timestamp)));
+    if (avgDinnerHour >= 20.5) {
+      cards.push({ level: 'tip', icon: '🌙', title: 'Late dinners may be a factor',
+        text: `Dinners averaged around ${fmtHour(avgDinnerHour)} this week. Eating late can slow digestion and delay the next day's bowel movement — try shifting dinner 30-60 minutes earlier if you can.` });
+    }
+  }
+
+  return cards;
+}
+
+// Returns an array of insight objects for meals/activity (no hydration — "water" logs
+// in this app are for refilling a water dispenser, not drinking, so they're excluded here)
+function computeLifestyleInsights() {
+  const RANGE = 7;
+  const records = getRecords();
+  const cards = [];
+
+  // --- Coffee timing ---
+  const coffeeLogs = records.filter(r => r.type === 'coffee' && withinLastDays(r.timestamp, RANGE));
+  if (coffeeLogs.length) {
+    const lateCoffees = coffeeLogs.filter(r => hoursOfDay(r.timestamp) >= 15);
+    if (lateCoffees.length / coffeeLogs.length >= 0.4) {
+      cards.push({ level: 'tip', icon: '☕', title: 'Some afternoon/evening coffee',
+        text: `${lateCoffees.length} of ${coffeeLogs.length} coffees this week were after 3 PM. Caffeine can linger for 6+ hours — if sleep feels off, try an earlier cutoff.` });
+    } else {
+      cards.push({ level: 'good', icon: '☕', title: 'Coffee timing looks great',
+        text: `Most of your coffees this week were earlier in the day — good for keeping sleep undisturbed.`, tag: 'Good' });
+    }
+  }
+
+  // --- Meal regularity: dinner time variance ---
+  const dinners = records.filter(r => r.type === 'dinner' && withinLastDays(r.timestamp, RANGE));
+  if (dinners.length >= 3) {
+    const hours = dinners.map(r => hoursOfDay(r.timestamp));
+    const meanH = avg(hours);
+    const sd = Math.sqrt(avg(hours.map(h => (h - meanH) ** 2)));
+    if (sd >= 1.5) {
+      cards.push({ level: 'tip', icon: '🍜', title: 'Dinner time varies a lot',
+        text: `Dinner has ranged widely this week (averaging around ${fmtHour(meanH)}, ±${sd.toFixed(1)}h). A more consistent mealtime can help digestion and sleep settle into a rhythm.` });
+    } else {
+      cards.push({ level: 'good', icon: '🍜', title: 'Dinner time has been steady',
+        text: `Dinner has stuck close to ${fmtHour(meanH)} all week — that kind of regularity is great for digestion.`, tag: 'Good' });
+    }
+  }
+
+  // --- Breakfast skipped ---
+  const breakfasts = records.filter(r => r.type === 'breakfast' && withinLastDays(r.timestamp, RANGE));
+  if (breakfasts.length <= 2) {
+    cards.push({ level: 'tip', icon: '🍳', title: `Breakfast logged only ${breakfasts.length} time(s)`,
+      text: `If you're regularly skipping breakfast, it can make bowel timing less predictable for some people — worth experimenting with even a small breakfast to see if it helps.` });
+  } else if (breakfasts.length >= 5) {
+    cards.push({ level: 'good', icon: '🍳', title: 'Breakfast habit is on lock',
+      text: `Logged ${breakfasts.length} breakfasts this week — that consistency helps keep your whole day's rhythm predictable.`, tag: 'Good' });
+  }
+
+  // --- Exercise ---
+  const exercises = records.filter(r => r.type === 'exercise' && withinLastDays(r.timestamp, RANGE));
+  if (exercises.length === 0) {
+    cards.push({ level: 'tip', icon: '🏃', title: 'No exercise logged this week',
+      text: `Even light daily activity, like a 15-20 minute walk, helps stimulate digestion and can ease constipation.` });
+  } else if (exercises.length >= 3) {
+    cards.push({ level: 'good', icon: '🏃', title: 'Nice movement this week',
+      text: `${exercises.length} workouts logged — activity like this is one of the best natural aids for regular digestion.`, tag: 'Good' });
+  }
+
+  return cards;
+}
+
+// ============================================================
+// DAILY REMINDER (shown once/day on the Summary tab)
+// ============================================================
+const REMINDER_SHOWN_KEY = 'lifelog_reminder_shown_date';
+
+function todayKey() {
+  const d = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
+function maybeShowDailyReminder() {
+  try {
+    if (localStorage.getItem(REMINDER_SHOWN_KEY) === todayKey()) return;
+
+    const bowelCards = computeBowelInsights();
+    const lifeCards = computeLifestyleInsights();
+    const all = [...bowelCards, ...lifeCards];
+
+    const priority = { warn: 0, watch: 1, tip: 2, good: 3 };
+    const actionable = all.filter(i => i.level !== 'good').sort((a, b) => priority[a.level] - priority[b.level]);
+
+    let items;
+    if (actionable.length) {
+      // Something worth flagging — lead with the most important issues
+      items = actionable.slice(0, 2);
+    } else {
+      // Nothing to flag — brag on the person a little
+      const goodOnes = all.filter(i => i.level === 'good');
+      items = [praiseBanner(goodOnes), ...goodOnes.slice(0, 2)];
+    }
+
+    showReminderSheet(items);
+    localStorage.setItem(REMINDER_SHOWN_KEY, todayKey());
+  } catch(e) {
+    console.error('Reminder check failed', e);
+  }
+}
+
+function praiseBanner(goodOnes) {
+  const headlines = [
+    "Great numbers today! 🎉",
+    "You're on a roll! ✨",
+    "Solid week — nicely done! 👏",
+    "Your habits are paying off 💪",
+    "Look at you, staying consistent! 🌟",
+    "Textbook week, honestly 😌"
+  ];
+  const headline = headlines[Math.floor(Math.random() * headlines.length)];
+  const text = goodOnes.length
+    ? `Nothing to flag this week — ${goodOnes.length} healthy pattern${goodOnes.length > 1 ? 's' : ''} spotted below. Whatever you're doing, keep doing it.`
+    : `No red flags in your recent logs. Keep those habits going!`;
+  return { level: 'good', icon: '🎉', title: headline, text, tag: 'Nice work' };
+}
+
+function showReminderSheet(items) {
+  const body = document.getElementById('reminder-body');
+  if (!body) return;
+  body.innerHTML = items.map(i => insightCard(i.level, i.icon, i.title, i.text, i.tag)).join('');
+  currentSheet = 'reminder';
+  document.getElementById('sheet-reminder').classList.add('visible');
+  document.getElementById('overlay').classList.add('visible');
+  document.body.style.overflow = 'hidden';
+}
+
+// ============================================================
 // TOAST
 // ============================================================
 let toastTimer;
@@ -2717,7 +3077,10 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeNow('dinner-time');
 
   // Cloud sync on startup
-  syncFromCloud();
+  syncFromCloud().then(() => {
+    // Show today's reminder (once/day) after data is up to date
+    setTimeout(maybeShowDailyReminder, 400);
+  });
 
   // prevent pull-to-refresh on iOS
   document.body.addEventListener('touchmove', e=>{
