@@ -105,6 +105,26 @@
     text-align:center; line-height:1.7; max-width:300px;
   }
 
+  .bg-hint {
+    font-size:11.5px; color:var(--text-muted); text-align:center;
+    line-height:1.6; max-width:300px; opacity:.8;
+  }
+
+  /* practice log */
+  .log-section {
+    width:100%; display:flex; flex-direction:column; gap:10px; align-items:center;
+    padding-top:14px; margin-top:2px; border-top:.5px solid var(--border);
+  }
+  .log-header { display:flex; gap:18px; font-size:13px; color:var(--text-secondary); }
+  .log-header b { color:var(--text-primary); font-weight:600; font-size:14px; }
+  .log-grid { display:flex; gap:5px; flex-wrap:wrap; justify-content:center; }
+  .log-cell {
+    width:15px; height:15px; border-radius:4px;
+    background:var(--ring-bg); border:.5px solid var(--border);
+  }
+  .log-cell.done { background:#378ADD; border-color:#378ADD; }
+  .log-cell.today { box-shadow:0 0 0 2px var(--border-strong) inset; }
+
   .phase-inhale .ring-prog { stroke:#378ADD; }
   .phase-hold   .ring-prog { stroke:#1D9E75; }
   .phase-exhale .ring-prog { stroke:#7F77DD; }
@@ -151,21 +171,39 @@
   </div>
 
   <p class="tip" id="tipText">建议做 4 轮，约 1 分钟。<br>鼻子吸气，嘴巴呼气效果最好。</p>
+  <p class="bg-hint">提示：手机锁屏后，浏览器可能会暂停声音（系统限制），这是正常现象；回到本页面时进度会自动校准，不会错乱。</p>
+
+  <div class="log-section">
+    <div class="log-header">
+      <span>🌙 <b id="logTotal">0</b> 次练习</span>
+      <span>🔥 <b id="logStreak">0</b> 天连续</span>
+    </div>
+    <div class="log-grid" id="logGrid"></div>
+  </div>
 </div>
 
 <script>
 /* ═══════════════════════════════
-   BREATHING LOGIC
+   BREATHING LOGIC — timestamp-driven so it survives
+   setInterval throttling / screen-lock / tab backgrounding.
+   Instead of counting ticks, every tick recomputes the current
+   round/phase from real elapsed wall-clock time.
 ═══════════════════════════════ */
 const PHASES = [
   { name:"吸气", sub:"用鼻子缓缓吸气",    speech:"吸气，用鼻子缓缓吸气",    sec:4, type:"inhale" },
   { name:"屏气", sub:"轻轻憋住，不要紧张", speech:"屏气，轻轻憋住，不要紧张", sec:7, type:"hold"   },
   { name:"呼气", sub:"用嘴缓缓呼出",      speech:"呼气，用嘴缓缓呼出",      sec:8, type:"exhale" }
 ];
-const TOTAL_ROUNDS = 4;
+const TOTAL_ROUNDS   = 4;
+const ROUND_DURATION = PHASES.reduce((s,p)=>s+p.sec,0);   // 19s
+const TOTAL_DURATION = ROUND_DURATION * TOTAL_ROUNDS;
 const CIRCUM = 2 * Math.PI * 105;
 
-let running=false, phaseIdx=0, roundIdx=0, ticker=null;
+let running=false;
+let baseElapsed=0;     // seconds accumulated across previous run-segments
+let runStartTs=0;      // Date.now() when the current run-segment began
+let curRound=0, curPhase=0, lastSecsDisplayed=null;
+let ticker=null;
 
 const phaseLabel  = document.getElementById('phaseLabel');
 const subLabel    = document.getElementById('subLabel');
@@ -185,64 +223,114 @@ function setRing(frac, type) {
 }
 function updateDots() {
   for (let i=0;i<TOTAL_ROUNDS;i++)
-    document.getElementById('d'+i).classList.toggle('done', i<roundIdx);
+    document.getElementById('d'+i).classList.toggle('done', i<curRound);
 }
-function startPhase() {
-  const ph = PHASES[phaseIdx];
+
+function getElapsed() {
+  if (!running) return baseElapsed;
+  return baseElapsed + (Date.now() - runStartTs) / 1000;
+}
+
+// Given total elapsed seconds since the session began, find which
+// round / phase / phase-elapsed that corresponds to.
+function locate(t) {
+  const round = Math.floor(t / ROUND_DURATION);
+  let tRound  = t - round * ROUND_DURATION;
+  let phase = 0, acc = 0;
+  for (; phase < PHASES.length - 1; phase++) {
+    if (tRound < acc + PHASES[phase].sec) break;
+    acc += PHASES[phase].sec;
+  }
+  return { round, phase, phaseElapsed: tRound - acc };
+}
+
+function enterPhase() {
+  updateDots();
+  const ph = PHASES[curPhase];
   phaseLabel.textContent = ph.name;
   subLabel.textContent   = ph.sub;
   countNum.textContent   = ph.sec;
   countSec.textContent   = '秒';
-  setRing(0, ph.type);
-  speak(ph.speech);
+  lastSecsDisplayed = ph.sec;
+  if (curPhase === 0 && curRound > 0) speak('第' + (curRound+1) + '轮，' + ph.speech);
+  else speak(ph.speech);
+}
 
-  const total=ph.sec; let elapsed=0, lastSec=ph.sec; const step=0.05;
-  clearInterval(ticker);
-  ticker = setInterval(()=>{
-    elapsed += step;
-    setRing(Math.min(elapsed/total,1), ph.type);
-    const secs = Math.max(Math.ceil(total-elapsed),1);
-    if (secs !== lastSec) { lastSec=secs; countNum.textContent=secs; if(secs<=3) speak(String(secs)); }
-    if (elapsed>=total) { clearInterval(ticker); nextPhase(); }
-  }, step*1000);
-}
-function nextPhase() {
-  phaseIdx++;
-  if (phaseIdx >= PHASES.length) {
-    phaseIdx=0; roundIdx++; updateDots();
-    if (roundIdx>=TOTAL_ROUNDS) { finish(); return; }
-    speak('第'+(roundIdx+1)+'轮，开始');
-    setTimeout(startPhase, 900); return;
+// Central tick: recompute state from wall-clock time. Safe to call
+// after any gap (throttled interval, backgrounded tab, screen lock).
+function tick() {
+  if (!running) return;
+  const t = getElapsed();
+  if (t >= TOTAL_DURATION) { finish(); return; }
+
+  const { round, phase, phaseElapsed } = locate(t);
+  if (round !== curRound || phase !== curPhase) {
+    curRound = round; curPhase = phase;
+    enterPhase();
   }
-  startPhase();
+  const ph = PHASES[curPhase];
+  setRing(Math.min(phaseElapsed / ph.sec, 1), ph.type);
+  const secsLeft = Math.max(Math.ceil(ph.sec - phaseElapsed), 1);
+  if (secsLeft !== lastSecsDisplayed) {
+    lastSecsDisplayed = secsLeft;
+    countNum.textContent = secsLeft;
+    if (secsLeft <= 3) speak(String(secsLeft));
+  }
 }
+
 function finish() {
-  running=false;
+  running = false;
+  clearInterval(ticker);
+  baseElapsed = TOTAL_DURATION;
   phaseLabel.textContent='做得很好！'; subLabel.textContent='可以安心闭眼了 ✨';
   countNum.textContent=''; countSec.textContent='';
   setRing(1,'inhale'); mainBtn.textContent='再来一轮';
   tipText.textContent='4-7-8 呼吸能激活副交感神经，帮助身体放松入睡。';
-  roundIdx=TOTAL_ROUNDS; updateDots();
+  curRound = TOTAL_ROUNDS; updateDots();
   speak('做得很好，可以安心闭眼休息了');
+  recordSession();
 }
+
 function resetBreath() {
-  phaseIdx=0; roundIdx=0; updateDots();
+  baseElapsed=0; curRound=0; curPhase=0; lastSecsDisplayed=null;
+  updateDots();
   phaseLabel.textContent='准备好了吗？'; subLabel.textContent='点击开始，跟着节奏呼吸';
   countNum.textContent='—'; countSec.textContent='';
   setRing(0,'inhale'); app.className='wrap';
 }
+
 function toggle() {
   if (running) {
-    clearInterval(ticker); window.speechSynthesis && window.speechSynthesis.cancel();
-    running=false; mainBtn.textContent='继续';
+    // pause: freeze accumulated elapsed time
+    baseElapsed = getElapsed();
+    running = false;
+    clearInterval(ticker);
+    window.speechSynthesis && window.speechSynthesis.cancel();
+    mainBtn.textContent = '继续';
   } else {
-    running=true;
-    if (roundIdx>=TOTAL_ROUNDS) resetBreath();
-    mainBtn.textContent='暂停';
-    if (phaseIdx===0 && roundIdx===0) { speak('好，开始第一轮'); setTimeout(startPhase,800); }
-    else startPhase();
+    if (baseElapsed >= TOTAL_DURATION) resetBreath();
+    running = true;
+    runStartTs = Date.now();
+    mainBtn.textContent = '暂停';
+    initKeepAlive();               // user-gesture: safe to touch audio here
+    if (actx && actx.state === 'suspended') actx.resume();
+    clearInterval(ticker);
+    ticker = setInterval(tick, 100);
+    if (baseElapsed === 0) speak('好，开始第一轮');
+    tick();
   }
 }
+
+// When the tab/screen comes back, timers may have been throttled or
+// fully paused. Recompute immediately instead of waiting for the next
+// tick, and resume the audio context if the OS suspended it.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    if (actx && actx.state === 'suspended') actx.resume().catch(()=>{});
+    if (running) tick();
+  }
+});
+window.addEventListener('pageshow', () => { if (running) tick(); });
 
 /* ═══════════════════════════════
    TTS
@@ -264,7 +352,8 @@ function loadVoices() {
 }
 if (synth) { loadVoices(); if (synth.onvoiceschanged!==undefined) synth.onvoiceschanged=loadVoices; }
 function speak(text) {
-  if (!synth||muted) return; synth.cancel();
+  if (!synth||muted) return;
+  synth.cancel();
   const u=new SpeechSynthesisUtterance(text);
   u.lang=preferredVoice?preferredVoice.lang:'zh-CN'; u.rate=0.88; u.pitch=1;
   if (preferredVoice) u.voice=preferredVoice; synth.speak(u);
@@ -277,7 +366,7 @@ function toggleMute() {
 /* ═══════════════════════════════
    AMBIENT MUSIC  (Web Audio API)
 ═══════════════════════════════ */
-let actx=null, masterGain=null, musicOn=false, melodyTimer=null;
+let actx=null, masterGain=null, lpfNode=null, reverbNode=null, musicOn=false, melodyTimer=null;
 const musicBtn  = document.getElementById('musicBtn');
 const musicRow  = document.getElementById('musicRow');
 const volSlider = document.getElementById('volSlider');
@@ -285,7 +374,6 @@ const volVal    = document.getElementById('volVal');
 
 // D major pentatonic: D4 E4 F#4 A4 B4 D5
 const PENTA = [293.66, 329.63, 369.99, 440.00, 493.88, 587.33];
-// Melody sequence (indices into PENTA) — gentle ascending/descending pattern
 const MELODY = [0,2,4,5,4,3,2,0,1,3,4,2,1,0,2,3,5,4,2,1];
 let melIdx=0;
 
@@ -301,7 +389,6 @@ function makeReverb(ctx, sec) {
 }
 
 function makePad(ctx, dest, reverb) {
-  // Warm sustained chord: D3 A3 D4 F#4 — perfect fifth + major third
   const freqs   = [146.83, 220.00, 293.66, 369.99];
   const detunes = [-4, 4, -3, 3];
   freqs.forEach((f,i)=>{
@@ -310,7 +397,6 @@ function makePad(ctx, dest, reverb) {
     g.gain.value=0;
     g.gain.setValueAtTime(0, ctx.currentTime);
     g.gain.linearRampToValueAtTime(0.055, ctx.currentTime+3);
-    // Slow tremolo
     const lfo=ctx.createOscillator(), lg=ctx.createGain();
     lfo.frequency.value=0.12+i*0.02; lg.gain.value=0.008;
     lfo.connect(lg); lg.connect(g.gain); lfo.start();
@@ -322,49 +408,45 @@ function scheduleMelody(ctx, dest, reverb) {
   if (!musicOn) return;
   const freq = PENTA[MELODY[melIdx % MELODY.length]];
   melIdx++;
-
-  const dur  = 2.8 + Math.random()*1.8;   // 2.8 – 4.6 s per note
+  const dur  = 2.8 + Math.random()*1.8;
   const now  = ctx.currentTime;
   const osc  = ctx.createOscillator();
   const env  = ctx.createGain();
-
   osc.type='sine'; osc.frequency.value=freq;
   env.gain.setValueAtTime(0, now);
   env.gain.linearRampToValueAtTime(0.10, now+0.9);
   env.gain.setValueAtTime(0.10, now+dur-1.1);
   env.gain.linearRampToValueAtTime(0, now+dur);
-
   osc.connect(env); env.connect(dest); env.connect(reverb);
   osc.start(now); osc.stop(now+dur+0.05);
-
   melodyTimer = setTimeout(()=>scheduleMelody(ctx,dest,reverb), (dur-0.6)*1000);
 }
 
+// Build the audio graph once; reuse it every time music is toggled
+// back on (fixes the old bug where re-enabling music after the first
+// toggle silently broke the reverb/lowpass connections).
+function ensureAudioGraph() {
+  if (actx) return;
+  actx = new (window.AudioContext||window.webkitAudioContext)();
+  masterGain = actx.createGain();
+  masterGain.gain.value = 0;
+  masterGain.connect(actx.destination);
+
+  reverbNode = makeReverb(actx, 3.5);
+  const rvGain = actx.createGain(); rvGain.gain.value=0.45;
+  reverbNode.connect(rvGain); rvGain.connect(masterGain);
+
+  lpfNode = actx.createBiquadFilter();
+  lpfNode.type='lowpass'; lpfNode.frequency.value=1800;
+  lpfNode.connect(masterGain);
+
+  makePad(actx, lpfNode, reverbNode);
+}
+
 function startMusic() {
-  if (!actx) {
-    actx = new (window.AudioContext||window.webkitAudioContext)();
-
-    masterGain = actx.createGain();
-    masterGain.gain.value = 0;
-    masterGain.connect(actx.destination);
-
-    const reverb = makeReverb(actx, 3.5);
-    const rvGain = actx.createGain(); rvGain.gain.value=0.45;
-    reverb.connect(rvGain); rvGain.connect(masterGain);
-
-    const lpf = actx.createBiquadFilter();
-    lpf.type='lowpass'; lpf.frequency.value=1800;
-    lpf.connect(masterGain);
-
-    makePad(actx, lpf, reverb);
-    scheduleMelody(actx, lpf, reverb);
-  } else {
-    actx.resume();
-    scheduleMelody(actx,
-      actx.destination, // fallback — reverb node no longer accessible, but pad still plays
-      {connect:()=>{}}  // dummy — melody will connect directly
-    );
-  }
+  ensureAudioGraph();
+  if (actx.state === 'suspended') actx.resume();
+  if (!melodyTimer) scheduleMelody(actx, lpfNode, reverbNode);
   const vol = parseInt(volSlider.value)/100 * 0.6;
   masterGain.gain.cancelScheduledValues(actx.currentTime);
   masterGain.gain.linearRampToValueAtTime(vol, actx.currentTime+1.5);
@@ -374,15 +456,14 @@ function stopMusic() {
   if (!masterGain) return;
   masterGain.gain.cancelScheduledValues(actx.currentTime);
   masterGain.gain.linearRampToValueAtTime(0, actx.currentTime+1.5);
-  clearTimeout(melodyTimer);
+  clearTimeout(melodyTimer); melodyTimer=null;
 }
 
 function toggleMusic() {
   musicOn = !musicOn;
-  musicBtn.textContent = musicOn ? '🎵' : '🎵';
   musicBtn.classList.toggle('off', !musicOn);
   musicRow.style.display = musicOn ? 'flex' : 'none';
-  if (musicOn) startMusic(); else stopMusic();
+  if (musicOn) { initKeepAlive(); startMusic(); } else stopMusic();
 }
 
 function setMusicVol(v) {
@@ -393,6 +474,87 @@ function setMusicVol(v) {
     masterGain.gain.setValueAtTime(vol, actx.currentTime);
   }
 }
+
+/* ═══════════════════════════════
+   BACKGROUND-AUDIO HELPER
+   Mobile browsers aggressively suspend page audio once the screen
+   locks. Registering a MediaSession + a looping silent <audio>
+   element (started from a real user tap) signals to the OS that
+   this page is "playing media," which noticeably improves how long
+   Chrome/Android keeps the tab's audio alive after screen-off.
+   iOS Safari remains more restrictive unless the page is added to
+   the Home Screen — this is a browser platform limitation, not
+   something a web page can fully override.
+═══════════════════════════════ */
+let keepAliveAudio=null, keepAliveInited=false;
+function initKeepAlive() {
+  if (keepAliveInited) return;
+  keepAliveInited = true;
+  try {
+    keepAliveAudio = document.createElement('audio');
+    keepAliveAudio.loop = true;
+    keepAliveAudio.setAttribute('playsinline','');
+    keepAliveAudio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+    keepAliveAudio.play().catch(()=>{});
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: '4-7-8 呼吸引导', artist: '放松练习', album: '呼吸训练'
+      });
+      navigator.mediaSession.setActionHandler('play', ()=>{});
+      navigator.mediaSession.setActionHandler('pause', ()=>{});
+    }
+  } catch(e) {}
+}
+
+/* ═══════════════════════════════
+   PRACTICE LOG — records one entry per completed session,
+   grouped by calendar day, persisted in localStorage.
+═══════════════════════════════ */
+const LOG_KEY = 'breathing478_sessions';
+
+function dayKey(d) {
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function loadLog() {
+  try { return JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+function recordSession() {
+  try {
+    const list = loadLog();
+    list.push(new Date().toISOString());
+    localStorage.setItem(LOG_KEY, JSON.stringify(list));
+  } catch(e) {}
+  renderLog();
+}
+function renderLog() {
+  const list = loadLog();
+  const total = list.length;
+  const daysSet = new Set(list.map(iso => dayKey(new Date(iso))));
+
+  // current streak: consecutive days with >=1 session, ending today or yesterday
+  let streak = 0;
+  let cursor = new Date();
+  if (!daysSet.has(dayKey(cursor))) cursor.setDate(cursor.getDate() - 1);
+  while (daysSet.has(dayKey(cursor))) { streak++; cursor.setDate(cursor.getDate() - 1); }
+
+  document.getElementById('logTotal').textContent = total;
+  document.getElementById('logStreak').textContent = streak;
+
+  const grid = document.getElementById('logGrid');
+  grid.innerHTML = '';
+  const todayKey = dayKey(new Date());
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const key = dayKey(d);
+    const cell = document.createElement('div');
+    cell.className = 'log-cell' + (daysSet.has(key) ? ' done' : '') + (key === todayKey ? ' today' : '');
+    cell.title = key + (daysSet.has(key) ? ' · 已练习' : '');
+    grid.appendChild(cell);
+  }
+}
+
+renderLog();
 </script>
 </body>
 </html>
