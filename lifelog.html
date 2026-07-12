@@ -36,6 +36,7 @@
     --breakfast: #FFB37B;
     --lunch: #C6E86B;
     --dinner: #A985FF;
+    --breathing: #8E97FD;
 
     --radius: 16px;
     --tab-h: 83px;
@@ -213,6 +214,71 @@
   .quick-btn.breakfast::before { background: var(--breakfast); }
   .quick-btn.lunch::before     { background: var(--lunch); }
   .quick-btn.dinner::before    { background: var(--dinner); }
+  .quick-btn.breathing::before { background: var(--breathing); }
+  /* ===== 4-7-8 BREATHING GUIDE ===== */
+  .breathing-guide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 22px 0 8px;
+  }
+  .breathing-ring-wrap {
+    width: 180px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .breathing-ring {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, rgba(142,151,253,.55), rgba(142,151,253,.22));
+    border: 1px solid rgba(142,151,253,.4);
+    box-shadow: 0 0 30px rgba(142,151,253,.35);
+    transition: transform 4s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .breathing-ring.inhale { transform: scale(1.65); transition-duration: 4s; }
+  .breathing-ring.hold   { transform: scale(1.65); transition-duration: .3s; }
+  .breathing-ring.exhale { transform: scale(1);    transition-duration: 8s; }
+  .breathing-count {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .breathing-phase {
+    margin-top: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text2);
+    letter-spacing: 0.3px;
+    min-height: 20px;
+  }
+  .breathing-rounds-done {
+    font-size: 12px;
+    color: var(--label);
+    margin-top: 4px;
+  }
+  .breathing-toggle-btn {
+    margin-top: 16px;
+    padding: 10px 28px;
+    border-radius: 20px;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--breathing);
+    cursor: pointer;
+  }
+  .breathing-toggle-btn:active { opacity: .8; }
+  .breathing-toggle-btn.stop { background: var(--red); }
+
   .quick-btn .q-icon { font-size: 28px; }
   .quick-btn .q-label { font-size: 13px; font-weight: 600; color: var(--text); }
   .quick-btn .q-sub   { font-size: 11px; color: var(--label); }
@@ -235,6 +301,7 @@
   .stat-val.breakfast { color: #C97A3E; }
   .stat-val.lunch     { color: #7C9A2E; }
   .stat-val.dinner    { color: #7A54E0; }
+  .stat-val.breathing { color: #5C63D6; }
   .stat-name { font-size: 11px; color: var(--label); margin-top: 4px; }
 
   /* ===== RECENT LIST ===== */
@@ -255,6 +322,7 @@
   .record-icon.breakfast { background: rgba(255,179,123,.16); }
   .record-icon.lunch     { background: rgba(198,232,107,.16); }
   .record-icon.dinner    { background: rgba(169,133,255,.16); }
+  .record-icon.breathing { background: rgba(142,151,253,.16); }
   .record-info { flex: 1; min-width: 0; }
   .record-title { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .record-time  { font-size: 12px; color: var(--label); margin-top: 1px; }
@@ -810,6 +878,11 @@
           <span class="q-label">Dinner</span>
           <span class="q-sub">Log Dinner</span>
         </button>
+        <button class="quick-btn breathing" onclick="openSheet('breathing')">
+          <span class="q-icon">🌬️</span>
+          <span class="q-label">Breathing</span>
+          <span class="q-sub">4-7-8 check-in</span>
+        </button>
       </div>
     </div>
 
@@ -860,6 +933,10 @@
         <div class="stat-card">
           <div class="stat-val dinner" id="stat-dinner">0</div>
           <div class="stat-name">Dinner</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val breathing" id="stat-breathing">0</div>
+          <div class="stat-name">Breathing</div>
         </div>
       </div>
     </div>
@@ -1481,6 +1558,57 @@
   </div>
 </div>
 
+<!-- ====== BREATHING (4-7-8) SHEET ====== -->
+<div class="sheet" id="sheet-breathing">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">🌬️ 4-7-8 Breathing</div>
+    <div class="sheet-close" onclick="closeSheet()">Done</div>
+  </div>
+  <div class="sheet-body">
+    <div class="breathing-guide">
+      <div class="breathing-ring-wrap">
+        <div class="breathing-ring" id="breathing-ring">
+          <span class="breathing-count" id="breathing-count">4</span>
+        </div>
+      </div>
+      <div class="breathing-phase" id="breathing-phase">Tap start when ready</div>
+      <div class="breathing-rounds-done" id="breathing-rounds-done">0 rounds completed</div>
+      <button class="breathing-toggle-btn" id="breathing-toggle-btn" onclick="toggleBreathingSession()">Start</button>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Rounds completed</div>
+      <div class="chip-row" id="breathing-rounds">
+        <div class="chip generic" data-val="4" onclick="toggleChipExclusive(this,'breathing-rounds')">4 rounds</div>
+        <div class="chip generic" data-val="6" onclick="toggleChipExclusive(this,'breathing-rounds')">6 rounds</div>
+        <div class="chip generic" data-val="8" onclick="toggleChipExclusive(this,'breathing-rounds')">8 rounds</div>
+        <div class="chip generic" data-val="10+" onclick="toggleChipExclusive(this,'breathing-rounds')">10+ rounds</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">How do you feel</div>
+      <div class="chip-row" id="breathing-feeling">
+        <div class="chip generic" data-val="Calmer" onclick="toggleChipExclusive(this,'breathing-feeling')">😌 Calmer</div>
+        <div class="chip generic" data-val="Same" onclick="toggleChipExclusive(this,'breathing-feeling')">😐 Same</div>
+        <div class="chip generic" data-val="Still tense" onclick="toggleChipExclusive(this,'breathing-feeling')">😣 Still tense</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Note</div>
+      <input type="text" id="breathing-note" placeholder="Optional note…">
+    </div>
+    <div class="form-section">
+      <div class="form-label">Time</div>
+      <div class="time-edit" onclick="editTime('breathing-time')">
+        <span>Log time</span>
+        <span class="time-edit-val" id="breathing-time-display"></span>
+      </div>
+      <input type="datetime-local" id="breathing-time" style="display:none" onchange="updateTimeDisplay('breathing-time')">
+    </div>
+    <button class="save-btn" style="background:var(--breathing)" onclick="saveRecord('breathing')">Save</button>
+  </div>
+</div>
+
 <!-- ====== EXPORT SHEET ====== -->
 <div class="sheet" id="sheet-export">
   <div class="sheet-handle"></div>
@@ -1829,6 +1957,7 @@ function renderSummary() {
   document.getElementById('stat-breakfast').textContent = today.filter(r=>r.type==='breakfast').length;
   document.getElementById('stat-lunch').textContent     = today.filter(r=>r.type==='lunch').length;
   document.getElementById('stat-dinner').textContent    = today.filter(r=>r.type==='dinner').length;
+  document.getElementById('stat-breathing').textContent = today.filter(r=>r.type==='breathing').length;
 
   // recent list
   const list = document.getElementById('recent-list');
@@ -1849,7 +1978,7 @@ function renderSummary() {
 }
 
 function typeIcon(t) {
-  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'💧':t==='trash'?'🗑️':t==='breakfast'?'🍳':t==='lunch'?'🍱':t==='dinner'?'🍜':'🧹';
+  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'💧':t==='trash'?'🗑️':t==='breakfast'?'🍳':t==='lunch'?'🍱':t==='dinner'?'🍜':t==='breathing'?'🌬️':'🧹';
 }
 
 function recordTitle(r) {
@@ -1895,6 +2024,12 @@ function recordTitle(r) {
     if (r.food) parts.push(r.food);
     if (r.tags && r.tags.length) parts.push(r.tags.join('·'));
     return parts.join(' · ') || mealName;
+  }
+  if (r.type==='breathing') {
+    const parts = [];
+    if (r.rounds) parts.push(r.rounds + ' rounds');
+    if (r.feeling) parts.push(r.feeling);
+    return parts.join(' · ') || '4-7-8 Breathing';
   }
   return 'Record';
 }
@@ -1954,6 +2089,12 @@ function openSheet(name) {
     document.getElementById('dinner-food').value = '';
     setTimeNow('dinner-time');
   }
+  if (name==='breathing') {
+    document.querySelectorAll('#sheet-breathing .chip').forEach(c=>c.classList.remove('active'));
+    document.getElementById('breathing-note').value = '';
+    resetBreathingSession();
+    setTimeNow('breathing-time');
+  }
   currentSheet = name;
   document.getElementById('sheet-'+name).classList.add('visible');
   document.getElementById('overlay').classList.add('visible');
@@ -1964,8 +2105,9 @@ function closeSheet() {
   if (currentSheet) {
     document.getElementById('sheet-'+currentSheet).classList.remove('visible');
   }
+  stopBreathingSession();
   // also close detail, export, import
-  ['detail','day-detail','export','import','shower','clean','exercise','water','trash','breakfast','lunch','dinner','reminder'].forEach(n => {
+  ['detail','day-detail','export','import','shower','clean','exercise','water','trash','breakfast','lunch','dinner','breathing','reminder'].forEach(n => {
     const el = document.getElementById('sheet-'+n);
     if (el) el.classList.remove('visible');
   });
@@ -2133,11 +2275,20 @@ function saveRecord(type) {
     rec.tags = [...document.querySelectorAll('#'+type+'-tags .chip.active')].map(c=>c.dataset.val);
   }
 
+  if (type==='breathing') {
+    const t = document.getElementById('breathing-time').value;
+    if (t) rec.timestamp = new Date(t).getTime();
+    rec.rounds  = document.querySelector('#breathing-rounds .chip.active')?.dataset.val || String(breathingRoundsCompleted) || '';
+    rec.feeling = document.querySelector('#breathing-feeling .chip.active')?.dataset.val || '';
+    rec.note    = document.getElementById('breathing-note').value.trim();
+    stopBreathingSession();
+  }
+
   addRecord(rec);
   closeSheet();
   renderSummary();
 
-  const toastMsg = type==='coffee'?'☕ Coffee logged':type==='bowel'?'💩 Bowel logged':type==='shower'?'🚿 Shower logged':type==='exercise'?'🏃 Exercise logged':type==='water'?'💧 Water logged':type==='trash'?'🗑️ Trash logged':type==='breakfast'?'🍳 Breakfast logged':type==='lunch'?'🍱 Lunch logged':type==='dinner'?'🍜 Dinner logged':'🧹 Cleaning logged';
+  const toastMsg = type==='coffee'?'☕ Coffee logged':type==='bowel'?'💩 Bowel logged':type==='shower'?'🚿 Shower logged':type==='exercise'?'🏃 Exercise logged':type==='water'?'💧 Water logged':type==='trash'?'🗑️ Trash logged':type==='breakfast'?'🍳 Breakfast logged':type==='lunch'?'🍱 Lunch logged':type==='dinner'?'🍜 Dinner logged':type==='breathing'?'🌬️ Breathing logged':'🧹 Cleaning logged';
   showToast(toastMsg);
   if (navigator.vibrate) navigator.vibrate(10);
 }
@@ -2145,6 +2296,96 @@ function saveRecord(type) {
 // ============================================================
 // DETAIL
 // ============================================================
+// ============================================================
+// 4-7-8 BREATHING GUIDE (Inhale 4s → Hold 7s → Exhale 8s)
+// ============================================================
+let breathingTimer = null;
+let breathingTicker = null;
+let breathingRoundsCompleted = 0;
+const BREATHING_PHASES = [
+  { name: 'inhale', label: 'Breathe in…',  seconds: 4 },
+  { name: 'hold',   label: 'Hold…',        seconds: 7 },
+  { name: 'exhale', label: 'Breathe out…', seconds: 8 }
+];
+
+function resetBreathingSession() {
+  clearTimeout(breathingTimer);
+  clearInterval(breathingTicker);
+  breathingTimer = null;
+  breathingTicker = null;
+  breathingRoundsCompleted = 0;
+  const ring = document.getElementById('breathing-ring');
+  if (ring) ring.className = 'breathing-ring';
+  const countEl = document.getElementById('breathing-count');
+  if (countEl) countEl.textContent = '4';
+  const phaseEl = document.getElementById('breathing-phase');
+  if (phaseEl) phaseEl.textContent = 'Tap start when ready';
+  const roundsEl = document.getElementById('breathing-rounds-done');
+  if (roundsEl) roundsEl.textContent = '0 rounds completed';
+  const btn = document.getElementById('breathing-toggle-btn');
+  if (btn) { btn.textContent = 'Start'; btn.classList.remove('stop'); }
+}
+
+function stopBreathingSession() {
+  const wasRunning = !!breathingTimer || !!breathingTicker;
+  clearTimeout(breathingTimer);
+  clearInterval(breathingTicker);
+  breathingTimer = null;
+  breathingTicker = null;
+  const btn = document.getElementById('breathing-toggle-btn');
+  if (btn) { btn.textContent = 'Start'; btn.classList.remove('stop'); }
+  const phaseEl = document.getElementById('breathing-phase');
+  if (phaseEl && wasRunning) phaseEl.textContent = 'Paused — tap start to resume';
+  const ring = document.getElementById('breathing-ring');
+  if (ring) ring.className = 'breathing-ring';
+}
+
+function toggleBreathingSession() {
+  const btn = document.getElementById('breathing-toggle-btn');
+  if (breathingTimer || breathingTicker) {
+    stopBreathingSession();
+  } else {
+    btn.textContent = 'Stop';
+    btn.classList.add('stop');
+    runBreathingPhase(0);
+  }
+}
+
+function runBreathingPhase(phaseIndex) {
+  const phase = BREATHING_PHASES[phaseIndex];
+  const ring = document.getElementById('breathing-ring');
+  const phaseEl = document.getElementById('breathing-phase');
+  const countEl = document.getElementById('breathing-count');
+  if (!ring || !phaseEl || !countEl) return;
+
+  ring.className = 'breathing-ring ' + phase.name;
+  phaseEl.textContent = phase.label;
+
+  let remaining = phase.seconds;
+  countEl.textContent = remaining;
+  clearInterval(breathingTicker);
+  breathingTicker = setInterval(() => {
+    remaining -= 1;
+    countEl.textContent = Math.max(remaining, 0);
+  }, 1000);
+
+  breathingTimer = setTimeout(() => {
+    clearInterval(breathingTicker);
+    const nextIndex = (phaseIndex + 1) % BREATHING_PHASES.length;
+    if (nextIndex === 0) {
+      breathingRoundsCompleted += 1;
+      const roundsEl = document.getElementById('breathing-rounds-done');
+      if (roundsEl) roundsEl.textContent = `${breathingRoundsCompleted} round${breathingRoundsCompleted===1?'':'s'} completed`;
+      // Keep the rounds chip in sync with what's actually been completed
+      const chipVal = breathingRoundsCompleted >= 10 ? '10+' : String(breathingRoundsCompleted);
+      document.querySelectorAll('#breathing-rounds .chip').forEach(c => {
+        c.classList.toggle('active', c.dataset.val === chipVal);
+      });
+    }
+    runBreathingPhase(nextIndex);
+  }, phase.seconds * 1000);
+}
+
 function showDetail(id) {
   const records = getRecords();
   const r = records.find(x=>x.id===id);
@@ -2212,6 +2453,12 @@ function showDetail(id) {
   if (r.type==='breakfast' || r.type==='lunch' || r.type==='dinner') {
     if (r.food)        html += `<div class="detail-field"><div class="detail-key">What did you eat</div><div class="detail-val">${r.food}</div></div>`;
     if (r.tags?.length) html += `<div class="detail-field"><div class="detail-key">Tags</div><div class="detail-val">${r.tags.join('、')}</div></div>`;
+  }
+
+  if (r.type==='breathing') {
+    if (r.rounds)  html += `<div class="detail-field"><div class="detail-key">Rounds</div><div class="detail-val">${r.rounds}</div></div>`;
+    if (r.feeling) html += `<div class="detail-field"><div class="detail-key">Feeling</div><div class="detail-val">${r.feeling}</div></div>`;
+    if (r.note)    html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${r.note}</div></div>`;
   }
 
   if (isToday) {
