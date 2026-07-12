@@ -238,14 +238,14 @@
     background: radial-gradient(circle at 35% 30%, rgba(142,151,253,.55), rgba(142,151,253,.22));
     border: 1px solid rgba(142,151,253,.4);
     box-shadow: 0 0 30px rgba(142,151,253,.35);
-    transition: transform 4s ease-in-out;
+    transition: transform .12s linear;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  .breathing-ring.inhale { transform: scale(1.65); transition-duration: 4s; }
-  .breathing-ring.hold   { transform: scale(1.65); transition-duration: .3s; }
-  .breathing-ring.exhale { transform: scale(1);    transition-duration: 8s; }
+  /* Scale is now set directly from JS each tick (based on real elapsed
+     time), so it stays accurate across throttled timers / screen-lock.
+     The classes below remain only as phase hooks, no transform here. */
   .breathing-count {
     font-family: var(--font-display);
     font-size: 28px;
@@ -265,8 +265,13 @@
     color: var(--label);
     margin-top: 4px;
   }
-  .breathing-toggle-btn {
+  .breathing-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     margin-top: 16px;
+  }
+  .breathing-toggle-btn {
     padding: 10px 28px;
     border-radius: 20px;
     border: none;
@@ -278,6 +283,27 @@
   }
   .breathing-toggle-btn:active { opacity: .8; }
   .breathing-toggle-btn.stop { background: var(--red); }
+  .breathing-mute-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--separator);
+    background: var(--card);
+    color: var(--label);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .breathing-mute-btn:active { opacity: .75; }
+  .breathing-mute-btn.off { opacity: .45; }
+  .breathing-target-hint {
+    font-size: 11px;
+    color: var(--label);
+    margin-top: 6px;
+  }
 
   .quick-btn .q-icon { font-size: 28px; }
   .quick-btn .q-label { font-size: 13px; font-weight: 600; color: var(--text); }
@@ -1545,15 +1571,19 @@
       </div>
       <div class="breathing-phase" id="breathing-phase">Tap start when ready</div>
       <div class="breathing-rounds-done" id="breathing-rounds-done">0 rounds completed</div>
-      <button class="breathing-toggle-btn" id="breathing-toggle-btn" onclick="toggleBreathingSession()">Start</button>
+      <div class="breathing-controls-row">
+        <button class="breathing-toggle-btn" id="breathing-toggle-btn" onclick="toggleBreathingSession()">Start</button>
+        <button class="breathing-mute-btn" id="breathing-mute-btn" title="Voice guidance" onclick="toggleBreathingMute()">🔊</button>
+      </div>
+      <div class="breathing-target-hint" id="breathing-target-hint">Target: 4 rounds</div>
     </div>
     <div class="form-section">
-      <div class="form-label">Rounds completed</div>
+      <div class="form-label">Rounds</div>
       <div class="chip-row" id="breathing-rounds">
-        <div class="chip generic" data-val="4" onclick="toggleChipExclusive(this,'breathing-rounds')">4 rounds</div>
-        <div class="chip generic" data-val="6" onclick="toggleChipExclusive(this,'breathing-rounds')">6 rounds</div>
-        <div class="chip generic" data-val="8" onclick="toggleChipExclusive(this,'breathing-rounds')">8 rounds</div>
-        <div class="chip generic" data-val="10+" onclick="toggleChipExclusive(this,'breathing-rounds')">10+ rounds</div>
+        <div class="chip generic" data-val="4" onclick="setBreathingTargetRounds(this)">4 rounds</div>
+        <div class="chip generic" data-val="6" onclick="setBreathingTargetRounds(this)">6 rounds</div>
+        <div class="chip generic" data-val="8" onclick="setBreathingTargetRounds(this)">8 rounds</div>
+        <div class="chip generic" data-val="10+" onclick="setBreathingTargetRounds(this)">10+ rounds</div>
       </div>
     </div>
     <div class="form-section">
@@ -2248,7 +2278,9 @@ function saveRecord(type) {
   if (type==='breathing') {
     const t = document.getElementById('breathing-time').value;
     if (t) rec.timestamp = new Date(t).getTime();
-    rec.rounds  = document.querySelector('#breathing-rounds .chip.active')?.dataset.val || String(breathingRoundsCompleted) || '';
+    rec.rounds  = breathingCurRound > 0
+      ? String(breathingCurRound)
+      : (document.querySelector('#breathing-rounds .chip.active')?.dataset.val || '');
     rec.feeling = document.querySelector('#breathing-feeling .chip.active')?.dataset.val || '';
     rec.note    = document.getElementById('breathing-note').value.trim();
     stopBreathingSession();
@@ -2268,24 +2300,62 @@ function saveRecord(type) {
 // ============================================================
 // ============================================================
 // 4-7-8 BREATHING GUIDE (Inhale 4s → Hold 7s → Exhale 8s)
+// Timestamp-driven: every tick recomputes the current round/phase
+// from real elapsed wall-clock time, so it can't drift or get stuck
+// after setInterval throttling, screen-lock, or tab backgrounding.
 // ============================================================
-let breathingTimer = null;
-let breathingTicker = null;
-let breathingRoundsCompleted = 0;
 const BREATHING_PHASES = [
-  { name: 'inhale', label: 'Breathe in…',  seconds: 4 },
-  { name: 'hold',   label: 'Hold…',        seconds: 7 },
-  { name: 'exhale', label: 'Breathe out…', seconds: 8 }
+  { name: 'inhale', label: 'Breathe in…',  speech: 'Breathe in, slowly through your nose', seconds: 4 },
+  { name: 'hold',   label: 'Hold…',        speech: 'Hold, gently, don\u2019t strain',        seconds: 7 },
+  { name: 'exhale', label: 'Breathe out…', speech: 'Breathe out, slowly through your mouth', seconds: 8 }
 ];
+const BREATHING_ROUND_DURATION = BREATHING_PHASES.reduce((s,p)=>s+p.seconds,0); // 19s
+
+let breathingRunning = false;
+let breathingBaseElapsed = 0;   // seconds accumulated across previous run-segments
+let breathingRunStartTs = 0;    // Date.now() when the current run-segment began
+let breathingCurRound = 0, breathingCurPhase = 0, breathingLastSecsDisplayed = null;
+let breathingTicker = null;
+let breathingTargetRounds = 4;
+let breathingMuted = false;
+
+function setBreathingTargetRounds(el) {
+  // Selecting a rounds chip only changes the plan before a session starts;
+  // once a session is running or paused mid-way, keep its original target
+  // to avoid corrupting the in-progress round/phase math.
+  if (breathingRunning || breathingBaseElapsed > 0) return;
+  toggleChipExclusive(el, 'breathing-rounds');
+  const val = el.dataset.val;
+  breathingTargetRounds = val === '10+' ? 10 : parseInt(val, 10);
+  const hintEl = document.getElementById('breathing-target-hint');
+  if (hintEl) hintEl.textContent = `Target: ${val === '10+' ? '10+' : breathingTargetRounds} rounds`;
+}
+
+function breathingSpeak(text) {
+  if (breathingMuted || !window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.9; u.pitch = 1;
+  window.speechSynthesis.speak(u);
+}
+
+function toggleBreathingMute() {
+  breathingMuted = !breathingMuted;
+  const btn = document.getElementById('breathing-mute-btn');
+  if (btn) { btn.textContent = breathingMuted ? '🔇' : '🔊'; btn.classList.toggle('off', breathingMuted); }
+  if (breathingMuted && window.speechSynthesis) window.speechSynthesis.cancel();
+}
 
 function resetBreathingSession() {
-  clearTimeout(breathingTimer);
   clearInterval(breathingTicker);
-  breathingTimer = null;
   breathingTicker = null;
-  breathingRoundsCompleted = 0;
+  breathingRunning = false;
+  breathingBaseElapsed = 0;
+  breathingCurRound = 0;
+  breathingCurPhase = 0;
+  breathingLastSecsDisplayed = null;
   const ring = document.getElementById('breathing-ring');
-  if (ring) ring.className = 'breathing-ring';
+  if (ring) { ring.className = 'breathing-ring'; ring.style.transform = 'scale(1)'; }
   const countEl = document.getElementById('breathing-count');
   if (countEl) countEl.textContent = '4';
   const phaseEl = document.getElementById('breathing-phase');
@@ -2294,67 +2364,163 @@ function resetBreathingSession() {
   if (roundsEl) roundsEl.textContent = '0 rounds completed';
   const btn = document.getElementById('breathing-toggle-btn');
   if (btn) { btn.textContent = 'Start'; btn.classList.remove('stop'); }
+  // Default target back to 4 rounds unless a chip is already active
+  const activeChip = document.querySelector('#breathing-rounds .chip.active');
+  if (activeChip) {
+    breathingTargetRounds = activeChip.dataset.val === '10+' ? 10 : parseInt(activeChip.dataset.val, 10);
+  } else {
+    breathingTargetRounds = 4;
+  }
+  const hintEl = document.getElementById('breathing-target-hint');
+  if (hintEl) hintEl.textContent = `Target: ${breathingTargetRounds} rounds`;
+}
+
+function breathingGetElapsed() {
+  if (!breathingRunning) return breathingBaseElapsed;
+  return breathingBaseElapsed + (Date.now() - breathingRunStartTs) / 1000;
+}
+
+// Given total elapsed seconds since the session began, find which
+// round / phase / phase-elapsed that corresponds to.
+function breathingLocate(t) {
+  const round = Math.floor(t / BREATHING_ROUND_DURATION);
+  let tRound = t - round * BREATHING_ROUND_DURATION;
+  let phase = 0, acc = 0;
+  for (; phase < BREATHING_PHASES.length - 1; phase++) {
+    if (tRound < acc + BREATHING_PHASES[phase].seconds) break;
+    acc += BREATHING_PHASES[phase].seconds;
+  }
+  return { round, phase, phaseElapsed: tRound - acc };
+}
+
+function breathingSetRingScale(phaseElapsed, ph) {
+  const ring = document.getElementById('breathing-ring');
+  if (!ring) return;
+  const frac = Math.min(Math.max(phaseElapsed / ph.seconds, 0), 1);
+  let scale;
+  if (ph.name === 'inhale') scale = 1 + 0.65 * frac;
+  else if (ph.name === 'hold') scale = 1.65;
+  else scale = 1.65 - 0.65 * frac; // exhale
+  ring.style.transform = 'scale(' + scale.toFixed(3) + ')';
+}
+
+function breathingEnterPhase() {
+  const ring = document.getElementById('breathing-ring');
+  const phaseEl = document.getElementById('breathing-phase');
+  const countEl = document.getElementById('breathing-count');
+  const ph = BREATHING_PHASES[breathingCurPhase];
+  if (ring) ring.className = 'breathing-ring ' + ph.name;
+  if (phaseEl) phaseEl.textContent = ph.label;
+  if (countEl) countEl.textContent = ph.seconds;
+  breathingLastSecsDisplayed = ph.seconds;
+  if (breathingCurPhase === 0 && breathingCurRound > 0) {
+    breathingSpeak('Round ' + (breathingCurRound + 1) + '. ' + ph.speech);
+  } else {
+    breathingSpeak(ph.speech);
+  }
+}
+
+// Central tick: recompute state from wall-clock time. Safe to call
+// after any gap (throttled interval, backgrounded tab, screen lock).
+function breathingTick() {
+  if (!breathingRunning) return;
+  const t = breathingGetElapsed();
+  const totalDuration = BREATHING_ROUND_DURATION * breathingTargetRounds;
+  if (t >= totalDuration) { finishBreathingSession(); return; }
+
+  const { round, phase, phaseElapsed } = breathingLocate(t);
+  if (round !== breathingCurRound || phase !== breathingCurPhase) {
+    breathingCurRound = round;
+    breathingCurPhase = phase;
+    breathingEnterPhase();
+    const roundsEl = document.getElementById('breathing-rounds-done');
+    if (roundsEl) roundsEl.textContent = `${breathingCurRound} round${breathingCurRound===1?'':'s'} completed`;
+    // Keep the rounds chip in sync with rounds actually completed so far
+    const chipVal = breathingCurRound >= 10 ? '10+' : String(breathingCurRound);
+    document.querySelectorAll('#breathing-rounds .chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.val === chipVal);
+    });
+  }
+  const ph = BREATHING_PHASES[breathingCurPhase];
+  breathingSetRingScale(phaseElapsed, ph);
+  const secsLeft = Math.max(Math.ceil(ph.seconds - phaseElapsed), 1);
+  if (secsLeft !== breathingLastSecsDisplayed) {
+    breathingLastSecsDisplayed = secsLeft;
+    const countEl = document.getElementById('breathing-count');
+    if (countEl) countEl.textContent = secsLeft;
+  }
+}
+
+function finishBreathingSession() {
+  breathingRunning = false;
+  clearInterval(breathingTicker);
+  breathingTicker = null;
+  breathingBaseElapsed = BREATHING_ROUND_DURATION * breathingTargetRounds;
+  const ring = document.getElementById('breathing-ring');
+  if (ring) { ring.className = 'breathing-ring'; ring.style.transform = 'scale(1)'; }
+  const phaseEl = document.getElementById('breathing-phase');
+  if (phaseEl) phaseEl.textContent = 'Nice work! ✨';
+  const countEl = document.getElementById('breathing-count');
+  if (countEl) countEl.textContent = '';
+  const roundsEl = document.getElementById('breathing-rounds-done');
+  if (roundsEl) roundsEl.textContent = `${breathingTargetRounds} round${breathingTargetRounds===1?'':'s'} completed`;
+  const chipVal = breathingTargetRounds >= 10 ? '10+' : String(breathingTargetRounds);
+  document.querySelectorAll('#breathing-rounds .chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.val === chipVal);
+  });
+  const btn = document.getElementById('breathing-toggle-btn');
+  if (btn) { btn.textContent = 'Start again'; btn.classList.remove('stop'); }
+  breathingSpeak('Nice work. You can rest now.');
 }
 
 function stopBreathingSession() {
-  const wasRunning = !!breathingTimer || !!breathingTicker;
-  clearTimeout(breathingTimer);
+  const wasRunning = breathingRunning;
+  if (breathingRunning) {
+    // pause: freeze accumulated elapsed time so resuming continues smoothly
+    breathingBaseElapsed = breathingGetElapsed();
+  }
+  breathingRunning = false;
   clearInterval(breathingTicker);
-  breathingTimer = null;
   breathingTicker = null;
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
   const btn = document.getElementById('breathing-toggle-btn');
-  if (btn) { btn.textContent = 'Start'; btn.classList.remove('stop'); }
+  if (btn) { btn.textContent = 'Resume'; btn.classList.remove('stop'); }
   const phaseEl = document.getElementById('breathing-phase');
-  if (phaseEl && wasRunning) phaseEl.textContent = 'Paused — tap start to resume';
-  const ring = document.getElementById('breathing-ring');
-  if (ring) ring.className = 'breathing-ring';
+  if (phaseEl && wasRunning) phaseEl.textContent = 'Paused — tap resume to continue';
 }
 
 function toggleBreathingSession() {
   const btn = document.getElementById('breathing-toggle-btn');
-  if (breathingTimer || breathingTicker) {
+  const totalDuration = BREATHING_ROUND_DURATION * breathingTargetRounds;
+  if (breathingRunning) {
     stopBreathingSession();
   } else {
-    btn.textContent = 'Stop';
-    btn.classList.add('stop');
-    runBreathingPhase(0);
+    if (breathingBaseElapsed >= totalDuration) {
+      // starting fresh after a completed/reset session
+      breathingBaseElapsed = 0;
+    }
+    // Force the first tick to (re-)enter the current phase, whether this
+    // is a fresh start or a resume after pause, so the label/ring update
+    // immediately instead of waiting for the next phase boundary.
+    breathingCurRound = -1;
+    breathingCurPhase = -1;
+    breathingLastSecsDisplayed = null;
+    breathingRunning = true;
+    breathingRunStartTs = Date.now();
+    if (btn) { btn.textContent = 'Pause'; btn.classList.add('stop'); }
+    clearInterval(breathingTicker);
+    breathingTicker = setInterval(breathingTick, 100);
+    if (breathingBaseElapsed === 0) breathingSpeak('Ready. Let\u2019s begin.');
+    breathingTick();
   }
 }
 
-function runBreathingPhase(phaseIndex) {
-  const phase = BREATHING_PHASES[phaseIndex];
-  const ring = document.getElementById('breathing-ring');
-  const phaseEl = document.getElementById('breathing-phase');
-  const countEl = document.getElementById('breathing-count');
-  if (!ring || !phaseEl || !countEl) return;
-
-  ring.className = 'breathing-ring ' + phase.name;
-  phaseEl.textContent = phase.label;
-
-  let remaining = phase.seconds;
-  countEl.textContent = remaining;
-  clearInterval(breathingTicker);
-  breathingTicker = setInterval(() => {
-    remaining -= 1;
-    countEl.textContent = Math.max(remaining, 0);
-  }, 1000);
-
-  breathingTimer = setTimeout(() => {
-    clearInterval(breathingTicker);
-    const nextIndex = (phaseIndex + 1) % BREATHING_PHASES.length;
-    if (nextIndex === 0) {
-      breathingRoundsCompleted += 1;
-      const roundsEl = document.getElementById('breathing-rounds-done');
-      if (roundsEl) roundsEl.textContent = `${breathingRoundsCompleted} round${breathingRoundsCompleted===1?'':'s'} completed`;
-      // Keep the rounds chip in sync with what's actually been completed
-      const chipVal = breathingRoundsCompleted >= 10 ? '10+' : String(breathingRoundsCompleted);
-      document.querySelectorAll('#breathing-rounds .chip').forEach(c => {
-        c.classList.toggle('active', c.dataset.val === chipVal);
-      });
-    }
-    runBreathingPhase(nextIndex);
-  }, phase.seconds * 1000);
-}
+// When the tab/screen comes back, timers may have been throttled or
+// fully paused. Recompute immediately instead of waiting for the next tick.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && breathingRunning) breathingTick();
+});
+window.addEventListener('pageshow', () => { if (breathingRunning) breathingTick(); });
 
 function showDetail(id) {
   const records = getRecords();
