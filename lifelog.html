@@ -975,6 +975,7 @@
           <div class="legend-item"><div class="legend-dot" style="background:var(--breakfast)"></div><span class="legend-label">Breakfast</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--lunch)"></div><span class="legend-label">Lunch</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--dinner)"></div><span class="legend-label">Dinner</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--breathing)"></div><span class="legend-label">Breathing</span></div>
           <div style="margin-left:auto;display:flex;align-items:center;gap:4px">
             <span style="font-size:11px;color:var(--label)">Less</span>
             <div style="display:flex;gap:2px">
@@ -1023,31 +1024,6 @@
       </div>
     </div>
 
-    <div style="height:16px"></div>
-  </div>
-
-  <!-- ====== INSIGHTS TAB ====== -->
-  <div class="screen" id="screen-insights" style="display:none">
-    <div class="nav-header">
-      <h1>Insights</h1>
-      <div class="nav-sub">Based on your last 7 days</div>
-    </div>
-
-    <div class="section" style="margin-top:16px">
-      <div class="section-label">Bowel &amp; Diet</div>
-      <div id="insights-bowel"></div>
-    </div>
-
-    <div class="section" style="margin-top:20px">
-      <div class="section-label">Meals &amp; Activity</div>
-      <div id="insights-lifestyle"></div>
-    </div>
-
-    <div class="section" style="margin-top:20px">
-      <div class="insight-meta" style="padding:0 4px 4px">
-        These are general lifestyle suggestions based on your logs, not medical advice. If symptoms persist or worsen, please see a doctor.
-      </div>
-    </div>
     <div style="height:16px"></div>
   </div>
 
@@ -1113,11 +1089,6 @@
     <div class="tab-item" id="tab-chart" onclick="switchTab('chart')">
       <span class="tab-icon">📊</span>
       <span class="tab-label">Charts</span>
-      <div class="tab-dot"></div>
-    </div>
-    <div class="tab-item" id="tab-insights" onclick="switchTab('insights')">
-      <span class="tab-icon">💡</span>
-      <span class="tab-label">Insights</span>
       <div class="tab-dot"></div>
     </div>
     <div class="tab-item" id="tab-manage" onclick="switchTab('manage')">
@@ -1684,7 +1655,7 @@
   </div>
   <div class="sheet-body" id="reminder-body"></div>
   <div style="padding:0 20px 20px">
-    <button class="save-btn" onclick="closeSheet(); switchTab('insights')">View all insights</button>
+    <button class="save-btn" onclick="closeSheet(); switchTab('chart')">View charts</button>
   </div>
 </div>
 
@@ -1920,14 +1891,13 @@ let pendingImport = null; // { toAdd:[], toUpdate:[] }
 // TAB NAV
 // ============================================================
 function switchTab(name) {
-  ['summary','chart','insights','manage'].forEach(t => {
+  ['summary','chart','manage'].forEach(t => {
     document.getElementById('screen-'+t).style.display = t===name ? 'block' : 'none';
     document.getElementById('tab-'+t).classList.toggle('active', t===name);
   });
   if (name === 'chart') { renderLifeHeatmap(); renderWaterCheckin(); }
   if (name === 'manage') renderAllRecords();
   if (name === 'summary') renderSummary();
-  if (name === 'insights') renderInsights();
 }
 
 // ============================================================
@@ -2669,8 +2639,8 @@ function commitImport(mode) {
 // ============================================================
 // LIFE HABITS HEATMAP  (Coffee/Bowel/Shower/Clean/Exercise)
 // ============================================================
-const LIFE_TYPES = ['coffee','bowel','shower','clean','exercise','breakfast','lunch','dinner'];
-const LIFE_LABELS = { coffee:'Coffee', bowel:'Bowel', shower:'Shower', clean:'Clean', exercise:'Exercise', breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner' };
+const LIFE_TYPES = ['coffee','bowel','shower','clean','exercise','breakfast','lunch','dinner','breathing'];
+const LIFE_LABELS = { coffee:'Coffee', bowel:'Bowel', shower:'Shower', clean:'Clean', exercise:'Exercise', breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner', breathing:'Breathing' };
 const LIFE_COLORS = {
   coffee:   ['rgba(216,155,106,.12)','rgba(216,155,106,.4)','rgba(216,155,106,.7)','#D89B6A'],
   bowel:    ['rgba(255,214,10,.12)','rgba(255,214,10,.4)','rgba(255,214,10,.7)','#FFD60A'],
@@ -2680,6 +2650,7 @@ const LIFE_COLORS = {
   breakfast:['rgba(255,179,123,.12)','rgba(255,179,123,.4)','rgba(255,179,123,.7)','#FFB37B'],
   lunch:    ['rgba(198,232,107,.12)','rgba(198,232,107,.4)','rgba(198,232,107,.7)','#C6E86B'],
   dinner:   ['rgba(169,133,255,.12)','rgba(169,133,255,.4)','rgba(169,133,255,.7)','#A985FF'],
+  breathing:['rgba(142,151,253,.12)','rgba(142,151,253,.4)','rgba(142,151,253,.7)','#8E97FD'],
 };
 
 let heatmapMode = 'week';
