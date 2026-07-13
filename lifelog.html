@@ -31,6 +31,8 @@
     --clean: #2FE6A5;
     --exercise: #FF8552;
     --water: #40C8E0;
+    --hydration: #3AACFF;
+    --forest: #34A853;
     --trash: #9DA3C7;
 
     --breakfast: #FFB37B;
@@ -214,6 +216,20 @@
   .quick-btn.breakfast::before { background: var(--breakfast); }
   .quick-btn.lunch::before     { background: var(--lunch); }
   .quick-btn.dinner::before    { background: var(--dinner); }
+  .quick-btn.meal::before      { background: linear-gradient(90deg, var(--breakfast), var(--lunch), var(--dinner)); }
+  .quick-btn.hydration::before { background: var(--hydration); }
+  .meal-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #08122b;
+    margin-bottom: 16px;
+    transition: background .2s;
+  }
   .quick-btn.breathing::before { background: var(--breathing); }
   /* ===== 4-7-8 BREATHING GUIDE ===== */
   .breathing-guide {
@@ -323,6 +339,8 @@
   .stat-val.clean  { color: #0E9F6E; }
   .stat-val.exercise { color: #E2622E; }
   .stat-val.water    { color: #0A93B0; }
+  .stat-val.hydration { color: #1E7DD6; }
+  .stat-val.forest   { color: #1E8E3E; }
   .stat-val.trash    { color: #6B7099; }
   .stat-val.breakfast { color: #C97A3E; }
   .stat-val.lunch     { color: #7C9A2E; }
@@ -344,6 +362,7 @@
   .record-icon.clean  { background: rgba(47,230,165,.16); }
   .record-icon.exercise { background: rgba(255,133,82,.16); }
   .record-icon.water    { background: rgba(64,200,224,.16); }
+  .record-icon.hydration { background: rgba(58,172,255,.16); }
   .record-icon.trash    { background: rgba(157,163,199,.16); }
   .record-icon.breakfast { background: rgba(255,179,123,.16); }
   .record-icon.lunch     { background: rgba(198,232,107,.16); }
@@ -575,10 +594,12 @@
   .chip.generic.active      { color: var(--blue); border-color: var(--blue); background: rgba(77,111,255,.18); }
   .chip.exercise-chip.active { color: #E2622E; border-color: var(--exercise); background: rgba(255,133,82,.18); }
   .chip.water-chip.active    { color: #0A93B0; border-color: var(--water);    background: rgba(64,200,224,.18); }
+  .chip.hydration-chip.active { color: #1E7DD6; border-color: var(--hydration); background: rgba(58,172,255,.18); }
   .chip.trash-chip.active    { color: #6B7099; border-color: var(--trash);    background: rgba(157,163,199,.18); }
   .chip.breakfast-chip.active { color: #C97A3E; border-color: var(--breakfast); background: rgba(255,179,123,.18); }
   .chip.lunch-chip.active     { color: #7C9A2E; border-color: var(--lunch);     background: rgba(198,232,107,.18); }
   .chip.dinner-chip.active    { color: #7A54E0; border-color: var(--dinner);    background: rgba(169,133,255,.18); }
+  .chip.meal-chip.active       { color: #7C9A2E; border-color: var(--lunch);    background: rgba(198,232,107,.18); }
 
   .bristol-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 6px; }
   .bristol-btn {
@@ -635,8 +656,26 @@
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
+    position: relative;
   }
   .time-edit-val { font-size: 15px; color: var(--blue); }
+  /* The real datetime-local input sits invisibly on top of the whole row so the
+     native iOS/Android picker opens on direct tap — programmatic .click()/.showPicker()
+     on a display:none input is unreliable on iOS Safari, so we avoid depending on it. */
+  .time-edit input[type="datetime-local"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+  }
 
   .save-btn {
     width: 100%;
@@ -881,28 +920,23 @@
         </button>
         <button class="quick-btn water" onclick="openSheet('water')">
           <span class="q-icon">💧</span>
-          <span class="q-label">Water</span>
-          <span class="q-sub">Log water intake</span>
+          <span class="q-label">12.5L</span>
+          <span class="q-sub">Log 12.5L refill</span>
+        </button>
+        <button class="quick-btn hydration" onclick="openSheet('hydration')">
+          <span class="q-icon">🥤</span>
+          <span class="q-label">Drink Water</span>
+          <span class="q-sub">Log a drink</span>
         </button>
         <button class="quick-btn trash" onclick="openSheet('trash')">
           <span class="q-icon">🗑️</span>
           <span class="q-label">Trash</span>
           <span class="q-sub">Log trash-out</span>
         </button>
-        <button class="quick-btn breakfast" onclick="openSheet('breakfast')">
-          <span class="q-icon">🍳</span>
-          <span class="q-label">Breakfast</span>
-          <span class="q-sub">Log Breakfast</span>
-        </button>
-        <button class="quick-btn lunch" onclick="openSheet('lunch')">
-          <span class="q-icon">🍱</span>
-          <span class="q-label">Lunch</span>
-          <span class="q-sub">Log Lunch</span>
-        </button>
-        <button class="quick-btn dinner" onclick="openSheet('dinner')">
-          <span class="q-icon">🍜</span>
-          <span class="q-label">Dinner</span>
-          <span class="q-sub">Log Dinner</span>
+        <button class="quick-btn meal" onclick="openSheet('meal')">
+          <span class="q-icon">🍽️</span>
+          <span class="q-label">Meal</span>
+          <span class="q-sub">Auto by time</span>
         </button>
         <button class="quick-btn breathing" onclick="openSheet('breathing')">
           <span class="q-icon">🌬️</span>
@@ -942,7 +976,11 @@
         </div>
         <div class="stat-card">
           <div class="stat-val water" id="stat-water">0</div>
-          <div class="stat-name">Water</div>
+          <div class="stat-name">12.5L</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val hydration" id="stat-hydration">0</div>
+          <div class="stat-name">Drink Water</div>
         </div>
         <div class="stat-card">
           <div class="stat-val trash" id="stat-trash">0</div>
@@ -963,6 +1001,10 @@
         <div class="stat-card">
           <div class="stat-val breathing" id="stat-breathing">0</div>
           <div class="stat-name">Breathing</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val forest" id="stat-forest">0</div>
+          <div class="stat-name">🌳 Trees</div>
         </div>
       </div>
     </div>
@@ -998,6 +1040,7 @@
           <div class="legend-item"><div class="legend-dot" style="background:var(--shower)"></div><span class="legend-label">Shower</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--clean)"></div><span class="legend-label">Clean</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--exercise)"></div><span class="legend-label">Exercise</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--hydration)"></div><span class="legend-label">Drink Water</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--breakfast)"></div><span class="legend-label">Breakfast</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--lunch)"></div><span class="legend-label">Lunch</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--dinner)"></div><span class="legend-label">Dinner</span></div>
@@ -1047,6 +1090,28 @@
           </div>
         </div>
         <canvas id="waterCheckinChart" style="display:block;width:100%;"></canvas>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top:16px">
+      <div class="section-label">🌳 Focus Forest</div>
+      <div class="chart-wrap">
+        <div style="font-size:11px;color:var(--label);margin-bottom:10px;">Synced from your Pomodoro forest app</div>
+        <div class="water-checkin-summary" style="display:flex;gap:12px;margin-bottom:12px;">
+          <div style="flex:1;background:rgba(52,168,83,.14);border-radius:12px;padding:10px 12px;">
+            <div style="font-size:11px;color:var(--label)">Total trees</div>
+            <div id="forest-total-count" style="font-size:20px;font-weight:600;color:var(--forest)">0</div>
+          </div>
+          <div style="flex:1;background:rgba(52,168,83,.14);border-radius:12px;padding:10px 12px;">
+            <div style="font-size:11px;color:var(--label)">Today</div>
+            <div id="forest-today-count" style="font-size:20px;font-weight:600;color:var(--forest)">0</div>
+          </div>
+          <div style="flex:1;background:rgba(52,168,83,.14);border-radius:12px;padding:10px 12px;">
+            <div style="font-size:11px;color:var(--label)">Last one</div>
+            <div id="forest-last-time" style="font-size:14px;font-weight:600;color:var(--forest)">--</div>
+          </div>
+        </div>
+        <canvas id="forestCheckinChart" style="display:block;width:100%;"></canvas>
       </div>
     </div>
 
@@ -1161,11 +1226,11 @@
     </div>
     <div class="form-section">
       <div class="form-label">Time</div>
-      <div class="time-edit" onclick="editTime('coffee-time')">
+      <div class="time-edit">
         <span>Log time</span>
         <span class="time-edit-val" id="coffee-time-display"></span>
+      <input type="datetime-local" id="coffee-time" onchange="updateTimeDisplay('coffee-time')">
       </div>
-      <input type="datetime-local" id="coffee-time" style="display:none" onchange="updateTimeDisplay('coffee-time')">
     </div>
     <button class="save-btn" onclick="saveRecord('coffee')">Save</button>
   </div>
@@ -1231,11 +1296,11 @@
     </div>
     <div class="form-section">
       <div class="form-label">Time</div>
-      <div class="time-edit" onclick="editTime('bowel-time')">
+      <div class="time-edit">
         <span>Log time</span>
         <span class="time-edit-val" id="bowel-time-display"></span>
+      <input type="datetime-local" id="bowel-time" onchange="updateTimeDisplay('bowel-time')">
       </div>
-      <input type="datetime-local" id="bowel-time" style="display:none" onchange="updateTimeDisplay('bowel-time')">
     </div>
     <button class="save-btn" onclick="saveRecord('bowel')">Save</button>
   </div>
@@ -1258,11 +1323,11 @@
     </div>
     <div class="form-section">
       <div class="form-label">Time</div>
-      <div class="time-edit" onclick="editTime('shower-time')">
+      <div class="time-edit">
         <span>Log time</span>
         <span class="time-edit-val" id="shower-time-display"></span>
+      <input type="datetime-local" id="shower-time" onchange="updateTimeDisplay('shower-time')">
       </div>
-      <input type="datetime-local" id="shower-time" style="display:none" onchange="updateTimeDisplay('shower-time')">
     </div>
     <button class="save-btn" style="background:var(--shower)" onclick="saveRecord('shower')">Save</button>
   </div>
@@ -1304,11 +1369,11 @@
     </div>
     <div class="form-section">
       <div class="form-label">Time</div>
-      <div class="time-edit" onclick="editTime('clean-time')">
+      <div class="time-edit">
         <span>Log time</span>
         <span class="time-edit-val" id="clean-time-display"></span>
+      <input type="datetime-local" id="clean-time" onchange="updateTimeDisplay('clean-time')">
       </div>
-      <input type="datetime-local" id="clean-time" style="display:none" onchange="updateTimeDisplay('clean-time')">
     </div>
     <button class="save-btn" style="background:var(--clean)" onclick="saveRecord('clean')">Save</button>
   </div>
@@ -1360,11 +1425,11 @@
     </div>
     <div class="form-section">
       <div class="form-label">Time</div>
-      <div class="time-edit" onclick="editTime('exercise-time')">
+      <div class="time-edit">
         <span>Log time</span>
         <span class="time-edit-val" id="exercise-time-display"></span>
+      <input type="datetime-local" id="exercise-time" onchange="updateTimeDisplay('exercise-time')">
       </div>
-      <input type="datetime-local" id="exercise-time" style="display:none" onchange="updateTimeDisplay('exercise-time')">
     </div>
     <button class="save-btn" style="background:var(--exercise)" onclick="saveRecord('exercise')">Save</button>
   </div>
@@ -1374,40 +1439,60 @@
 <div class="sheet" id="sheet-water">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
-    <div class="sheet-title">💧 Log Water</div>
+    <div class="sheet-title">💧 Log 12.5L</div>
+    <div class="sheet-close" onclick="closeSheet()">Done</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">Time</div>
+      <div class="time-edit">
+        <span>Log time</span>
+        <span class="time-edit-val" id="water-time-display"></span>
+      <input type="datetime-local" id="water-time" onchange="updateTimeDisplay('water-time')">
+      </div>
+    </div>
+    <button class="save-btn" style="background:var(--water)" onclick="saveRecord('water')">Save</button>
+  </div>
+</div>
+
+<!-- ====== HYDRATION (drink water) SHEET ====== -->
+<div class="sheet" id="sheet-hydration">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">🥤 Log a Drink</div>
     <div class="sheet-close" onclick="closeSheet()">Done</div>
   </div>
   <div class="sheet-body">
     <div class="form-section">
       <div class="form-label">Volume</div>
-      <div class="chip-row" id="water-volume">
-        <div class="chip water-chip" data-val="150ml" onclick="toggleChipExclusive(this,'water-volume')">150ml</div>
-        <div class="chip water-chip" data-val="250ml" onclick="toggleChipExclusive(this,'water-volume')">250ml</div>
-        <div class="chip water-chip" data-val="350ml" onclick="toggleChipExclusive(this,'water-volume')">350ml</div>
-        <div class="chip water-chip" data-val="500ml" onclick="toggleChipExclusive(this,'water-volume')">500ml</div>
-        <div class="chip water-chip" data-val="750ml" onclick="toggleChipExclusive(this,'water-volume')">750ml</div>
+      <div class="chip-row" id="hydration-volume">
+        <div class="chip hydration-chip" data-val="150ml" onclick="toggleChipExclusive(this,'hydration-volume')">150ml</div>
+        <div class="chip hydration-chip" data-val="250ml" onclick="toggleChipExclusive(this,'hydration-volume')">250ml</div>
+        <div class="chip hydration-chip" data-val="350ml" onclick="toggleChipExclusive(this,'hydration-volume')">350ml</div>
+        <div class="chip hydration-chip" data-val="500ml" onclick="toggleChipExclusive(this,'hydration-volume')">500ml</div>
+        <div class="chip hydration-chip" data-val="750ml" onclick="toggleChipExclusive(this,'hydration-volume')">750ml</div>
       </div>
     </div>
     <div class="form-section">
       <div class="form-label">Drink</div>
-      <div class="chip-row" id="water-kind">
-        <div class="chip generic" data-val="Plain water" onclick="toggleChipExclusive(this,'water-kind')">Plain water</div>
-        <div class="chip generic" data-val="Warm water" onclick="toggleChipExclusive(this,'water-kind')">Warm water</div>
-        <div class="chip generic" data-val="Green tea" onclick="toggleChipExclusive(this,'water-kind')">Green tea</div>
-        <div class="chip generic" data-val="Herbal tea" onclick="toggleChipExclusive(this,'water-kind')">Herbal tea</div>
-        <div class="chip generic" data-val="Juice" onclick="toggleChipExclusive(this,'water-kind')">Juice</div>
-        <div class="chip generic" data-val="Other" onclick="toggleChipExclusive(this,'water-kind')">Other</div>
+      <div class="chip-row" id="hydration-kind">
+        <div class="chip generic" data-val="Plain water" onclick="toggleChipExclusive(this,'hydration-kind')">Plain water</div>
+        <div class="chip generic" data-val="Warm water" onclick="toggleChipExclusive(this,'hydration-kind')">Warm water</div>
+        <div class="chip generic" data-val="Tea" onclick="toggleChipExclusive(this,'hydration-kind')">Tea</div>
+        <div class="chip generic" data-val="Coffee" onclick="toggleChipExclusive(this,'hydration-kind')">Coffee</div>
+        <div class="chip generic" data-val="Juice" onclick="toggleChipExclusive(this,'hydration-kind')">Juice</div>
+        <div class="chip generic" data-val="Other" onclick="toggleChipExclusive(this,'hydration-kind')">Other</div>
       </div>
     </div>
     <div class="form-section">
       <div class="form-label">Time</div>
-      <div class="time-edit" onclick="editTime('water-time')">
+      <div class="time-edit">
         <span>Log time</span>
-        <span class="time-edit-val" id="water-time-display"></span>
+        <span class="time-edit-val" id="hydration-time-display"></span>
+      <input type="datetime-local" id="hydration-time" onchange="updateTimeDisplay('hydration-time')">
       </div>
-      <input type="datetime-local" id="water-time" style="display:none" onchange="updateTimeDisplay('water-time')">
     </div>
-    <button class="save-btn" style="background:var(--water)" onclick="saveRecord('water')">Save</button>
+    <button class="save-btn" style="background:var(--hydration)" onclick="saveRecord('hydration')">Save</button>
   </div>
 </div>
 
@@ -1443,115 +1528,49 @@
     </div>
     <div class="form-section">
       <div class="form-label">Time</div>
-      <div class="time-edit" onclick="editTime('trash-time')">
+      <div class="time-edit">
         <span>Log time</span>
         <span class="time-edit-val" id="trash-time-display"></span>
+      <input type="datetime-local" id="trash-time" onchange="updateTimeDisplay('trash-time')">
       </div>
-      <input type="datetime-local" id="trash-time" style="display:none" onchange="updateTimeDisplay('trash-time')">
     </div>
     <button class="save-btn" style="background:var(--trash)" onclick="saveRecord('trash')">Save</button>
   </div>
 </div>
 
 <!-- ====== BREAKFAST SHEET ====== -->
-<div class="sheet" id="sheet-breakfast">
+<div class="sheet" id="sheet-meal">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
-    <div class="sheet-title">🍳 Log Breakfast</div>
+    <div class="sheet-title" id="meal-sheet-title">🍽️ Log Meal</div>
     <div class="sheet-close" onclick="closeSheet()">Done</div>
   </div>
   <div class="sheet-body">
+    <div class="meal-type-badge" id="meal-type-badge">🍳 Breakfast</div>
     <div class="form-section">
       <div class="form-label">What did you eat</div>
-      <input type="text" id="breakfast-food" placeholder="Type freely, e.g. milk + whole-wheat toast…">
+      <input type="text" id="meal-food" placeholder="Type freely, e.g. milk + whole-wheat toast…">
     </div>
     <div class="form-section">
       <div class="form-label">Tags (optional)</div>
-      <div class="chip-row" id="breakfast-tags">
-        <div class="chip breakfast-chip" data-val="Homemade" onclick="toggleChip(this)">Homemade</div>
-        <div class="chip breakfast-chip" data-val="Delivery" onclick="toggleChip(this)">Delivery</div>
-        <div class="chip breakfast-chip" data-val="Simple" onclick="toggleChip(this)">Simple</div>
-        <div class="chip breakfast-chip" data-val="Big meal" onclick="toggleChip(this)">Big meal</div>
-        <div class="chip breakfast-chip" data-val="Skipped" onclick="toggleChip(this)">Skipped</div>
+      <div class="chip-row" id="meal-tags">
+        <div class="chip meal-chip" data-val="Homemade" onclick="toggleChip(this)">Homemade</div>
+        <div class="chip meal-chip" data-val="Delivery" onclick="toggleChip(this)">Delivery</div>
+        <div class="chip meal-chip" data-val="Simple" onclick="toggleChip(this)">Simple</div>
+        <div class="chip meal-chip" data-val="Big meal" onclick="toggleChip(this)">Big meal</div>
+        <div class="chip meal-chip" data-val="Skipped" onclick="toggleChip(this)">Skipped</div>
       </div>
     </div>
     <div class="form-section">
       <div class="form-label">Time</div>
-      <div class="time-edit" onclick="editTime('breakfast-time')">
+      <div class="time-edit">
         <span>Log time</span>
-        <span class="time-edit-val" id="breakfast-time-display"></span>
+        <span class="time-edit-val" id="meal-time-display"></span>
+      <input type="datetime-local" id="meal-time" onchange="onMealTimeChange()">
       </div>
-      <input type="datetime-local" id="breakfast-time" style="display:none" onchange="updateTimeDisplay('breakfast-time')">
+      <div style="font-size:11px;color:var(--label);margin-top:6px;padding:0 2px;">Meal type is set automatically from this time — Breakfast 04:00–10:29, Lunch 10:30–16:29, Dinner 16:30–03:59</div>
     </div>
-    <button class="save-btn" style="background:var(--breakfast);color:#08122b" onclick="saveRecord('breakfast')">Save</button>
-  </div>
-</div>
-
-<!-- ====== LUNCH SHEET ====== -->
-<div class="sheet" id="sheet-lunch">
-  <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <div class="sheet-title">🍱 Log Lunch</div>
-    <div class="sheet-close" onclick="closeSheet()">Done</div>
-  </div>
-  <div class="sheet-body">
-    <div class="form-section">
-      <div class="form-label">What did you eat</div>
-      <input type="text" id="lunch-food" placeholder="Type freely, e.g. tomato & eggs + rice…">
-    </div>
-    <div class="form-section">
-      <div class="form-label">Tags (optional)</div>
-      <div class="chip-row" id="lunch-tags">
-        <div class="chip lunch-chip" data-val="Homemade" onclick="toggleChip(this)">Homemade</div>
-        <div class="chip lunch-chip" data-val="Delivery" onclick="toggleChip(this)">Delivery</div>
-        <div class="chip lunch-chip" data-val="Simple" onclick="toggleChip(this)">Simple</div>
-        <div class="chip lunch-chip" data-val="Big meal" onclick="toggleChip(this)">Big meal</div>
-        <div class="chip lunch-chip" data-val="Skipped" onclick="toggleChip(this)">Skipped</div>
-      </div>
-    </div>
-    <div class="form-section">
-      <div class="form-label">Time</div>
-      <div class="time-edit" onclick="editTime('lunch-time')">
-        <span>Log time</span>
-        <span class="time-edit-val" id="lunch-time-display"></span>
-      </div>
-      <input type="datetime-local" id="lunch-time" style="display:none" onchange="updateTimeDisplay('lunch-time')">
-    </div>
-    <button class="save-btn" style="background:var(--lunch);color:#08122b" onclick="saveRecord('lunch')">Save</button>
-  </div>
-</div>
-
-<!-- ====== DINNER SHEET ====== -->
-<div class="sheet" id="sheet-dinner">
-  <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <div class="sheet-title">🍜 Log Dinner</div>
-    <div class="sheet-close" onclick="closeSheet()">Done</div>
-  </div>
-  <div class="sheet-body">
-    <div class="form-section">
-      <div class="form-label">What did you eat</div>
-      <input type="text" id="dinner-food" placeholder="Type freely, e.g. stir-fried veggies + multigrain rice…">
-    </div>
-    <div class="form-section">
-      <div class="form-label">Tags (optional)</div>
-      <div class="chip-row" id="dinner-tags">
-        <div class="chip dinner-chip" data-val="Homemade" onclick="toggleChip(this)">Homemade</div>
-        <div class="chip dinner-chip" data-val="Delivery" onclick="toggleChip(this)">Delivery</div>
-        <div class="chip dinner-chip" data-val="Simple" onclick="toggleChip(this)">Simple</div>
-        <div class="chip dinner-chip" data-val="Big meal" onclick="toggleChip(this)">Big meal</div>
-        <div class="chip dinner-chip" data-val="Skipped" onclick="toggleChip(this)">Skipped</div>
-      </div>
-    </div>
-    <div class="form-section">
-      <div class="form-label">Time</div>
-      <div class="time-edit" onclick="editTime('dinner-time')">
-        <span>Log time</span>
-        <span class="time-edit-val" id="dinner-time-display"></span>
-      </div>
-      <input type="datetime-local" id="dinner-time" style="display:none" onchange="updateTimeDisplay('dinner-time')">
-    </div>
-    <button class="save-btn" style="background:var(--dinner);color:#08122b" onclick="saveRecord('dinner')">Save</button>
+    <button class="save-btn" id="meal-save-btn" style="background:var(--breakfast);color:#08122b" onclick="saveRecord('meal')">Save</button>
   </div>
 </div>
 
@@ -1600,11 +1619,11 @@
     </div>
     <div class="form-section">
       <div class="form-label">Time</div>
-      <div class="time-edit" onclick="editTime('breathing-time')">
+      <div class="time-edit">
         <span>Log time</span>
         <span class="time-edit-val" id="breathing-time-display"></span>
+      <input type="datetime-local" id="breathing-time" onchange="updateTimeDisplay('breathing-time')">
       </div>
-      <input type="datetime-local" id="breathing-time" style="display:none" onchange="updateTimeDisplay('breathing-time')">
     </div>
     <button class="save-btn" style="background:var(--breathing)" onclick="saveRecord('breathing')">Save</button>
   </div>
@@ -1699,6 +1718,12 @@
 const SUPABASE_URL = 'https://olndbldkugwjyfmhvdqr.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_5wu37z5HXj51nxJrfRkc7A_Tf0U97hc';
 
+// Read-only link to the separate Pomodoro "forest" app's Supabase project,
+// so trees planted there can be shown here without LifeLog ever writing to it.
+const FOREST_SUPABASE_URL = 'https://qhxodrovsruyqpwjbxqx.supabase.co';
+const FOREST_SUPABASE_KEY = 'sb_publishable_to_Ogr1hdbajSLBIjR6TJA_JRccD-oS';
+const FOREST_TABLE = 'forest_trees';
+
 async function sbFetch(path, options = {}) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     ...options,
@@ -1716,6 +1741,21 @@ async function sbFetch(path, options = {}) {
   }
   const text = await res.text();
   return text ? JSON.parse(text) : null;
+}
+
+// Read-only fetch against the forest app's own Supabase project
+async function forestFetch(path) {
+  const res = await fetch(`${FOREST_SUPABASE_URL}/rest/v1/${path}`, {
+    headers: {
+      'apikey': FOREST_SUPABASE_KEY,
+      'Authorization': `Bearer ${FOREST_SUPABASE_KEY}`,
+    }
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err);
+  }
+  return res.json();
 }
 
 // ============================================================
@@ -1853,6 +1893,36 @@ async function deleteFromCloud(id) {
   }
 }
 
+// ============================================================
+// FOREST TREES (read-only, from the separate Pomodoro forest app)
+// ============================================================
+const FOREST_CACHE_KEY = 'lifelog_forest_cache_v1';
+
+function loadForestCache() {
+  try { return JSON.parse(localStorage.getItem(FOREST_CACHE_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+function saveForestCache(trees) {
+  try { localStorage.setItem(FOREST_CACHE_KEY, JSON.stringify(trees)); } catch(e) {}
+}
+let forestTrees = loadForestCache();
+
+async function syncForestTrees() {
+  try {
+    const rows = await forestFetch(`${FOREST_TABLE}?select=*&order=created_at.desc`);
+    forestTrees = rows || [];
+    saveForestCache(forestTrees);
+  } catch(e) {
+    console.error('Forest sync failed, showing cached trees', e);
+    // keep whatever was cached locally so the UI still shows something
+  }
+  renderForestStats();
+  if (document.getElementById('stat-forest')) {
+    document.getElementById('stat-forest').textContent =
+      forestTrees.filter(t => t.date === todayDateStr()).length;
+  }
+}
+
 function addRecord(rec) {
   const data = loadData();
   data.records.unshift(rec);
@@ -1925,7 +1995,7 @@ function switchTab(name) {
     document.getElementById('screen-'+t).style.display = t===name ? 'block' : 'none';
     document.getElementById('tab-'+t).classList.toggle('active', t===name);
   });
-  if (name === 'chart') { renderLifeHeatmap(); renderWaterCheckin(); }
+  if (name === 'chart') { renderLifeHeatmap(); renderWaterCheckin(); renderForestStats(); }
   if (name === 'manage') renderAllRecords();
   if (name === 'summary') renderSummary();
 }
@@ -1953,6 +2023,7 @@ function renderSummary() {
   document.getElementById('stat-clean').textContent  = today.filter(r=>r.type==='clean').length;
   document.getElementById('stat-exercise').textContent = today.filter(r=>r.type==='exercise').length;
   document.getElementById('stat-water').textContent   = today.filter(r=>r.type==='water').length;
+  document.getElementById('stat-hydration').textContent = today.filter(r=>r.type==='hydration').length;
   document.getElementById('stat-trash').textContent   = today.filter(r=>r.type==='trash').length;
   document.getElementById('stat-breakfast').textContent = today.filter(r=>r.type==='breakfast').length;
   document.getElementById('stat-lunch').textContent     = today.filter(r=>r.type==='lunch').length;
@@ -1978,7 +2049,7 @@ function renderSummary() {
 }
 
 function typeIcon(t) {
-  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'💧':t==='trash'?'🗑️':t==='breakfast'?'🍳':t==='lunch'?'🍱':t==='dinner'?'🍜':t==='breathing'?'🌬️':'🧹';
+  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'💧':t==='hydration'?'🥤':t==='trash'?'🗑️':t==='breakfast'?'🍳':t==='lunch'?'🍱':t==='dinner'?'🍜':t==='breathing'?'🌬️':'🧹';
 }
 
 function recordTitle(r) {
@@ -2010,7 +2081,13 @@ function recordTitle(r) {
     const parts = [];
     if (r.kind) parts.push(r.kind);
     if (r.volume) parts.push(r.volume);
-    return parts.join(' · ') || 'Water';
+    return parts.join(' · ') || '12.5L';
+  }
+  if (r.type==='hydration') {
+    const parts = [];
+    if (r.kind) parts.push(r.kind);
+    if (r.volume) parts.push(r.volume);
+    return parts.join(' · ') || 'Drink';
   }
   if (r.type==='trash') {
     const parts = [];
@@ -2069,25 +2146,20 @@ function openSheet(name) {
     document.querySelectorAll('#sheet-water .chip').forEach(c=>c.classList.remove('active'));
     setTimeNow('water-time');
   }
+  if (name==='hydration') {
+    document.querySelectorAll('#sheet-hydration .chip').forEach(c=>c.classList.remove('active'));
+    setTimeNow('hydration-time');
+  }
   if (name==='trash') {
     document.querySelectorAll('#sheet-trash .chip').forEach(c=>c.classList.remove('active'));
     document.getElementById('trash-note').value = '';
     setTimeNow('trash-time');
   }
-  if (name==='breakfast') {
-    document.querySelectorAll('#sheet-breakfast .chip').forEach(c=>c.classList.remove('active'));
-    document.getElementById('breakfast-food').value = '';
-    setTimeNow('breakfast-time');
-  }
-  if (name==='lunch') {
-    document.querySelectorAll('#sheet-lunch .chip').forEach(c=>c.classList.remove('active'));
-    document.getElementById('lunch-food').value = '';
-    setTimeNow('lunch-time');
-  }
-  if (name==='dinner') {
-    document.querySelectorAll('#sheet-dinner .chip').forEach(c=>c.classList.remove('active'));
-    document.getElementById('dinner-food').value = '';
-    setTimeNow('dinner-time');
+  if (name==='meal') {
+    document.querySelectorAll('#sheet-meal .chip').forEach(c=>c.classList.remove('active'));
+    document.getElementById('meal-food').value = '';
+    setTimeNow('meal-time');
+    updateMealTypeUI();
   }
   if (name==='breathing') {
     document.querySelectorAll('#sheet-breathing .chip').forEach(c=>c.classList.remove('active'));
@@ -2107,7 +2179,7 @@ function closeSheet() {
   }
   stopBreathingSession();
   // also close detail, export, import
-  ['detail','day-detail','export','import','shower','clean','exercise','water','trash','breakfast','lunch','dinner','breathing','reminder'].forEach(n => {
+  ['detail','day-detail','export','import','shower','clean','exercise','water','hydration','trash','meal','breathing','reminder'].forEach(n => {
     const el = document.getElementById('sheet-'+n);
     if (el) el.classList.remove('visible');
   });
@@ -2162,6 +2234,45 @@ function setTimeForDate(id, date) {
 function editTime(id) {
   const el = document.getElementById(id);
   el.showPicker ? el.showPicker() : el.click();
+}
+
+// ============================================================
+// MEAL TYPE AUTO-DETECTION (by time of day)
+//   04:00–10:29 -> breakfast
+//   10:30–16:29 -> lunch
+//   16:30–03:59 -> dinner (wraps past midnight for late-night meals)
+// ============================================================
+const MEAL_META = {
+  breakfast: { icon: '🍳', label: 'Breakfast', color: 'var(--breakfast)' },
+  lunch:     { icon: '🍱', label: 'Lunch',     color: 'var(--lunch)' },
+  dinner:    { icon: '🍜', label: 'Dinner',    color: 'var(--dinner)' },
+};
+
+function getMealTypeByHour(hourDecimal) {
+  if (hourDecimal >= 4 && hourDecimal < 10.5) return 'breakfast';
+  if (hourDecimal >= 10.5 && hourDecimal < 16.5) return 'lunch';
+  return 'dinner';
+}
+
+function getMealTypeForTimestamp(ts) {
+  const d = new Date(ts);
+  return getMealTypeByHour(d.getHours() + d.getMinutes() / 60);
+}
+
+function updateMealTypeUI() {
+  const t = document.getElementById('meal-time').value;
+  const ts = t ? new Date(t).getTime() : Date.now();
+  const type = getMealTypeForTimestamp(ts);
+  const meta = MEAL_META[type];
+  document.getElementById('meal-type-badge').textContent = `${meta.icon} ${meta.label}`;
+  document.getElementById('meal-type-badge').style.background = meta.color;
+  document.getElementById('meal-sheet-title').textContent = `${meta.icon} Log ${meta.label}`;
+  document.getElementById('meal-save-btn').style.background = meta.color;
+}
+
+function onMealTimeChange() {
+  updateTimeDisplay('meal-time');
+  updateMealTypeUI();
 }
 
 function updateTimeDisplay(id) {
@@ -2256,8 +2367,13 @@ function saveRecord(type) {
   if (type==='water') {
     const t = document.getElementById('water-time').value;
     if (t) rec.timestamp = new Date(t).getTime();
-    rec.volume = document.querySelector('#water-volume .chip.active')?.dataset.val || '';
-    rec.kind   = document.querySelector('#water-kind .chip.active')?.dataset.val || '';
+  }
+
+  if (type==='hydration') {
+    const t = document.getElementById('hydration-time').value;
+    if (t) rec.timestamp = new Date(t).getTime();
+    rec.volume = document.querySelector('#hydration-volume .chip.active')?.dataset.val || '';
+    rec.kind   = document.querySelector('#hydration-kind .chip.active')?.dataset.val || '';
   }
 
   if (type==='trash') {
@@ -2268,11 +2384,13 @@ function saveRecord(type) {
     rec.note = document.getElementById('trash-note').value.trim();
   }
 
-  if (type==='breakfast' || type==='lunch' || type==='dinner') {
-    const t = document.getElementById(type+'-time').value;
+  if (type==='meal') {
+    const t = document.getElementById('meal-time').value;
     if (t) rec.timestamp = new Date(t).getTime();
-    rec.food = document.getElementById(type+'-food').value.trim();
-    rec.tags = [...document.querySelectorAll('#'+type+'-tags .chip.active')].map(c=>c.dataset.val);
+    // determine the real meal type (breakfast/lunch/dinner) from the chosen time
+    rec.type = getMealTypeForTimestamp(rec.timestamp);
+    rec.food = document.getElementById('meal-food').value.trim();
+    rec.tags = [...document.querySelectorAll('#meal-tags .chip.active')].map(c=>c.dataset.val);
   }
 
   if (type==='breathing') {
@@ -2290,7 +2408,8 @@ function saveRecord(type) {
   closeSheet();
   renderSummary();
 
-  const toastMsg = type==='coffee'?'☕ Coffee logged':type==='bowel'?'💩 Bowel logged':type==='shower'?'🚿 Shower logged':type==='exercise'?'🏃 Exercise logged':type==='water'?'💧 Water logged':type==='trash'?'🗑️ Trash logged':type==='breakfast'?'🍳 Breakfast logged':type==='lunch'?'🍱 Lunch logged':type==='dinner'?'🍜 Dinner logged':type==='breathing'?'🌬️ Breathing logged':'🧹 Cleaning logged';
+  const ft = rec.type;
+  const toastMsg = ft==='coffee'?'☕ Coffee logged':ft==='bowel'?'💩 Bowel logged':ft==='shower'?'🚿 Shower logged':ft==='exercise'?'🏃 Exercise logged':ft==='water'?'💧 12.5L logged':ft==='hydration'?'🥤 Drink logged':ft==='trash'?'🗑️ Trash logged':ft==='breakfast'?'🍳 Breakfast logged':ft==='lunch'?'🍱 Lunch logged':ft==='dinner'?'🍜 Dinner logged':ft==='breathing'?'🌬️ Breathing logged':'🧹 Cleaning logged';
   showToast(toastMsg);
   if (navigator.vibrate) navigator.vibrate(10);
 }
@@ -2535,11 +2654,11 @@ function showDetail(id) {
   if (isToday) {
     html += `<div class="form-section">
       <div class="form-label">Time</div>
-      <div class="time-edit" onclick="editTime('detail-time-input')">
+      <div class="time-edit">
         <span>Log time</span>
         <span class="time-edit-val" id="detail-time-input-display"></span>
+      <input type="datetime-local" id="detail-time-input" onchange="updateDetailTime('${r.id}')">
       </div>
-      <input type="datetime-local" id="detail-time-input" style="display:none" onchange="updateDetailTime('${r.id}')">
     </div>`;
   } else {
     html += `<div class="detail-field"><div class="detail-key">Time</div><div class="detail-val">${new Date(r.timestamp).toLocaleString('zh-CN')}</div></div>`;
@@ -2575,7 +2694,7 @@ function showDetail(id) {
     if (r.note)         html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${r.note}</div></div>`;
   }
 
-  if (r.type==='water') {
+  if (r.type==='water' || r.type==='hydration') {
     if (r.kind)   html += `<div class="detail-field"><div class="detail-key">Drink</div><div class="detail-val">${r.kind}</div></div>`;
     if (r.volume) html += `<div class="detail-field"><div class="detail-key">Volume</div><div class="detail-val">${r.volume}</div></div>`;
   }
@@ -2805,14 +2924,15 @@ function commitImport(mode) {
 // ============================================================
 // LIFE HABITS HEATMAP  (Coffee/Bowel/Shower/Clean/Exercise)
 // ============================================================
-const LIFE_TYPES = ['coffee','bowel','shower','clean','exercise','breakfast','lunch','dinner','breathing'];
-const LIFE_LABELS = { coffee:'Coffee', bowel:'Bowel', shower:'Shower', clean:'Clean', exercise:'Exercise', breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner', breathing:'Breathing' };
+const LIFE_TYPES = ['coffee','bowel','shower','clean','exercise','hydration','breakfast','lunch','dinner','breathing'];
+const LIFE_LABELS = { coffee:'Coffee', bowel:'Bowel', shower:'Shower', clean:'Clean', exercise:'Exercise', hydration:'Drink Water', breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner', breathing:'Breathing' };
 const LIFE_COLORS = {
   coffee:   ['rgba(216,155,106,.12)','rgba(216,155,106,.4)','rgba(216,155,106,.7)','#D89B6A'],
   bowel:    ['rgba(255,214,10,.12)','rgba(255,214,10,.4)','rgba(255,214,10,.7)','#FFD60A'],
   shower:   ['rgba(100,210,255,.12)','rgba(100,210,255,.4)','rgba(100,210,255,.7)','#64D2FF'],
   clean:    ['rgba(47,230,165,.12)','rgba(47,230,165,.4)','rgba(47,230,165,.7)','#2FE6A5'],
   exercise: ['rgba(255,133,82,.12)','rgba(255,133,82,.4)','rgba(255,133,82,.7)','#FF8552'],
+  hydration:['rgba(58,172,255,.12)','rgba(58,172,255,.4)','rgba(58,172,255,.7)','#3AACFF'],
   breakfast:['rgba(255,179,123,.12)','rgba(255,179,123,.4)','rgba(255,179,123,.7)','#FFB37B'],
   lunch:    ['rgba(198,232,107,.12)','rgba(198,232,107,.4)','rgba(198,232,107,.7)','#C6E86B'],
   dinner:   ['rgba(169,133,255,.12)','rgba(169,133,255,.4)','rgba(169,133,255,.7)','#A985FF'],
@@ -3162,9 +3282,92 @@ function renderWaterCheckin() {
   }
 }
 
+function renderForestStats() {
+  const totalEl = document.getElementById('forest-total-count');
+  const todayEl = document.getElementById('forest-today-count');
+  const lastEl  = document.getElementById('forest-last-time');
+  const canvas  = document.getElementById('forestCheckinChart');
+
+  const trees = [...forestTrees].sort((a,b) => new Date(a.date) - new Date(b.date));
+  const today = todayDateStr();
+
+  if (totalEl) totalEl.textContent = trees.length;
+  if (todayEl) todayEl.textContent = trees.filter(t => t.date === today).length;
+  if (lastEl) {
+    if (trees.length) {
+      const last = trees[trees.length - 1];
+      lastEl.textContent = last.date === today ? 'Today' : last.date.slice(5).replace('-','/');
+    } else {
+      lastEl.textContent = '--';
+    }
+  }
+
+  if (!canvas) return;
+
+  const dpr = window.devicePixelRatio || 1;
+  const containerW = canvas.parentElement.clientWidth - 32;
+  const PAD_L = 10, PAD_R = 10, TOP_PAD = 20, ROW_H = 28, BOTTOM_PAD = 6;
+  const totalH = TOP_PAD + ROW_H + BOTTOM_PAD;
+
+  canvas.width = containerW * dpr;
+  canvas.height = totalH * dpr;
+  canvas.style.width = containerW + 'px';
+  canvas.style.height = totalH + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, containerW, totalH);
+  ctx.fillStyle = '#FBFCFF';
+  ctx.fillRect(0, 0, containerW, totalH);
+
+  const RANGE_DAYS = 30;
+  const todayDate = new Date(); todayDate.setHours(23,59,59,999);
+  const rangeStart = new Date(todayDate);
+  rangeStart.setDate(rangeStart.getDate() - (RANGE_DAYS - 1));
+  rangeStart.setHours(0,0,0,0);
+
+  const recent = trees.filter(t => new Date(t.date) >= rangeStart);
+
+  ctx.fillStyle = '#6B7099';
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(`${rangeStart.getMonth()+1}/${rangeStart.getDate()}`, PAD_L, TOP_PAD - 6);
+  ctx.textAlign = 'right';
+  ctx.fillText(`${todayDate.getMonth()+1}/${todayDate.getDate()}`, containerW - PAD_R, TOP_PAD - 6);
+
+  const lineY = TOP_PAD + ROW_H / 2;
+  ctx.strokeStyle = 'rgba(10,14,36,0.08)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(PAD_L, lineY);
+  ctx.lineTo(containerW - PAD_R, lineY);
+  ctx.stroke();
+
+  const availW = containerW - PAD_L - PAD_R;
+  recent.forEach(t => {
+    const d = new Date(t.date);
+    const frac = (d - rangeStart) / (todayDate - rangeStart);
+    const x = PAD_L + Math.max(0, Math.min(1, frac)) * availW;
+    ctx.fillStyle = t.is_full === false ? 'rgba(52,168,83,.55)' : '#34A853';
+    ctx.beginPath();
+    ctx.arc(x, lineY, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(10,14,36,0.10)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  });
+
+  if (!recent.length) {
+    ctx.fillStyle = 'rgba(10,14,36,0.25)';
+    ctx.font = '12px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('No trees planted in the last 30 days', containerW / 2, lineY + 4);
+  }
+}
+
 function renderChart() {
   renderLifeHeatmap();
   renderWaterCheckin();
+  renderForestStats();
 }
 
 // ============================================================
@@ -3456,15 +3659,16 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeNow('shower-time');
   setTimeNow('clean-time');
   setTimeNow('exercise-time');
-  setTimeNow('breakfast-time');
-  setTimeNow('lunch-time');
-  setTimeNow('dinner-time');
+  setTimeNow('meal-time');
+  updateMealTypeUI();
 
   // Cloud sync on startup
   syncFromCloud().then(() => {
     // Show today's reminder (once/day) after data is up to date
     setTimeout(maybeShowDailyReminder, 400);
   });
+  renderForestStats(); // paint from cache immediately, then refresh from cloud
+  syncForestTrees();
 
   // prevent pull-to-refresh on iOS
   document.body.addEventListener('touchmove', e=>{
@@ -3477,6 +3681,7 @@ window.addEventListener('resize', ()=>{
   if (document.getElementById('screen-chart').style.display!=='none') {
     renderLifeHeatmap();
     renderWaterCheckin();
+    renderForestStats();
   }
 });
 </script>
