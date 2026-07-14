@@ -1077,6 +1077,32 @@
     </div>
 
     <div class="section" style="margin-top:16px">
+      <div class="section-label">Drink Water</div>
+      <div class="chart-wrap">
+        <div class="water-checkin-summary" style="display:flex;gap:12px;margin-bottom:10px;">
+          <div style="flex:1;background:rgba(58,172,255,.14);border-radius:12px;padding:10px 12px;">
+            <div style="font-size:11px;color:var(--label)">Today</div>
+            <div id="hydration-today-total" style="font-size:20px;font-weight:600;color:var(--hydration)">0 L</div>
+          </div>
+          <div style="flex:1;background:rgba(58,172,255,.14);border-radius:12px;padding:10px 12px;">
+            <div style="font-size:11px;color:var(--label)">7-day avg</div>
+            <div id="hydration-week-avg" style="font-size:20px;font-weight:600;color:var(--hydration)">0 L</div>
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-size:11px;color:var(--label)">Daily goal</span>
+            <span id="hydration-goal-label" style="font-size:11px;font-weight:600;color:var(--hydration)">0 / 2.0 L</span>
+          </div>
+          <div style="width:100%;height:8px;border-radius:4px;background:rgba(58,172,255,.14);overflow:hidden;">
+            <div id="hydration-goal-bar" style="height:100%;width:0%;border-radius:4px;background:var(--hydration);transition:width .3s;"></div>
+          </div>
+        </div>
+        <canvas id="hydrationChart" style="display:block;width:100%;"></canvas>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top:16px">
       <div class="section-label">Water Check-in</div>
       <div class="chart-wrap">
         <div class="water-checkin-summary" style="display:flex;gap:12px;margin-bottom:12px;">
@@ -1995,7 +2021,7 @@ function switchTab(name) {
     document.getElementById('screen-'+t).style.display = t===name ? 'block' : 'none';
     document.getElementById('tab-'+t).classList.toggle('active', t===name);
   });
-  if (name === 'chart') { renderLifeHeatmap(); renderWaterCheckin(); renderForestStats(); }
+  if (name === 'chart') { renderLifeHeatmap(); renderHydrationChart(); renderWaterCheckin(); renderForestStats(); }
   if (name === 'manage') renderAllRecords();
   if (name === 'summary') renderSummary();
 }
@@ -2924,6 +2950,7 @@ function commitImport(mode) {
 // ============================================================
 // LIFE HABITS HEATMAP  (Coffee/Bowel/Shower/Clean/Exercise)
 // ============================================================
+const HYDRATION_GOAL_L = 2; // daily drink-water goal in liters (~2000ml)
 const LIFE_TYPES = ['coffee','bowel','shower','clean','exercise','hydration','breakfast','lunch','dinner','breathing'];
 const LIFE_LABELS = { coffee:'Coffee', bowel:'Bowel', shower:'Shower', clean:'Clean', exercise:'Exercise', hydration:'Drink Water', breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner', breathing:'Breathing' };
 const LIFE_COLORS = {
@@ -3200,6 +3227,152 @@ function showDayDetail(year, month, day) {
 }
 
 
+// Parses a hydration record's volume field (e.g. "250ml") into liters.
+function hydrationVolumeLiters(r) {
+  const n = parseFloat(r.volume);
+  return isNaN(n) ? 0 : n / 1000;
+}
+
+function renderHydrationChart() {
+  const canvas = document.getElementById('hydrationChart');
+
+  const records = getRecords().filter(r => r.type === 'hydration');
+
+  const dateKeyOf = ts => {
+    const d = new Date(ts);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  };
+  const todayStr = todayDateStr();
+  const todayTotal = records
+    .filter(r => dateKeyOf(r.timestamp) === todayStr)
+    .reduce((sum, r) => sum + hydrationVolumeLiters(r), 0);
+
+  const todayEl = document.getElementById('hydration-today-total');
+  const avgEl = document.getElementById('hydration-week-avg');
+  if (todayEl) todayEl.textContent = todayTotal.toFixed(1) + ' L';
+
+  const goalLabelEl = document.getElementById('hydration-goal-label');
+  const goalBarEl = document.getElementById('hydration-goal-bar');
+  if (goalLabelEl) goalLabelEl.textContent = `${todayTotal.toFixed(1)} / ${HYDRATION_GOAL_L.toFixed(1)} L`;
+  if (goalBarEl) {
+    const pct = Math.max(0, Math.min(100, (todayTotal / HYDRATION_GOAL_L) * 100));
+    goalBarEl.style.width = pct + '%';
+    goalBarEl.style.background = todayTotal >= HYDRATION_GOAL_L ? 'var(--green)' : 'var(--hydration)';
+  }
+
+  // Build the last 14 days, oldest -> newest, summing liters per day
+  const RANGE_DAYS = 14;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const days = [];
+  for (let i = RANGE_DAYS - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    days.push(d);
+  }
+  const dayKey = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const totalsByDay = {};
+  days.forEach(d => totalsByDay[dayKey(d)] = 0);
+  records.forEach(r => {
+    const key = dayKey(new Date(r.timestamp));
+    if (key in totalsByDay) totalsByDay[key] += hydrationVolumeLiters(r);
+  });
+
+  if (avgEl) {
+    const last7 = days.slice(-7).map(d => totalsByDay[dayKey(d)]);
+    avgEl.textContent = (last7.reduce((a,b)=>a+b,0) / last7.length).toFixed(1) + ' L';
+  }
+
+  if (!canvas) return;
+
+  const dpr = window.devicePixelRatio || 1;
+  const containerW = canvas.parentElement.clientWidth - 32;
+  const PAD_L = 6, PAD_R = 6, TOP_PAD = 22, BAR_AREA_H = 90, LABEL_H = 16, BOTTOM_PAD = 4;
+  const totalH = TOP_PAD + BAR_AREA_H + LABEL_H + BOTTOM_PAD;
+
+  canvas.width = containerW * dpr;
+  canvas.height = totalH * dpr;
+  canvas.style.width = containerW + 'px';
+  canvas.style.height = totalH + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, containerW, totalH);
+  ctx.fillStyle = '#FBFCFF';
+  ctx.fillRect(0, 0, containerW, totalH);
+
+  const values = days.map(d => totalsByDay[dayKey(d)]);
+  const maxVal = Math.max(2, HYDRATION_GOAL_L, ...values); // keep a sane floor so a 0-3L day still reads clearly
+  const availW = containerW - PAD_L - PAD_R;
+  const gap = 4;
+  const barW = (availW - gap * (days.length - 1)) / days.length;
+  const baseY = TOP_PAD + BAR_AREA_H;
+
+  // dashed goal reference line
+  const goalY = baseY - (HYDRATION_GOAL_L / maxVal) * BAR_AREA_H;
+  ctx.save();
+  ctx.strokeStyle = 'rgba(58,172,255,.55)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath();
+  ctx.moveTo(PAD_L, goalY);
+  ctx.lineTo(containerW - PAD_R, goalY);
+  ctx.stroke();
+  ctx.restore();
+  ctx.fillStyle = '#3AACFF';
+  ctx.font = '9px -apple-system, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(`Goal ${HYDRATION_GOAL_L}L`, PAD_L, goalY - 3);
+
+  days.forEach((d, i) => {
+    const v = values[i];
+    const x = PAD_L + i * (barW + gap);
+    const h = maxVal > 0 ? (v / maxVal) * BAR_AREA_H : 0;
+    const y = baseY - h;
+
+    ctx.fillStyle = dayKey(d) === todayStr ? '#3AACFF' : 'rgba(58,172,255,.45)';
+    const r = Math.min(4, barW / 2);
+    ctx.beginPath();
+    if (h > 0) {
+      ctx.moveTo(x, baseY);
+      ctx.lineTo(x, y + r);
+      ctx.arcTo(x, y, x + r, y, r);
+      ctx.lineTo(x + barW - r, y);
+      ctx.arcTo(x + barW, y, x + barW, y + r, r);
+      ctx.lineTo(x + barW, baseY);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    if (v > 0 && barW >= 12) {
+      ctx.fillStyle = '#1E7DD6';
+      ctx.font = '9px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(v.toFixed(1), x + barW / 2, y - 4 < TOP_PAD ? y + 10 : y - 4);
+    }
+
+    if (i % 2 === 0 || days.length <= 7) {
+      ctx.fillStyle = '#6B7099';
+      ctx.font = '9px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${d.getMonth()+1}/${d.getDate()}`, x + barW / 2, baseY + LABEL_H);
+    }
+  });
+
+  // baseline
+  ctx.strokeStyle = 'rgba(10,14,36,0.10)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PAD_L, baseY);
+  ctx.lineTo(containerW - PAD_R, baseY);
+  ctx.stroke();
+
+  if (!values.some(v => v > 0)) {
+    ctx.fillStyle = 'rgba(10,14,36,0.25)';
+    ctx.font = '12px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('No drinks logged in the last 14 days', containerW / 2, TOP_PAD + BAR_AREA_H / 2);
+  }
+}
+
 function renderWaterCheckin() {
   const canvas = document.getElementById('waterCheckinChart');
   if (!canvas) return;
@@ -3366,6 +3539,7 @@ function renderForestStats() {
 
 function renderChart() {
   renderLifeHeatmap();
+  renderHydrationChart();
   renderWaterCheckin();
   renderForestStats();
 }
@@ -3514,8 +3688,9 @@ function computeBowelInsights() {
   return cards;
 }
 
-// Returns an array of insight objects for meals/activity (no hydration — "water" logs
-// in this app are for refilling a water dispenser, not drinking, so they're excluded here)
+// Returns an array of insight objects for meals/activity/hydration ("water" logs
+// in this app are for refilling a water dispenser, not drinking — those stay out of
+// this function; "hydration" logs are the actual drink-water records)
 function computeLifestyleInsights() {
   const RANGE = 7;
   const records = getRecords();
@@ -3567,6 +3742,27 @@ function computeLifestyleInsights() {
   } else if (exercises.length >= 3) {
     cards.push({ level: 'good', icon: '🏃', title: 'Nice movement this week',
       text: `${exercises.length} workouts logged — activity like this is one of the best natural aids for regular digestion.`, tag: 'Good' });
+  }
+
+  // --- Hydration goal (2L/day) ---
+  const hydrationLogs = records.filter(r => r.type === 'hydration' && withinLastDays(r.timestamp, RANGE));
+  if (hydrationLogs.length) {
+    const byDay = {};
+    hydrationLogs.forEach(r => {
+      const d = new Date(r.timestamp);
+      const key = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+      byDay[key] = (byDay[key] || 0) + hydrationVolumeLiters(r);
+    });
+    const dailyTotals = Object.values(byDay);
+    const avgDaily = avg(dailyTotals);
+    const daysHitGoal = dailyTotals.filter(v => v >= HYDRATION_GOAL_L).length;
+    if (avgDaily < HYDRATION_GOAL_L * 0.7) {
+      cards.push({ level: 'tip', icon: '💧', title: 'Water intake is below goal',
+        text: `Averaging ${avgDaily.toFixed(1)}L/day logged this week, short of the ${HYDRATION_GOAL_L}L goal. Try keeping a bottle within reach and sipping through the day rather than a few big glasses at once.` });
+    } else if (daysHitGoal >= Math.max(3, Object.keys(byDay).length - 1)) {
+      cards.push({ level: 'good', icon: '💧', title: 'Hitting your water goal',
+        text: `You reached the ${HYDRATION_GOAL_L}L goal on ${daysHitGoal} of the last ${Object.keys(byDay).length} logged day(s). Nicely hydrated.`, tag: 'Good' });
+    }
   }
 
   return cards;
@@ -3680,6 +3876,7 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('resize', ()=>{
   if (document.getElementById('screen-chart').style.display!=='none') {
     renderLifeHeatmap();
+    renderHydrationChart();
     renderWaterCheckin();
     renderForestStats();
   }
