@@ -6,6 +6,26 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#F3F5FC">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script>
+  // Always fetch the freshest deploy from GitHub Pages when opened from the
+  // home-screen icon. Home-screen web clips can hold onto a stale cached copy
+  // of this page even after a new version is pushed to GitHub, so on every
+  // cold open we redirect once to a cache-busted URL (?_v=timestamp), which
+  // the CDN/browser treats as a brand-new resource and can't serve from cache.
+  // This runs before anything else loads, so a stale page never gets to render.
+  (function () {
+    try {
+      var params = new URLSearchParams(location.search);
+      if (!params.has('_v')) {
+        params.set('_v', Date.now().toString());
+        location.replace(location.pathname + '?' + params.toString() + location.hash);
+      }
+    } catch (e) { /* if anything goes wrong, just continue loading normally */ }
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,600;0,700;0,800;1,700;1,800;1,900&display=swap" rel="stylesheet">
@@ -173,7 +193,7 @@
   .card-row:active { background: rgba(10,14,36,0.08); }
 
   /* ===== GLASS SURFACE (unified glass surface) ===== */
-  .quick-btn, .stat-card, .checkin-card, .plan-summary-card, .plan-week-chip,
+  .quick-btn, .stat-card, .plan-summary-card, .plan-week-chip,
   .plan-day-card, .chart-wrap, .toggle-row, .time-edit, .conflict-row,
   textarea.import-area, input[type="datetime-local"], select, input[type="text"] {
     border: 0.5px solid rgba(10,14,36,0.08);
@@ -372,50 +392,6 @@
   .record-title { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .record-time  { font-size: 12px; color: var(--label); margin-top: 1px; }
   .record-chevron { color: var(--separator); font-size: 14px; }
-
-  /* ===== LIMITED-TIME CHECK-IN ===== */
-  :root {
-    --effort: #FFB020;
-    --sleep: #6C7CFF;
-  }
-  .checkin-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    transition: background .12s, transform .1s;
-    width: 100%;
-    text-align: left;
-  }
-  .checkin-card:active { transform: scale(.98); background: rgba(10,14,36,0.07); }
-  .checkin-card + .checkin-card { margin-top: 10px; }
-  .checkin-icon {
-    width: 40px; height: 40px;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-  }
-  .checkin-card.effort .checkin-icon { background: rgba(255,176,32,.16); }
-  .checkin-card.sleep  .checkin-icon { background: rgba(108,124,255,.16); }
-  .checkin-info { flex: 1; min-width: 0; }
-  .checkin-title { font-size: 15px; font-weight: 600; color: var(--text); }
-  .checkin-sub { font-size: 12px; color: var(--label); margin-top: 2px; }
-  .checkin-check {
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    border: 1.5px solid var(--separator);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    font-size: 14px;
-    color: transparent;
-    transition: background .12s, border-color .12s, color .12s;
-  }
-  .checkin-card.effort.done .checkin-check { background: var(--effort); border-color: var(--effort); color: #fff; }
-  .checkin-card.sleep.done  .checkin-check { background: var(--sleep);  border-color: var(--sleep);  color: #fff; }
 
   /* ===== DOT MATRIX CHART ===== */
   .chart-wrap {
@@ -1020,11 +996,6 @@
           <span class="q-sub">4-7-8 check-in</span>
         </button>
       </div>
-    </div>
-
-    <div class="section" id="checkin-section" style="margin-top:20px;display:none">
-      <div class="section-label">Limited-Time Check-ins</div>
-      <div id="checkin-list"></div>
     </div>
 
     <div class="section" style="margin-top:20px">
@@ -1918,67 +1889,9 @@ function saveData(data) {
 
 function getRecords() { return loadData().records; }
 
-// ============================================================
-// LIMITED-TIME CHECK-IN CAMPAIGNS
-// ============================================================
-// end 为End date（含当天可打卡），过后自动从列表隐藏
-const CHECKIN_CAMPAIGNS = [
-  { id: 'effort', icon: '🔥', name: 'Effective Effort', sub: 'Daily check-in', end: '2026-07-21' },
-  { id: 'sleep',  icon: '😴', name: 'Sleep Routine', sub: 'Daily check-in', end: '2026-07-23' },
-];
-const CHECKIN_STORAGE_KEY = 'lifelog_checkins_v1';
-
-function loadCheckins() {
-  try {
-    const raw = localStorage.getItem(CHECKIN_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch(e) { return {}; }
-}
-function saveCheckins(data) {
-  localStorage.setItem(CHECKIN_STORAGE_KEY, JSON.stringify(data));
-}
 function todayDateStr() {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-}
-function isCampaignActive(c) {
-  // 结束日当天仍可打卡，第二天起自动隐藏
-  return todayDateStr() <= c.end;
-}
-function toggleCheckin(id) {
-  const data = loadCheckins();
-  const today = todayDateStr();
-  if (!data[id]) data[id] = {};
-  data[id][today] = !data[id][today];
-  saveCheckins(data);
-  renderCheckins();
-}
-function renderCheckins() {
-  const section = document.getElementById('checkin-section');
-  const list = document.getElementById('checkin-list');
-  if (!section || !list) return;
-  const active = CHECKIN_CAMPAIGNS.filter(isCampaignActive);
-  const data = loadCheckins();
-  const today = todayDateStr();
-  // Today已Done的卡片要从列表里整个移除，而不Yes显示"已Done"的勾选态占位
-  const pending = active.filter(c => !(data[c.id] && data[c.id][today]));
-  if (!pending.length) {
-    section.style.display = 'none';
-    list.innerHTML = '';
-    return;
-  }
-  section.style.display = 'block';
-  list.innerHTML = pending.map(c => {
-    return `
-    <button class="checkin-card ${c.id}" onclick="toggleCheckin('${c.id}')">
-      <div class="checkin-icon">${c.icon}</div>
-      <div class="checkin-info">
-        <div class="checkin-title">${c.name}</div>
-        <div class="checkin-sub">${c.sub} · until ${c.end.slice(5).replace('-','/')}</div>
-      </div>
-      <div class="checkin-check">✓</div>
-    </button>`;
-  }).join('');
 }
 
 // Pull all records from Supabase and merge into localStorage
@@ -2144,7 +2057,6 @@ function switchTab(name) {
 // SUMMARY
 // ============================================================
 function renderSummary() {
-  renderCheckins();
   const now = new Date();
   const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
   document.getElementById('today-label').textContent =
@@ -2194,6 +2106,7 @@ function typeIcon(t) {
 
 function recordTitle(r) {
   if (r.type==='coffee') {
+    if (r.autoFromHydration) return 'Coffee — auto from Drink Water';
     const parts = [];
     if (r.capsule) parts.push(r.capsule);
     if (r.options && r.options.length) parts.push(r.options.join('·'));
@@ -2545,12 +2458,28 @@ function saveRecord(type) {
   }
 
   addRecord(rec);
+
+  // If a "drink water" entry is actually coffee, auto-credit the Coffee log too
+  // so coffee counts stay accurate without a separate manual entry.
+  let autoCoffeeLogged = false;
+  if (rec.type === 'hydration' && rec.kind === 'Coffee') {
+    addRecord({
+      id: genId(),
+      type: 'coffee',
+      timestamp: rec.timestamp,
+      capsule: '',
+      options: [],
+      autoFromHydration: true // marks this as auto-generated, not a manual coffee log
+    });
+    autoCoffeeLogged = true;
+  }
+
   closeSheet();
   renderSummary();
   if (document.getElementById('screen-schedule').style.display !== 'none') renderSchedule();
 
   const ft = rec.type;
-  const toastMsg = ft==='coffee'?'☕ Coffee logged':ft==='bowel'?'💩 Bowel logged':ft==='shower'?'🚿 Shower logged':ft==='exercise'?'🏃 Exercise logged':ft==='water'?'🪣 12.5L logged':ft==='hydration'?'💧 Drink logged':ft==='trash'?'🗑️ Trash logged':ft==='breakfast'?'🍳 Breakfast logged':ft==='lunch'?'🍱 Lunch logged':ft==='dinner'?'🍜 Dinner logged':ft==='breathing'?'🌬️ Breathing logged':'🧹 Cleaning logged';
+  const toastMsg = autoCoffeeLogged ? '💧 Drink logged · ☕ Coffee +1' : ft==='coffee'?'☕ Coffee logged':ft==='bowel'?'💩 Bowel logged':ft==='shower'?'🚿 Shower logged':ft==='exercise'?'🏃 Exercise logged':ft==='water'?'🪣 12.5L logged':ft==='hydration'?'💧 Drink logged':ft==='trash'?'🗑️ Trash logged':ft==='breakfast'?'🍳 Breakfast logged':ft==='lunch'?'🍱 Lunch logged':ft==='dinner'?'🍜 Dinner logged':ft==='breathing'?'🌬️ Breathing logged':'🧹 Cleaning logged';
   showToast(toastMsg);
   if (navigator.vibrate) navigator.vibrate(10);
 }
@@ -3115,7 +3044,7 @@ function renderHeatmapRowLabels(lifeTypes, topPad, rowH) {
   if (!el) return;
   let html = `<div style="height:${topPad}px;flex-shrink:0;"></div>`;
   lifeTypes.forEach(t => {
-    html += `<div style="height:${rowH}px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;">${typeIcon(t)}</div>`;
+    html += `<div style="height:${rowH}px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1;">${typeIcon(t)}</div>`;
   });
   el.innerHTML = html;
 }
@@ -3160,11 +3089,16 @@ function renderLifeHeatmapWeekly() {
   const containerW = canvas.parentElement.clientWidth;
 
   const ROWS = lifeTypes.length;
-  const CELL_GAP = 6;
-  const CELL = Math.floor((containerW - CELL_GAP * (DAYS - 1)) / DAYS);
-  const ROW_H = CELL + CELL_GAP;
-  const TOP_PAD = 30;
-  const BOTTOM_PAD = 4;
+  // Column width still scales with the screen so weekday cells stay legible,
+  // but row height is kept small and fixed (independent of width) so a full
+  // week of every habit fits on screen without needing to scroll the page.
+  const CELL_GAP_X = 6;
+  const CELL_GAP_Y = 4;
+  const CELL_W = Math.floor((containerW - CELL_GAP_X * (DAYS - 1)) / DAYS);
+  const CELL_H = 22;
+  const ROW_H = CELL_H + CELL_GAP_Y;
+  const TOP_PAD = 28;
+  const BOTTOM_PAD = 2;
   const totalH = TOP_PAD + ROWS * ROW_H + BOTTOM_PAD;
 
   renderHeatmapRowLabels(lifeTypes, TOP_PAD, ROW_H);
@@ -3183,13 +3117,13 @@ function renderLifeHeatmapWeekly() {
   // 星期 + 日期 双行表头
   ctx.textAlign = 'center';
   for (let i = 0; i < DAYS; i++) {
-    const x = i * (CELL + CELL_GAP) + CELL / 2;
+    const x = i * (CELL_W + CELL_GAP_X) + CELL_W / 2;
     const isToday = i === todayIdx;
 
     if (isToday) {
       ctx.fillStyle = 'rgba(77,111,255,.12)';
       ctx.beginPath();
-      ctx.roundRect(x - CELL / 2, 2, CELL, TOP_PAD - 6, 6);
+      ctx.roundRect(x - CELL_W / 2, 2, CELL_W, TOP_PAD - 6, 6);
       ctx.fill();
     }
 
@@ -3214,27 +3148,27 @@ function renderLifeHeatmapWeekly() {
       else if (cnt === 2) shade = palette[2];
       else shade = palette[3];
 
-      const x = i * (CELL + CELL_GAP);
+      const x = i * (CELL_W + CELL_GAP_X);
       ctx.fillStyle = shade;
       ctx.beginPath();
-      ctx.roundRect(x, rowTop, CELL, CELL, 4);
+      ctx.roundRect(x, rowTop, CELL_W, CELL_H, 4);
       ctx.fill();
 
       if (cnt > 0) {
         ctx.fillStyle = (cnt >= 3) ? '#FFFFFF' : 'rgba(10,14,36,0.6)';
         ctx.font = `10px -apple-system, sans-serif`;
         ctx.textAlign = 'center';
-        ctx.fillText(String(cnt), x + CELL / 2, rowTop + CELL / 2 + 3.5);
+        ctx.fillText(String(cnt), x + CELL_W / 2, rowTop + CELL_H / 2 + 3.5);
       }
     }
   });
 
   // 今天所在列的高亮描边
   if (todayIdx >= 0 && todayIdx < DAYS) {
-    const x = todayIdx * (CELL + CELL_GAP) - 1;
+    const x = todayIdx * (CELL_W + CELL_GAP_X) - 1;
     ctx.strokeStyle = 'rgba(77,111,255,.6)';
     ctx.lineWidth = 1.5;
-    ctx.strokeRect(x, TOP_PAD - 2, CELL + 2, ROWS * ROW_H - CELL_GAP + 2);
+    ctx.strokeRect(x, TOP_PAD - 2, CELL_W + 2, ROWS * ROW_H - CELL_GAP_Y + 2);
   }
 }
 
