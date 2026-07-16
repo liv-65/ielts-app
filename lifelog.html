@@ -1585,13 +1585,17 @@
     <div class="form-section">
       <div class="form-label">Drink</div>
       <div class="chip-row" id="hydration-kind">
-        <div class="chip generic" data-val="Plain water" onclick="toggleChipExclusive(this,'hydration-kind')">Plain water</div>
-        <div class="chip generic" data-val="Warm water" onclick="toggleChipExclusive(this,'hydration-kind')">Warm water</div>
-        <div class="chip generic" data-val="Tea" onclick="toggleChipExclusive(this,'hydration-kind')">Tea</div>
-        <div class="chip generic" data-val="Coffee" onclick="toggleChipExclusive(this,'hydration-kind')">Coffee</div>
-        <div class="chip generic" data-val="Juice" onclick="toggleChipExclusive(this,'hydration-kind')">Juice</div>
-        <div class="chip generic" data-val="Other" onclick="toggleChipExclusive(this,'hydration-kind')">Other</div>
+        <div class="chip generic" data-val="Plain water" onclick="toggleChipExclusive(this,'hydration-kind');onHydrationKindChange(this)">Plain water</div>
+        <div class="chip generic" data-val="Warm water" onclick="toggleChipExclusive(this,'hydration-kind');onHydrationKindChange(this)">Warm water</div>
+        <div class="chip generic" data-val="Tea" onclick="toggleChipExclusive(this,'hydration-kind');onHydrationKindChange(this)">Tea</div>
+        <div class="chip generic" data-val="Coffee" onclick="toggleChipExclusive(this,'hydration-kind');onHydrationKindChange(this)">Coffee</div>
+        <div class="chip generic" data-val="Juice" onclick="toggleChipExclusive(this,'hydration-kind');onHydrationKindChange(this)">Juice</div>
+        <div class="chip generic" data-val="Soy milk" onclick="toggleChipExclusive(this,'hydration-kind');onHydrationKindChange(this)">豆浆</div>
+        <div class="chip generic" data-val="Other" onclick="toggleChipExclusive(this,'hydration-kind');onHydrationKindChange(this)">Other</div>
+        <div class="chip generic" data-val="Custom" onclick="toggleChipExclusive(this,'hydration-kind');onHydrationKindChange(this)">自定义</div>
       </div>
+      <input type="text" id="hydration-kind-custom" placeholder="输入饮品名称"
+        style="display:none;margin-top:10px;width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--separator);background:var(--card);font-size:15px;color:var(--text);font-family:inherit;">
     </div>
     <div class="form-section">
       <div class="form-label">Time</div>
@@ -2201,6 +2205,8 @@ function openSheet(name) {
   }
   if (name==='hydration') {
     document.querySelectorAll('#sheet-hydration .chip').forEach(c=>c.classList.remove('active'));
+    const customInput = document.getElementById('hydration-kind-custom');
+    if (customInput) { customInput.value = ''; customInput.style.display = 'none'; }
     setTimeNow('hydration-time');
   }
   if (name==='trash') {
@@ -2345,6 +2351,17 @@ function toggleChipExclusive(el, groupId) {
   el.classList.add('active');
 }
 
+function onHydrationKindChange(el) {
+  const input = document.getElementById('hydration-kind-custom');
+  if (!input) return;
+  if (el.dataset.val === 'Custom') {
+    input.style.display = 'block';
+    input.focus();
+  } else {
+    input.style.display = 'none';
+  }
+}
+
 let selectedBristol = null;
 function selectBristol(n) {
   selectedBristol = n;
@@ -2426,7 +2443,13 @@ function saveRecord(type) {
     const t = document.getElementById('hydration-time').value;
     if (t) rec.timestamp = new Date(t).getTime();
     rec.volume = document.querySelector('#hydration-volume .chip.active')?.dataset.val || '';
-    rec.kind   = document.querySelector('#hydration-kind .chip.active')?.dataset.val || '';
+    const kindVal = document.querySelector('#hydration-kind .chip.active')?.dataset.val || '';
+    if (kindVal === 'Custom') {
+      const customText = document.getElementById('hydration-kind-custom')?.value.trim();
+      rec.kind = customText || 'Custom';
+    } else {
+      rec.kind = kindVal;
+    }
   }
 
   if (type==='trash') {
