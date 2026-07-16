@@ -60,6 +60,8 @@
     --dinner: #A985FF;
     --breathing: #8E97FD;
     --goout: #FF5DA2;
+    --shortvideo: #FF6B4A;
+    --resist: #2FE6A5;
 
     --radius: 16px;
     --tab-h: 83px;
@@ -103,7 +105,7 @@
     background: rgba(243,245,252,0.72);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    padding: 52px 20px 14px;
+    padding: 46px 20px 10px;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -111,7 +113,7 @@
   }
   .nav-header h1 {
     font-family: var(--font-display);
-    font-size: 34px;
+    font-size: 28px;
     font-weight: 800;
     font-style: italic;
     letter-spacing: -0.5px;
@@ -120,7 +122,7 @@
     background-clip: text;
     color: transparent;
   }
-  .nav-header .nav-sub { font-size: 13px; color: var(--label); margin-top: 4px; }
+  .nav-header .nav-sub { font-size: 12px; color: var(--label); margin-top: 2px; }
 
   /* ===== TAB BAR ===== */
   .tab-bar {
@@ -203,18 +205,19 @@
   }
 
   /* ===== QUICK RECORD BUTTONS ===== */
-  .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .quick-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
   .quick-btn {
     background: var(--card);
-    border-radius: var(--radius);
-    padding: 18px 12px 14px;
+    border-radius: 16px;
+    padding: 14px 6px 11px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
     cursor: pointer;
     width: 100%;
-    text-align: left;
+    text-align: center;
     transition: transform .1s, opacity .1s;
     position: relative;
     overflow: hidden;
@@ -253,6 +256,8 @@
   }
   .quick-btn.breathing::before { background: var(--breathing); }
   .quick-btn.goout::before { background: var(--goout); }
+  .quick-btn.shortvideo::before { background: var(--shortvideo); }
+  .quick-btn.resist::before { background: var(--resist); }
   /* ===== 4-7-8 BREATHING GUIDE ===== */
   .breathing-guide {
     display: flex;
@@ -343,9 +348,9 @@
     margin-top: 6px;
   }
 
-  .quick-btn .q-icon { font-size: 28px; }
-  .quick-btn .q-label { font-size: 13px; font-weight: 600; color: var(--text); }
-  .quick-btn .q-sub   { font-size: 11px; color: var(--label); }
+  .quick-btn .q-icon { font-size: 25px; line-height: 1; }
+  .quick-btn .q-label { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.15; }
+  .quick-btn .q-sub   { font-size: 9px; color: var(--label); line-height: 1.1; }
 
   /* ===== TODAY STATS ===== */
   .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
@@ -369,7 +374,73 @@
   .stat-val.dinner    { color: #7A54E0; }
   .stat-val.breathing { color: #5C63D6; }
   .stat-val.goout     { color: #D6318A; }
+  .stat-val.shortvideo { color: #E2492A; }
   .stat-name { font-size: 11px; color: var(--label); margin-top: 4px; }
+
+  /* ===== AVERSION GAUGE CARD ===== */
+  .aversion-card {
+    background: var(--card);
+    border: 0.5px solid rgba(10,14,36,0.08);
+    border-radius: var(--radius);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    padding: 16px 18px 14px;
+  }
+  .aversion-top { display: flex; align-items: baseline; justify-content: space-between; }
+  .aversion-val { font-family: var(--font-display); font-size: 30px; font-weight: 800; font-style: italic; letter-spacing: -1px; }
+  .aversion-zone {
+    font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 100px;
+    text-transform: uppercase; letter-spacing: .05em;
+  }
+  .aversion-bar-track { height: 8px; border-radius: 4px; background: rgba(10,14,36,0.08); margin-top: 10px; overflow: hidden; }
+  .aversion-bar-fill { height: 100%; border-radius: 4px; width: 0%; transition: width .5s ease, background .5s ease; }
+  .aversion-sub { display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; color: var(--label); }
+  .aversion-sub b { color: var(--text2); font-weight: 600; }
+
+  /* ===== PUNISHMENT OVERLAY (separate from bottom-sheet overlay) ===== */
+  .punish-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10,10,20,.72);
+    z-index: 400;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s ease;
+  }
+  .punish-overlay.visible { opacity: 1; pointer-events: all; }
+  .punish-modal {
+    width: 100%; max-width: 380px;
+    background: #FBFCFF;
+    border-radius: 20px;
+    padding: 22px 20px;
+  }
+  .punish-stripe {
+    height: 5px; border-radius: 3px; margin-bottom: 14px;
+    background: repeating-linear-gradient(45deg, var(--shortvideo) 0 8px, rgba(10,14,36,.12) 8px 16px);
+  }
+  .punish-modal h3 { font-family: var(--font-display); font-size: 19px; font-weight: 800; font-style: italic; margin-bottom: 6px; }
+  .punish-modal p.punish-desc { font-size: 13px; color: var(--label); line-height: 1.5; margin-bottom: 14px; }
+  .punish-target {
+    font-size: 14px; color: var(--text); background: rgba(255,107,74,.1);
+    border: 1px solid rgba(255,107,74,.35); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px;
+  }
+  .punish-modal input[type=text] {
+    width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid rgba(10,14,36,.12);
+    background: rgba(10,14,36,.03); font-size: 14px; color: var(--text);
+  }
+  .punish-holdbtn {
+    width: 100%; padding: 16px; border-radius: 12px; border: none;
+    background: rgba(255,107,74,.12); color: #C74B2E; font-size: 14px; font-weight: 600;
+    position: relative; overflow: hidden; cursor: pointer; user-select: none;
+  }
+  .punish-holdfill { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: rgba(255,107,74,.32); }
+  .punish-btn-row { margin-top: 16px; }
+  .punish-btn {
+    width: 100%; padding: 13px; border-radius: 12px; border: none;
+    background: var(--shortvideo); color: #fff; font-weight: 700; font-size: 14px; cursor: pointer;
+  }
+  .punish-btn:disabled { opacity: .35; }
+  .hidden { display: none !important; }
 
   /* ===== RECENT LIST ===== */
   .record-icon {
@@ -392,6 +463,8 @@
   .record-icon.dinner    { background: rgba(169,133,255,.16); }
   .record-icon.breathing { background: rgba(142,151,253,.16); }
   .record-icon.goout     { background: rgba(255,93,162,.16); }
+  .record-icon.shortvideo { background: rgba(255,107,74,.16); }
+  .record-icon.resist     { background: rgba(47,230,165,.16); }
   .record-info { flex: 1; min-width: 0; }
   .record-title { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .record-time  { font-size: 12px; color: var(--label); margin-top: 1px; }
@@ -573,6 +646,7 @@
   .chip.clean-chip.active   { color: #0E9F6E; border-color: var(--clean); background: rgba(47,230,165,.18); }
   .chip.generic.active      { color: var(--blue); border-color: var(--blue); background: rgba(77,111,255,.18); }
   .chip.exercise-chip.active { color: #E2622E; border-color: var(--exercise); background: rgba(255,133,82,.18); }
+  .chip.sv-chip.active { color: #C74B2E; border-color: var(--shortvideo); background: rgba(255,107,74,.18); }
   .chip.water-chip.active    { color: #0A93B0; border-color: var(--water);    background: rgba(64,200,224,.18); }
   .chip.hydration-chip.active { color: #1E7DD6; border-color: var(--hydration); background: rgba(58,172,255,.18); }
   .chip.trash-chip.active    { color: #6B7099; border-color: var(--trash);    background: rgba(157,163,199,.18); }
@@ -947,7 +1021,7 @@
       <div class="nav-sub" id="today-label"></div>
     </div>
 
-    <div class="section" style="margin-top:16px">
+    <div class="section" style="margin-top:10px">
       <div class="section-label">Quick Log</div>
       <div class="quick-grid">
         <button class="quick-btn coffee" onclick="openSheet('coffee')">
@@ -1005,6 +1079,31 @@
           <span class="q-label">Go Out</span>
           <span class="q-sub">Log going out</span>
         </button>
+        <button class="quick-btn shortvideo" onclick="openSheet('shortvideo')">
+          <span class="q-icon">📱</span>
+          <span class="q-label">刷视频</span>
+          <span class="q-sub">记录一次曝光</span>
+        </button>
+        <button class="quick-btn resist" onclick="logResist()">
+          <span class="q-icon">✊</span>
+          <span class="q-label">抵抗</span>
+          <span class="q-sub">扛住了一次冲动</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top:20px">
+      <div class="section-label">厌恶值</div>
+      <div class="aversion-card">
+        <div class="aversion-top">
+          <div class="aversion-val" id="aversion-val">0</div>
+          <div class="aversion-zone" id="aversion-zone-label">安全</div>
+        </div>
+        <div class="aversion-bar-track"><div class="aversion-bar-fill" id="aversion-bar-fill"></div></div>
+        <div class="aversion-sub">
+          <span>今日已刷 <b id="aversion-today-count">0</b> 次</span>
+          <span>连续清醒 <b id="aversion-streak">0</b> 天</span>
+        </div>
       </div>
     </div>
 
@@ -1791,6 +1890,62 @@
   </div>
 </div>
 
+<!-- ====== SHORT VIDEO SHEET ====== -->
+<div class="sheet" id="sheet-shortvideo">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">📱 记录刷视频</div>
+    <div class="sheet-close" onclick="closeSheet()">Done</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">时长（分钟）</div>
+      <div class="chip-row" id="sv-duration-chips">
+        <div class="chip sv-chip" data-val="5" onclick="selectSVDuration(this)">5</div>
+        <div class="chip sv-chip" data-val="10" onclick="selectSVDuration(this)">10</div>
+        <div class="chip sv-chip" data-val="20" onclick="selectSVDuration(this)">20</div>
+        <div class="chip sv-chip" data-val="30" onclick="selectSVDuration(this)">30</div>
+        <div class="chip sv-chip" data-val="60" onclick="selectSVDuration(this)">60</div>
+      </div>
+      <input type="number" id="sv-duration-input" placeholder="或手动输入分钟数…" min="1" max="999" style="margin-top:8px" oninput="onSVDurationInput(this)">
+    </div>
+    <div class="form-section">
+      <div class="form-label">净化任务强度</div>
+      <div class="chip-row" id="sv-intensity">
+        <div class="chip sv-chip" data-val="mild" onclick="toggleChipExclusive(this,'sv-intensity')">轻度 · 长按</div>
+        <div class="chip sv-chip" data-val="medium" onclick="toggleChipExclusive(this,'sv-intensity')">中度 · 抄写反思</div>
+        <div class="chip sv-chip" data-val="severe" onclick="toggleChipExclusive(this,'sv-intensity')">重度 · 抄写+长按</div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="form-label">Note</div>
+      <input type="text" id="sv-note" placeholder="在刷什么？为什么打开的？">
+    </div>
+    <div class="form-section">
+      <div class="form-label">Time</div>
+      <div class="time-edit">
+        <span>Log time</span>
+        <span class="time-edit-val" id="sv-time-display"></span>
+      <input type="datetime-local" id="sv-time" onchange="updateTimeDisplay('sv-time')">
+      </div>
+    </div>
+    <button class="save-btn" style="background:var(--shortvideo)" onclick="onSaveShortVideo()">记录并进入净化程序</button>
+  </div>
+</div>
+
+<!-- ====== PUNISHMENT OVERLAY ====== -->
+<div class="punish-overlay" id="punish-overlay">
+  <div class="punish-modal">
+    <div class="punish-stripe"></div>
+    <h3 id="punish-title">净化程序</h3>
+    <p class="punish-desc" id="punish-desc">完成以下步骤后，这次记录才会提交。</p>
+    <div id="punish-body"></div>
+    <div class="punish-btn-row">
+      <button class="punish-btn" id="punish-confirm" disabled>完成</button>
+    </div>
+  </div>
+</div>
+
 <!-- ====== EXPORT SHEET ====== -->
 <div class="sheet" id="sheet-export">
   <div class="sheet-handle"></div>
@@ -2136,6 +2291,8 @@ function renderSummary() {
   document.getElementById('stat-breathing').textContent = today.filter(r=>r.type==='breathing').length;
   document.getElementById('stat-goout').textContent     = today.filter(r=>r.type==='goout').length;
 
+  renderAversionCard();
+
   // recent list
   const list = document.getElementById('recent-list');
   const recent = records.slice(0,8);
@@ -2155,7 +2312,7 @@ function renderSummary() {
 }
 
 function typeIcon(t) {
-  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'🪣':t==='hydration'?'💧':t==='trash'?'🗑️':t==='breakfast'?'🍳':t==='lunch'?'🍱':t==='dinner'?'🍜':t==='breathing'?'🌬️':t==='goout'?'🚪':'🧹';
+  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'🪣':t==='hydration'?'💧':t==='trash'?'🗑️':t==='breakfast'?'🍳':t==='lunch'?'🍱':t==='dinner'?'🍜':t==='breathing'?'🌬️':t==='goout'?'🚪':t==='shortvideo'?'📱':t==='resist'?'✊':'🧹';
 }
 
 function recordTitle(r) {
@@ -2220,6 +2377,16 @@ function recordTitle(r) {
     if (r.reason) parts.push(r.reason);
     if (r.note) parts.push(r.note);
     return parts.join(' — ') || 'Go Out';
+  }
+  if (r.type==='shortvideo') {
+    const parts = [];
+    if (r.duration) parts.push(r.duration + ' min');
+    if (r.note) parts.push(r.note);
+    if (typeof r.delta === 'number') parts.push('+' + r.delta);
+    return '刷视频' + (parts.length ? ' · ' + parts.join(' · ') : '');
+  }
+  if (r.type==='resist') {
+    return '抵抗了一次冲动 · -8';
   }
   return 'Record';
 }
@@ -2287,6 +2454,16 @@ function openSheet(name) {
     document.getElementById('goout-note').value = '';
     setTimeNow('goout-time');
   }
+  if (name==='shortvideo') {
+    document.querySelectorAll('#sheet-shortvideo .chip').forEach(c=>c.classList.remove('active'));
+    document.getElementById('sv-duration-input').value = '';
+    document.getElementById('sv-note').value = '';
+    setTimeNow('sv-time');
+    // restore last-used punishment intensity, default medium
+    const savedIntensity = localStorage.getItem('lifelog_sv_intensity') || 'medium';
+    const chip = document.querySelector(`#sv-intensity .chip[data-val="${savedIntensity}"]`);
+    if (chip) chip.classList.add('active');
+  }
   currentSheet = name;
   document.getElementById('sheet-'+name).classList.add('visible');
   document.getElementById('overlay').classList.add('visible');
@@ -2299,7 +2476,7 @@ function closeSheet() {
   }
   stopBreathingSession();
   // also close detail, export, import
-  ['detail','day-detail','export','import','shower','clean','exercise','water','hydration','trash','meal','breathing','goout','reminder'].forEach(n => {
+  ['detail','day-detail','export','import','shower','clean','exercise','water','hydration','trash','meal','breathing','goout','shortvideo','reminder'].forEach(n => {
     const el = document.getElementById('sheet-'+n);
     if (el) el.classList.remove('visible');
   });
@@ -2443,6 +2620,18 @@ function onDurationInput(el) {
   }
 }
 
+function selectSVDuration(el) {
+  document.querySelectorAll('#sv-duration-chips .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('sv-duration-input').value = '';
+}
+
+function onSVDurationInput(el) {
+  if (el.value) {
+    document.querySelectorAll('#sv-duration-chips .chip').forEach(c=>c.classList.remove('active'));
+  }
+}
+
 // ============================================================
 // SAVE RECORDS
 // ============================================================
@@ -2573,6 +2762,212 @@ function saveRecord(type) {
   const toastMsg = autoCoffeeLogged ? '💧 Drink logged · ☕ Coffee +1' : ft==='coffee'?'☕ Coffee logged':ft==='bowel'?'💩 Bowel logged':ft==='shower'?'🚿 Shower logged':ft==='exercise'?'🏃 Exercise logged':ft==='water'?'🪣 12.5L logged':ft==='hydration'?'💧 Drink logged':ft==='trash'?'🗑️ Trash logged':ft==='breakfast'?'🍳 Breakfast logged':ft==='lunch'?'🍱 Lunch logged':ft==='dinner'?'🍜 Dinner logged':ft==='breathing'?'🌬️ Breathing logged':ft==='goout'?'🚪 Go Out logged':'🧹 Cleaning logged';
   showToast(toastMsg);
   if (navigator.vibrate) navigator.vibrate(10);
+}
+
+// ============================================================
+// AVERSION SYSTEM (short-video exposure tracker)
+//   Derived entirely from 'shortvideo' / 'resist' records already
+//   stored in the normal records list (synced via Supabase like
+//   everything else), so there's no separate source of truth to
+//   get out of sync across devices.
+// ============================================================
+const SV_SENTENCES = [
+  '我知道我又刷了下去',
+  '这段时间不会再回来了',
+  '我本可以做别的事',
+  '算法比我更清楚我的弱点',
+  '刷完之后我并不快乐'
+];
+
+function computeAversionState() {
+  const records = getRecords();
+  const events = records
+    .filter(r => r.type === 'shortvideo' || r.type === 'resist')
+    .sort((a,b) => a.timestamp - b.timestamp);
+
+  if (!events.length) {
+    return { aversion: 0, cleanStreak: 0, totalExposureEver: 0, totalMinutesEver: 0, todayCount: 0 };
+  }
+
+  const byDate = {};
+  events.forEach(e => {
+    const d = new Date(e.timestamp);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    (byDate[key] = byDate[key] || []).push(e);
+  });
+
+  const today = todayDateStr();
+  let cursor = Object.keys(byDate).sort()[0];
+  let aversion = 0, cleanStreak = 0, totalExposureEver = 0, totalMinutesEver = 0;
+
+  while (true) {
+    const dayEvents = (byDate[cursor] || []).sort((a,b) => a.timestamp - b.timestamp);
+    let watchCountToday = 0;
+    let hadWatch = false;
+    dayEvents.forEach(e => {
+      if (e.type === 'shortvideo') {
+        hadWatch = true;
+        const minutes = e.duration || 0;
+        const base = minutes * 0.8;
+        const multiplier = 1 + watchCountToday * 0.5;
+        const delta = typeof e.delta === 'number' ? e.delta : Math.max(5, Math.round(base * multiplier));
+        aversion += delta;
+        totalExposureEver += delta;
+        totalMinutesEver += minutes;
+        watchCountToday++;
+      } else if (e.type === 'resist') {
+        aversion = Math.max(0, aversion - 8);
+      }
+    });
+    if (cursor === today) break;
+    if (hadWatch) {
+      cleanStreak = 0;
+    } else {
+      aversion = Math.max(0, aversion - 8);
+      cleanStreak += 1;
+    }
+    const dt = new Date(cursor + 'T00:00:00');
+    dt.setDate(dt.getDate() + 1);
+    cursor = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+  }
+
+  const todayCount = (byDate[today] || []).filter(e => e.type === 'shortvideo').length;
+  return { aversion, cleanStreak, totalExposureEver, totalMinutesEver, todayCount };
+}
+
+function aversionZone(v) {
+  if (v <= 20) return { label: '安全', color: 'var(--resist)' };
+  if (v <= 50) return { label: '警戒', color: '#E8A33D' };
+  if (v <= 80) return { label: '超标', color: 'var(--shortvideo)' };
+  return { label: '临界', color: 'var(--red)' };
+}
+
+function renderAversionCard() {
+  const state = computeAversionState();
+  const zone = aversionZone(state.aversion);
+  const display = Math.min(100, state.aversion);
+
+  const valEl = document.getElementById('aversion-val');
+  valEl.textContent = state.aversion;
+  valEl.style.color = zone.color;
+
+  const zoneEl = document.getElementById('aversion-zone-label');
+  zoneEl.textContent = zone.label;
+  zoneEl.style.color = zone.color;
+  zoneEl.style.background = zone.color.startsWith('var') ? 'rgba(255,107,74,.12)' : zone.color + '22';
+  zoneEl.style.border = `1px solid ${zone.color}`;
+
+  document.getElementById('aversion-bar-fill').style.width = display + '%';
+  document.getElementById('aversion-bar-fill').style.background = zone.color;
+  document.getElementById('aversion-today-count').textContent = state.todayCount;
+  document.getElementById('aversion-streak').textContent = state.cleanStreak;
+}
+
+function logResist() {
+  addRecord({ id: genId(), type: 'resist', timestamp: Date.now() });
+  renderSummary();
+  showToast('✊ 抵抗记录 -8');
+  if (navigator.vibrate) navigator.vibrate(10);
+}
+
+function onSaveShortVideo() {
+  const chipDur = document.querySelector('#sv-duration-chips .chip.active')?.dataset.val;
+  const inputDur = document.getElementById('sv-duration-input').value;
+  const duration = parseInt(chipDur || inputDur) || 0;
+  if (!duration) { showToast('请先选择或输入时长'); return; }
+
+  const intensity = document.querySelector('#sv-intensity .chip.active')?.dataset.val || 'medium';
+  localStorage.setItem('lifelog_sv_intensity', intensity);
+
+  const note = document.getElementById('sv-note').value.trim();
+  const tVal = document.getElementById('sv-time').value;
+  const timestamp = tVal ? new Date(tVal).getTime() : Date.now();
+
+  closeSheet();
+
+  runPunishFlow(intensity).then(() => {
+    // compute this session's delta based on how many shortvideo sessions already logged today
+    const todayStr = todayDateStr();
+    const already = getRecords().filter(r => r.type === 'shortvideo' &&
+      (() => { const d = new Date(r.timestamp); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` === todayStr; })()
+    ).length;
+    const base = duration * 0.8;
+    const multiplier = 1 + already * 0.5;
+    const delta = Math.max(5, Math.round(base * multiplier));
+
+    addRecord({ id: genId(), type: 'shortvideo', timestamp, duration, note, intensity, delta });
+    renderSummary();
+    showToast(`📱 已记录，厌恶值 +${delta}`);
+    if (navigator.vibrate) navigator.vibrate(10);
+  });
+}
+
+function svPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function runPunishFlow(intensity) {
+  return new Promise((resolve) => {
+    const overlay = document.getElementById('punish-overlay');
+    const bodyEl = document.getElementById('punish-body');
+    const confirmBtn = document.getElementById('punish-confirm');
+
+    overlay.classList.add('visible');
+    confirmBtn.classList.remove('hidden');
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = '完成';
+
+    function renderTypeStep(onDone) {
+      const sentence = svPick(SV_SENTENCES);
+      bodyEl.innerHTML = `
+        <div class="punish-target">${sentence}</div>
+        <input type="text" id="punish-type-input" placeholder="在此原样输入上面这句话" autocomplete="off">
+      `;
+      confirmBtn.disabled = true;
+      const input = document.getElementById('punish-type-input');
+      input.addEventListener('input', () => {
+        confirmBtn.disabled = input.value.trim() !== sentence;
+      });
+      confirmBtn.onclick = () => {
+        if (input.value.trim() !== sentence) return;
+        onDone();
+      };
+    }
+
+    function renderHoldStep(onDone) {
+      bodyEl.innerHTML = `<button class="punish-holdbtn" id="punish-hold-btn"><div class="punish-holdfill" id="punish-hold-fill"></div>长按 3 秒表示知晓</button>`;
+      confirmBtn.classList.add('hidden');
+      const btn = document.getElementById('punish-hold-btn');
+      const fill = document.getElementById('punish-hold-fill');
+      let start = null, raf = null;
+      function begin() { start = Date.now(); tick(); }
+      function tick() {
+        const elapsed = Date.now() - start;
+        const pct = Math.min(100, (elapsed / 3000) * 100);
+        fill.style.width = pct + '%';
+        if (pct >= 100) { onDone(); return; }
+        raf = requestAnimationFrame(tick);
+      }
+      function cancel() { if (raf) cancelAnimationFrame(raf); fill.style.width = '0%'; }
+      btn.addEventListener('mousedown', begin);
+      btn.addEventListener('touchstart', begin, { passive: true });
+      btn.addEventListener('mouseup', cancel);
+      btn.addEventListener('mouseleave', cancel);
+      btn.addEventListener('touchend', cancel);
+    }
+
+    function finish() {
+      overlay.classList.remove('visible');
+      confirmBtn.classList.remove('hidden');
+      resolve();
+    }
+
+    if (intensity === 'mild') {
+      renderHoldStep(finish);
+    } else if (intensity === 'severe') {
+      renderTypeStep(() => renderHoldStep(finish));
+    } else {
+      renderTypeStep(finish);
+    }
+  });
 }
 
 // ============================================================
@@ -2882,6 +3277,17 @@ function showDetail(id) {
     if (r.note)   html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${r.note}</div></div>`;
   }
 
+  if (r.type==='shortvideo') {
+    if (r.duration) html += `<div class="detail-field"><div class="detail-key">时长</div><div class="detail-val">${r.duration} 分钟</div></div>`;
+    if (typeof r.delta === 'number') html += `<div class="detail-field"><div class="detail-key">厌恶值变化</div><div class="detail-val">+${r.delta}</div></div>`;
+    if (r.intensity) html += `<div class="detail-field"><div class="detail-key">净化任务</div><div class="detail-val">${r.intensity}</div></div>`;
+    if (r.note) html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${r.note}</div></div>`;
+  }
+
+  if (r.type==='resist') {
+    html += `<div class="detail-field"><div class="detail-key">厌恶值变化</div><div class="detail-val">-8</div></div>`;
+  }
+
   if (isToday) {
     html += `<button class="save-btn" style="background:var(--red);margin-top:24px" onclick="deleteFromDetail('${r.id}')">Delete Record</button>`;
   } else {
@@ -3174,13 +3580,26 @@ function renderLifeHeatmapWeekly() {
 
   const counts = {};
   lifeTypes.forEach(t => counts[t] = Array(DAYS).fill(0));
+  // Drink Water is special-cased below: the heatmap cell shows how many times
+  // the daily hydration goal (HYDRATION_GOAL_L) was reached that day (2L -> 1,
+  // 4L -> 2, etc.), not the raw number of drink logs. Every other habit still
+  // counts records directly.
+  const hydrationLiters = Array(DAYS).fill(0);
   records.forEach(r => {
     if (!lifeTypes.includes(r.type)) return;
     const d = new Date(r.timestamp);
     const dd = new Date(d); dd.setHours(0,0,0,0);
     const idx = Math.round((dd - weekStart) / 86400000);
-    if (idx >= 0 && idx < DAYS) counts[r.type][idx]++;
+    if (idx < 0 || idx >= DAYS) return;
+    if (r.type === 'hydration') {
+      hydrationLiters[idx] += hydrationVolumeLiters(r);
+    } else {
+      counts[r.type][idx]++;
+    }
   });
+  for (let i = 0; i < DAYS; i++) {
+    counts['hydration'][i] = Math.floor(hydrationLiters[i] / HYDRATION_GOAL_L);
+  }
 
   const dpr = window.devicePixelRatio || 1;
   const containerW = canvas.parentElement.clientWidth;
@@ -3292,16 +3711,30 @@ function renderLifeHeatmapMonthly() {
 
   // 按天统计每种类型次数 + 当天总数
   const byDay = {}; // day(1-based) -> {type: count, total: n}
-  for (let d = 1; d <= daysInMonth; d++) byDay[d] = { total: 0 };
+  const hydrationLitersByDay = {}; // day(1-based) -> liters, converted to goal-count after the loop
+  for (let d = 1; d <= daysInMonth; d++) { byDay[d] = { total: 0 }; hydrationLitersByDay[d] = 0; }
   records.forEach(r => {
     if (!lifeTypes.includes(r.type)) return;
     const d = new Date(r.timestamp);
     if (d.getFullYear() === year && d.getMonth() === month) {
       const day = d.getDate();
-      byDay[day][r.type] = (byDay[day][r.type] || 0) + 1;
-      byDay[day].total++;
+      if (r.type === 'hydration') {
+        hydrationLitersByDay[day] += hydrationVolumeLiters(r);
+      } else {
+        byDay[day][r.type] = (byDay[day][r.type] || 0) + 1;
+        byDay[day].total++;
+      }
     }
   });
+  // Drink Water counts as how many times the daily goal was reached (2L -> 1, 4L -> 2),
+  // matching the weekly heatmap, and rolls into the day's total the same way.
+  for (let d = 1; d <= daysInMonth; d++) {
+    const hydrationCount = Math.floor(hydrationLitersByDay[d] / HYDRATION_GOAL_L);
+    if (hydrationCount > 0) {
+      byDay[d].hydration = hydrationCount;
+      byDay[d].total += hydrationCount;
+    }
+  }
 
   let maxTotal = 0;
   Object.values(byDay).forEach(v => { if (v.total > maxTotal) maxTotal = v.total; });
@@ -3349,7 +3782,16 @@ function showDayDetail(year, month, day) {
   });
 
   const counts = {};
-  dayRecords.forEach(r => { counts[r.type] = (counts[r.type] || 0) + 1; });
+  let dayHydrationLiters = 0;
+  dayRecords.forEach(r => {
+    if (r.type === 'hydration') {
+      dayHydrationLiters += hydrationVolumeLiters(r);
+    } else {
+      counts[r.type] = (counts[r.type] || 0) + 1;
+    }
+  });
+  const hydrationGoalCount = Math.floor(dayHydrationLiters / HYDRATION_GOAL_L);
+  if (hydrationGoalCount > 0) counts['hydration'] = hydrationGoalCount;
 
   const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   document.getElementById('day-detail-title').textContent = `${monthNames[month]} ${day}, ${year}`;
