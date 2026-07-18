@@ -62,6 +62,7 @@
     --goout: #FF5DA2;
     --shortvideo: #FF6B4A;
     --resist: #2FE6A5;
+    --family: #FFC24B;
 
     --radius: 16px;
     --tab-h: 83px;
@@ -230,7 +231,6 @@
     height: 3px;
     border-radius: 3px 3px 0 0;
   }
-  .quick-btn.coffee::before { background: var(--coffee); }
   .quick-btn.bowel::before  { background: var(--bowel); }
   .quick-btn.shower::before { background: var(--shower); }
   .quick-btn.clean::before  { background: var(--clean); }
@@ -258,6 +258,7 @@
   .quick-btn.goout::before { background: var(--goout); }
   .quick-btn.shortvideo::before { background: var(--shortvideo); }
   .quick-btn.resist::before { background: var(--resist); }
+  .quick-btn.family::before { background: var(--family); }
   /* ===== 4-7-8 BREATHING GUIDE ===== */
   .breathing-guide {
     display: flex;
@@ -375,6 +376,7 @@
   .stat-val.breathing { color: #5C63D6; }
   .stat-val.goout     { color: #D6318A; }
   .stat-val.shortvideo { color: #E2492A; }
+  .stat-val.family    { color: #B8791A; }
   .stat-name { font-size: 11px; color: var(--label); margin-top: 4px; }
 
   /* ===== AVERSION GAUGE CARD ===== */
@@ -464,6 +466,7 @@
   .record-icon.breathing { background: rgba(142,151,253,.16); }
   .record-icon.goout     { background: rgba(255,93,162,.16); }
   .record-icon.shortvideo { background: rgba(255,107,74,.16); }
+  .record-icon.family    { background: rgba(255,194,75,.16); }
   .record-icon.resist     { background: rgba(47,230,165,.16); }
   .record-info { flex: 1; min-width: 0; }
   .record-title { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -655,6 +658,7 @@
   .chip.dinner-chip.active    { color: #7A54E0; border-color: var(--dinner);    background: rgba(169,133,255,.18); }
   .chip.meal-chip.active       { color: #7C9A2E; border-color: var(--lunch);    background: rgba(198,232,107,.18); }
   .chip.goout-chip.active      { color: #D6318A; border-color: var(--goout);    background: rgba(255,93,162,.18); }
+  .chip.family-chip.active     { color: #B8791A; border-color: var(--family);   background: rgba(255,194,75,.18); }
 
   .bristol-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 6px; }
   .bristol-btn {
@@ -1024,11 +1028,6 @@
     <div class="section" style="margin-top:10px">
       <div class="section-label">Quick Log</div>
       <div class="quick-grid">
-        <button class="quick-btn coffee" onclick="openSheet('coffee')">
-          <span class="q-icon">☕</span>
-          <span class="q-label">Coffee</span>
-          <span class="q-sub">Log a cup</span>
-        </button>
         <button class="quick-btn bowel" onclick="openSheet('bowel')">
           <span class="q-icon">💩</span>
           <span class="q-label">Bowel</span>
@@ -1078,6 +1077,11 @@
           <span class="q-icon">🚪</span>
           <span class="q-label">Go Out</span>
           <span class="q-sub">Log going out</span>
+        </button>
+        <button class="quick-btn family" onclick="openSheet('family')">
+          <span class="q-icon">👪</span>
+          <span class="q-label">家人到来</span>
+          <span class="q-sub">电话/到访</span>
         </button>
         <button class="quick-btn shortvideo" onclick="openSheet('shortvideo')">
           <span class="q-icon">📱</span>
@@ -1163,6 +1167,10 @@
           <div class="stat-name">Go Out</div>
         </div>
         <div class="stat-card">
+          <div class="stat-val family" id="stat-family">0</div>
+          <div class="stat-name">家人到来</div>
+        </div>
+        <div class="stat-card">
           <div class="stat-val forest" id="stat-forest">0</div>
           <div class="stat-name">🌳 Trees</div>
         </div>
@@ -1200,12 +1208,6 @@
           <div class="legend-item"><div class="legend-dot" style="background:var(--shower)"></div><span class="legend-label">Shower</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--clean)"></div><span class="legend-label">Clean</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--exercise)"></div><span class="legend-label">Exercise</span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--hydration)"></div><span class="legend-label">Drink Water</span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--breakfast)"></div><span class="legend-label">Breakfast</span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--lunch)"></div><span class="legend-label">Lunch</span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--dinner)"></div><span class="legend-label">Dinner</span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--breathing)"></div><span class="legend-label">Breathing</span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--goout)"></div><span class="legend-label">Go Out</span></div>
           <div style="margin-left:auto;display:flex;align-items:center;gap:4px">
             <span style="font-size:11px;color:var(--label)">Less</span>
             <div style="display:flex;gap:2px">
@@ -1233,6 +1235,15 @@
             <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
           </div>
           <div class="calendar-grid" id="calendar-grid"></div>
+        </div>
+        <div class="heatmap-legend" style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;align-items:center;">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--hydration)"></div><span class="legend-label">Drink Water</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--breakfast)"></div><span class="legend-label">Breakfast</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--lunch)"></div><span class="legend-label">Lunch</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--dinner)"></div><span class="legend-label">Dinner</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--breathing)"></div><span class="legend-label">Breathing</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--goout)"></div><span class="legend-label">Go Out</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--family)"></div><span class="legend-label">家人到来</span></div>
         </div>
       </div>
     </div>
@@ -1415,49 +1426,6 @@
 
 <!-- ====== OVERLAY ====== -->
 <div class="overlay" id="overlay" onclick="closeSheet()"></div>
-
-<!-- ====== COFFEE SHEET ====== -->
-<div class="sheet" id="sheet-coffee">
-  <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <div class="sheet-title">☕ Log Coffee</div>
-    <div class="sheet-close" onclick="closeSheet()">Done</div>
-  </div>
-  <div class="sheet-body">
-    <div class="form-section">
-      <div class="form-label">Capsule</div>
-      <select id="coffee-capsule" style="margin-bottom:0">
-        <option value="">Choose a capsule</option>
-        <option value="Ristretto">Ristretto</option>
-        <option value="Espresso">Espresso</option>
-        <option value="Lungo">Lungo</option>
-        <option value="Volluto">Volluto</option>
-        <option value="Livanto">Livanto</option>
-        <option value="Capriccio">Capriccio</option>
-        <option value="Fortissio Lungo">Fortissio Lungo</option>
-        <option value="Custom">Custom</option>
-      </select>
-    </div>
-    <div class="form-section">
-      <div class="form-label">Options</div>
-      <div class="chip-row" id="coffee-options">
-        <div class="chip coffee-chip" data-val="Hot" onclick="toggleChip(this)">Hot</div>
-        <div class="chip coffee-chip" data-val="Iced" onclick="toggleChip(this)">Iced</div>
-        <div class="chip coffee-chip" data-val="Milk" onclick="toggleChip(this)">Milk</div>
-        <div class="chip coffee-chip" data-val="Americano" onclick="toggleChip(this)">Americano</div>
-      </div>
-    </div>
-    <div class="form-section">
-      <div class="form-label">Time</div>
-      <div class="time-edit">
-        <span>Log time</span>
-        <span class="time-edit-val" id="coffee-time-display"></span>
-      <input type="datetime-local" id="coffee-time" onchange="updateTimeDisplay('coffee-time')">
-      </div>
-    </div>
-    <button class="save-btn" onclick="saveRecord('coffee')">Save</button>
-  </div>
-</div>
 
 <!-- ====== BOWEL SHEET ====== -->
 <div class="sheet" id="sheet-bowel">
@@ -1711,6 +1679,27 @@
       <input type="text" id="hydration-kind-custom" placeholder="输入饮品名称"
         style="display:none;margin-top:10px;width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--separator);background:var(--card);font-size:15px;color:var(--text);font-family:inherit;">
     </div>
+    <div class="form-section" id="hydration-coffee-detail" style="display:none">
+      <div class="form-label">Capsule</div>
+      <select id="coffee-capsule" style="margin-bottom:12px">
+        <option value="">Choose a capsule</option>
+        <option value="Ristretto">Ristretto</option>
+        <option value="Espresso">Espresso</option>
+        <option value="Lungo">Lungo</option>
+        <option value="Volluto">Volluto</option>
+        <option value="Livanto">Livanto</option>
+        <option value="Capriccio">Capriccio</option>
+        <option value="Fortissio Lungo">Fortissio Lungo</option>
+        <option value="Custom">Custom</option>
+      </select>
+      <div class="form-label">Options</div>
+      <div class="chip-row" id="coffee-options">
+        <div class="chip coffee-chip" data-val="Hot" onclick="toggleChip(this)">Hot</div>
+        <div class="chip coffee-chip" data-val="Iced" onclick="toggleChip(this)">Iced</div>
+        <div class="chip coffee-chip" data-val="Milk" onclick="toggleChip(this)">Milk</div>
+        <div class="chip coffee-chip" data-val="Americano" onclick="toggleChip(this)">Americano</div>
+      </div>
+    </div>
     <div class="form-section">
       <div class="form-label">Time</div>
       <div class="time-edit">
@@ -1887,6 +1876,40 @@
       </div>
     </div>
     <button class="save-btn" style="background:var(--goout)" onclick="saveRecord('goout')">Save</button>
+  </div>
+</div>
+
+<!-- ====== FAMILY SHEET ====== -->
+<div class="sheet" id="sheet-family">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">👪 家人到来</div>
+    <div class="sheet-close" onclick="closeSheet()">Done</div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-section">
+      <div class="form-label">方式</div>
+      <div class="chip-row" id="family-kind">
+        <div class="chip family-chip" data-val="Phone call" onclick="toggleChipExclusive(this,'family-kind');onFamilyKindChange(this)">📞 打电话</div>
+        <div class="chip family-chip" data-val="Visit" onclick="toggleChipExclusive(this,'family-kind');onFamilyKindChange(this)">🏠 到家里来</div>
+        <div class="chip family-chip" data-val="Custom" onclick="toggleChipExclusive(this,'family-kind');onFamilyKindChange(this)">✍️ 自定义</div>
+      </div>
+      <input type="text" id="family-kind-custom" placeholder="输入方式，例如「视频通话」"
+        style="display:none;margin-top:10px;width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--separator);background:var(--card);font-size:15px;color:var(--text);font-family:inherit;">
+    </div>
+    <div class="form-section">
+      <div class="form-label">Note</div>
+      <input type="text" id="family-note" placeholder="谁来了、聊了什么…">
+    </div>
+    <div class="form-section">
+      <div class="form-label">Time</div>
+      <div class="time-edit">
+        <span>Log time</span>
+        <span class="time-edit-val" id="family-time-display"></span>
+      <input type="datetime-local" id="family-time" onchange="updateTimeDisplay('family-time')">
+      </div>
+    </div>
+    <button class="save-btn" style="background:var(--family)" onclick="saveRecord('family')">Save</button>
   </div>
 </div>
 
@@ -2290,6 +2313,7 @@ function renderSummary() {
   document.getElementById('stat-dinner').textContent    = today.filter(r=>r.type==='dinner').length;
   document.getElementById('stat-breathing').textContent = today.filter(r=>r.type==='breathing').length;
   document.getElementById('stat-goout').textContent     = today.filter(r=>r.type==='goout').length;
+  document.getElementById('stat-family').textContent    = today.filter(r=>r.type==='family').length;
 
   renderAversionCard();
 
@@ -2312,16 +2336,17 @@ function renderSummary() {
 }
 
 function typeIcon(t) {
-  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'🪣':t==='hydration'?'💧':t==='trash'?'🗑️':t==='breakfast'?'🍳':t==='lunch'?'🍱':t==='dinner'?'🍜':t==='breathing'?'🌬️':t==='goout'?'🚪':t==='shortvideo'?'📱':t==='resist'?'✊':'🧹';
+  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'🪣':t==='hydration'?'💧':t==='trash'?'🗑️':t==='breakfast'?'🍳':t==='lunch'?'🍱':t==='dinner'?'🍜':t==='breathing'?'🌬️':t==='goout'?'🚪':t==='shortvideo'?'📱':t==='resist'?'✊':t==='family'?'👪':'🧹';
 }
 
 function recordTitle(r) {
   if (r.type==='coffee') {
-    if (r.autoFromHydration) return 'Coffee — auto from Drink Water';
     const parts = [];
     if (r.capsule) parts.push(r.capsule);
     if (r.options && r.options.length) parts.push(r.options.join('·'));
-    return parts.join(' — ') || 'Coffee';
+    if (parts.length) return parts.join(' — ');
+    if (r.autoFromHydration) return 'Coffee — auto from Drink Water';
+    return 'Coffee';
   }
   if (r.type==='bowel') {
     const labels = ['','Separate hard lumps','Lumpy sausage','Cracked sausage','Smooth soft snake','Soft blobs','Mushy','Watery'];
@@ -2388,6 +2413,12 @@ function recordTitle(r) {
   if (r.type==='resist') {
     return '抵抗了一次冲动 · -8';
   }
+  if (r.type==='family') {
+    const parts = [];
+    if (r.kind) parts.push(r.kind === 'Phone call' ? '打电话' : r.kind === 'Visit' ? '到家里来' : r.kind);
+    if (r.note) parts.push(r.note);
+    return parts.join(' · ') || '家人到来';
+  }
   return 'Record';
 }
 
@@ -2396,11 +2427,6 @@ function recordTitle(r) {
 // ============================================================
 function openSheet(name) {
   // reset form
-  if (name==='coffee') {
-    document.querySelectorAll('#sheet-coffee .chip').forEach(c=>c.classList.remove('active'));
-    document.getElementById('coffee-capsule').value='';
-    setTimeNow('coffee-time');
-  }
   if (name==='bowel') {
     document.querySelectorAll('#sheet-bowel .chip').forEach(c=>c.classList.remove('active'));
     document.querySelectorAll('#bristol-grid .bristol-btn').forEach(b=>b.classList.remove('active'));
@@ -2430,12 +2456,23 @@ function openSheet(name) {
     document.querySelectorAll('#sheet-hydration .chip').forEach(c=>c.classList.remove('active'));
     const customInput = document.getElementById('hydration-kind-custom');
     if (customInput) { customInput.value = ''; customInput.style.display = 'none'; }
+    const coffeeCapsule = document.getElementById('coffee-capsule');
+    if (coffeeCapsule) coffeeCapsule.value = '';
+    const coffeeDetail = document.getElementById('hydration-coffee-detail');
+    if (coffeeDetail) coffeeDetail.style.display = 'none';
     setTimeNow('hydration-time');
   }
   if (name==='trash') {
     document.querySelectorAll('#sheet-trash .chip').forEach(c=>c.classList.remove('active'));
     document.getElementById('trash-note').value = '';
     setTimeNow('trash-time');
+  }
+  if (name==='family') {
+    document.querySelectorAll('#sheet-family .chip').forEach(c=>c.classList.remove('active'));
+    const customInput = document.getElementById('family-kind-custom');
+    if (customInput) { customInput.value = ''; customInput.style.display = 'none'; }
+    document.getElementById('family-note').value = '';
+    setTimeNow('family-time');
   }
   if (name==='meal') {
     document.querySelectorAll('#sheet-meal .chip').forEach(c=>c.classList.remove('active'));
@@ -2589,14 +2626,31 @@ function toggleChipExclusive(el, groupId) {
   el.classList.add('active');
 }
 
+function onFamilyKindChange(el) {
+  const input = document.getElementById('family-kind-custom');
+  if (input) {
+    if (el.dataset.val === 'Custom') {
+      input.style.display = 'block';
+      input.focus();
+    } else {
+      input.style.display = 'none';
+    }
+  }
+}
+
 function onHydrationKindChange(el) {
   const input = document.getElementById('hydration-kind-custom');
-  if (!input) return;
-  if (el.dataset.val === 'Custom') {
-    input.style.display = 'block';
-    input.focus();
-  } else {
-    input.style.display = 'none';
+  if (input) {
+    if (el.dataset.val === 'Custom') {
+      input.style.display = 'block';
+      input.focus();
+    } else {
+      input.style.display = 'none';
+    }
+  }
+  const coffeeDetail = document.getElementById('hydration-coffee-detail');
+  if (coffeeDetail) {
+    coffeeDetail.style.display = el.dataset.val === 'Coffee' ? 'block' : 'none';
   }
 }
 
@@ -2637,13 +2691,6 @@ function onSVDurationInput(el) {
 // ============================================================
 function saveRecord(type) {
   let rec = { id: genId(), type, timestamp: Date.now() };
-
-  if (type==='coffee') {
-    const t = document.getElementById('coffee-time').value;
-    if (t) rec.timestamp = new Date(t).getTime();
-    rec.capsule = document.getElementById('coffee-capsule').value;
-    rec.options = [...document.querySelectorAll('#coffee-options .chip.active')].map(c=>c.dataset.val);
-  }
 
   if (type==='bowel') {
     if (!selectedBristol) { showToast('Please choose a Bristol type'); return; }
@@ -2700,6 +2747,10 @@ function saveRecord(type) {
     } else {
       rec.kind = kindVal;
     }
+    if (kindVal === 'Coffee') {
+      rec.coffeeCapsule = document.getElementById('coffee-capsule')?.value || '';
+      rec.coffeeOptions = [...document.querySelectorAll('#coffee-options .chip.active')].map(c=>c.dataset.val);
+    }
   }
 
   if (type==='trash') {
@@ -2737,6 +2788,19 @@ function saveRecord(type) {
     rec.note   = document.getElementById('goout-note').value.trim();
   }
 
+  if (type==='family') {
+    const t = document.getElementById('family-time').value;
+    if (t) rec.timestamp = new Date(t).getTime();
+    const kindVal = document.querySelector('#family-kind .chip.active')?.dataset.val || '';
+    if (kindVal === 'Custom') {
+      const customText = document.getElementById('family-kind-custom')?.value.trim();
+      rec.kind = customText || 'Custom';
+    } else {
+      rec.kind = kindVal;
+    }
+    rec.note = document.getElementById('family-note').value.trim();
+  }
+
   addRecord(rec);
 
   // If a "drink water" entry is actually coffee, auto-credit the Coffee log too
@@ -2747,9 +2811,9 @@ function saveRecord(type) {
       id: genId(),
       type: 'coffee',
       timestamp: rec.timestamp,
-      capsule: '',
-      options: [],
-      autoFromHydration: true // marks this as auto-generated, not a manual coffee log
+      capsule: rec.coffeeCapsule || '',
+      options: rec.coffeeOptions || [],
+      autoFromHydration: true // marks this as auto-generated from the Drink Water sheet, not a separate coffee entry point
     });
     autoCoffeeLogged = true;
   }
@@ -2759,7 +2823,7 @@ function saveRecord(type) {
   if (document.getElementById('screen-schedule').style.display !== 'none') renderSchedule();
 
   const ft = rec.type;
-  const toastMsg = autoCoffeeLogged ? '💧 Drink logged · ☕ Coffee +1' : ft==='coffee'?'☕ Coffee logged':ft==='bowel'?'💩 Bowel logged':ft==='shower'?'🚿 Shower logged':ft==='exercise'?'🏃 Exercise logged':ft==='water'?'🪣 12.5L logged':ft==='hydration'?'💧 Drink logged':ft==='trash'?'🗑️ Trash logged':ft==='breakfast'?'🍳 Breakfast logged':ft==='lunch'?'🍱 Lunch logged':ft==='dinner'?'🍜 Dinner logged':ft==='breathing'?'🌬️ Breathing logged':ft==='goout'?'🚪 Go Out logged':'🧹 Cleaning logged';
+  const toastMsg = autoCoffeeLogged ? '💧 Drink logged · ☕ Coffee +1' : ft==='coffee'?'☕ Coffee logged':ft==='bowel'?'💩 Bowel logged':ft==='shower'?'🚿 Shower logged':ft==='exercise'?'🏃 Exercise logged':ft==='water'?'🪣 12.5L logged':ft==='hydration'?'💧 Drink logged':ft==='trash'?'🗑️ Trash logged':ft==='breakfast'?'🍳 Breakfast logged':ft==='lunch'?'🍱 Lunch logged':ft==='dinner'?'🍜 Dinner logged':ft==='breathing'?'🌬️ Breathing logged':ft==='goout'?'🚪 Go Out logged':ft==='family'?'👪 家人到来 logged':'🧹 Cleaning logged';
   showToast(toastMsg);
   if (navigator.vibrate) navigator.vibrate(10);
 }
@@ -3288,6 +3352,11 @@ function showDetail(id) {
     html += `<div class="detail-field"><div class="detail-key">厌恶值变化</div><div class="detail-val">-8</div></div>`;
   }
 
+  if (r.type==='family') {
+    if (r.kind) html += `<div class="detail-field"><div class="detail-key">方式</div><div class="detail-val">${r.kind === 'Phone call' ? '打电话' : r.kind === 'Visit' ? '到家里来' : r.kind}</div></div>`;
+    if (r.note) html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${r.note}</div></div>`;
+  }
+
   if (isToday) {
     html += `<button class="save-btn" style="background:var(--red);margin-top:24px" onclick="deleteFromDetail('${r.id}')">Delete Record</button>`;
   } else {
@@ -3499,8 +3568,8 @@ function commitImport(mode) {
 // LIFE HABITS HEATMAP  (Coffee/Bowel/Shower/Clean/Exercise)
 // ============================================================
 const HYDRATION_GOAL_L = 2; // daily drink-water goal in liters (~2000ml)
-const LIFE_TYPES = ['coffee','bowel','shower','clean','exercise','hydration','breakfast','lunch','dinner','breathing','goout'];
-const LIFE_LABELS = { coffee:'Coffee', bowel:'Bowel', shower:'Shower', clean:'Clean', exercise:'Exercise', hydration:'Drink Water', breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner', breathing:'Breathing', goout:'Go Out' };
+const LIFE_TYPES = ['coffee','bowel','shower','clean','exercise','hydration','breakfast','lunch','dinner','breathing','goout','family'];
+const LIFE_LABELS = { coffee:'Coffee', bowel:'Bowel', shower:'Shower', clean:'Clean', exercise:'Exercise', hydration:'Drink Water', breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner', breathing:'Breathing', goout:'Go Out', family:'家人到来' };
 const LIFE_COLORS = {
   coffee:   ['rgba(216,155,106,.12)','rgba(216,155,106,.4)','rgba(216,155,106,.7)','#D89B6A'],
   bowel:    ['rgba(255,214,10,.12)','rgba(255,214,10,.4)','rgba(255,214,10,.7)','#FFD60A'],
@@ -3513,6 +3582,7 @@ const LIFE_COLORS = {
   dinner:   ['rgba(169,133,255,.12)','rgba(169,133,255,.4)','rgba(169,133,255,.7)','#A985FF'],
   breathing:['rgba(142,151,253,.12)','rgba(142,151,253,.4)','rgba(142,151,253,.7)','#8E97FD'],
   goout:    ['rgba(255,93,162,.12)','rgba(255,93,162,.4)','rgba(255,93,162,.7)','#FF5DA2'],
+  family:   ['rgba(255,194,75,.12)','rgba(255,194,75,.4)','rgba(255,194,75,.7)','#FFC24B'],
 };
 
 let heatmapMode = 'week';
@@ -4632,7 +4702,6 @@ function showToast(msg) {
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   renderSummary();
-  setTimeNow('coffee-time');
   setTimeNow('bowel-time');
   setTimeNow('shower-time');
   setTimeNow('clean-time');
