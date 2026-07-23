@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#F3F5FC">
+<meta name="theme-color" content="#F7EFE1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -28,21 +28,21 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,600;0,700;0,800;1,700;1,800;1,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600;1,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <title>LifeLog</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #F3F5FC;
-    --card: rgba(255,255,255,0.62);
-    --label: #6B7099;
-    --separator: rgba(10,14,36,0.10);
-    --text: #14162E;
-    --text2: #454A72;
-    --blue: #4D6FFF;
-    --red: #FF453A;
-    --green: #2FE6A5;
+    --bg: #F7EFE1;
+    --card: rgba(255,250,240,0.58);
+    --label: #8A7458;
+    --separator: rgba(122,84,32,0.16);
+    --text: #3B2C1E;
+    --text2: #6B5642;
+    --blue: #C99A4B;
+    --red: #A8552F;
+    --green: #7C9A45;
 
     /* semantic */
     --coffee: #D89B6A;
@@ -67,26 +67,31 @@
     --radius: 16px;
     --tab-h: 83px;
     --safe-bottom: env(safe-area-inset-bottom, 0px);
-    --font-display: 'Archivo', -apple-system, sans-serif;
+    --font-display: 'Cormorant Garamond', serif;
+    --font-body: 'Manrope', -apple-system, sans-serif;
   }
 
   html, body {
     height: 100%;
     background:
-      radial-gradient(ellipse 140% 46% at 50% -6%, rgba(108,124,255,.18), transparent 58%),
-      repeating-linear-gradient(115deg,
-        #F3F5FC 0px, #F3F5FC 86px,
-        #E8ECFA 86px, #E8ECFA 92px,
-        #F3F5FC 92px, #F3F5FC 172px,
-        #DDE3FA 172px, #DDE3FA 176px,
-        #F3F5FC 176px, #F3F5FC 260px,
-        #ECEFFA 260px, #ECEFFA 264px);
+      radial-gradient(ellipse 140% 46% at 50% -6%, rgba(240,194,123,.28), transparent 58%),
+      radial-gradient(circle at 18% 8%, #FCF3DE 0%, #F7EFE1 42%, #F0E0BE 100%);
     background-attachment: fixed;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    font-family: var(--font-body);
     color: var(--text);
     overflow: hidden;
     -webkit-font-smoothing: antialiased;
     user-select: none;
+  }
+
+  html::before {
+    content: '';
+    position: fixed; inset: 0;
+    z-index: 3000;
+    pointer-events: none;
+    opacity: 0.045;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   /* ===== LAYOUT ===== */
@@ -103,10 +108,10 @@
 
   /* ===== NAV HEADER ===== */
   .nav-header {
-    background: rgba(243,245,252,0.68);
+    background: rgba(247,239,225,0.68);
     backdrop-filter: blur(20px) saturate(160%);
     -webkit-backdrop-filter: blur(20px) saturate(160%);
-    padding: 46px 20px 10px;
+    padding: 46px 16px 10px;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -119,7 +124,7 @@
     font-weight: 800;
     font-style: italic;
     letter-spacing: -0.5px;
-    background: linear-gradient(100deg, #14162E 55%, #4D6FFF 100%);
+    background: linear-gradient(100deg, #3B2C1E 55%, #C99A4B 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -160,7 +165,7 @@
   .tab-label { font-size: 10px; font-weight: 500; color: var(--label); }
   .tab-item.active .tab-label { color: var(--blue); }
   .tab-item.active .tab-icon { filter: none; }
-  .tab-dot { width: 4px; height: 10px; border-radius: 2px; background: var(--blue); opacity: 0; margin-top: -4px; transform: skewX(-20deg); box-shadow: 0 0 8px rgba(77,111,255,.8); }
+  .tab-dot { width: 4px; height: 10px; border-radius: 2px; background: var(--blue); opacity: 0; margin-top: -4px; transform: skewX(-20deg); box-shadow: 0 0 8px rgba(201,154,75,.8); }
   .tab-item.active .tab-dot { opacity: 1; }
 
   /* ===== SECTION ===== */
@@ -180,12 +185,12 @@
   /* ===== CARD ===== */
   .card {
     background: var(--card);
-    border: 0.5px solid rgba(10,14,36,0.08);
+    border: 0.5px solid rgba(59,44,30,0.08);
     border-radius: var(--radius);
     overflow: hidden;
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 1px 3px rgba(20,22,46,0.04);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 1px 3px rgba(89,63,26,0.04);
   }
   .card-row {
     display: flex;
@@ -197,13 +202,13 @@
     gap: 12px;
   }
   .card-row:last-child { border-bottom: none; }
-  .card-row:active { background: rgba(10,14,36,0.08); }
+  .card-row:active { background: rgba(59,44,30,0.08); }
 
   /* ===== GLASS SURFACE (unified glass surface) ===== */
   .quick-btn, .stat-card, .plan-summary-card, .plan-week-chip,
   .plan-day-card, .chart-wrap, .toggle-row, .time-edit, .conflict-row,
   textarea.import-area, input[type="datetime-local"], select, input[type="text"] {
-    border: 0.5px solid rgba(10,14,36,0.08);
+    border: 0.5px solid rgba(59,44,30,0.08);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
@@ -214,10 +219,10 @@
     padding: 14px 16px;
     border-radius: var(--radius);
     background: var(--card);
-    border: 0.5px solid rgba(10,14,36,0.08);
+    border: 0.5px solid rgba(59,44,30,0.08);
     backdrop-filter: blur(14px) saturate(160%);
     -webkit-backdrop-filter: blur(14px) saturate(160%);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 1px 3px rgba(20,22,46,0.04);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 1px 3px rgba(89,63,26,0.04);
     margin-top: 10px;
   }
   .weather-main { display: flex; align-items: center; gap: 12px; cursor: pointer; }
@@ -228,7 +233,7 @@
   .weather-range { font-size: 12.5px; color: var(--label); text-align: right; flex-shrink: 0; white-space: nowrap; }
   .weather-feel-row {
     margin-top: 10px; padding-top: 10px;
-    border-top: 0.5px solid rgba(10,14,36,0.08);
+    border-top: 0.5px solid rgba(59,44,30,0.08);
     font-size: 13px; min-height: 18px;
   }
   .weather-feel-placeholder { color: var(--label); cursor: pointer; }
@@ -244,7 +249,7 @@
     width: 100%;
     aspect-ratio: 4/3;
     border-radius: var(--radius);
-    border: 1.5px dashed rgba(10,14,36,0.18);
+    border: 1.5px dashed rgba(59,44,30,0.18);
     background: rgba(255,255,255,0.35);
     backdrop-filter: blur(14px) saturate(160%);
     -webkit-backdrop-filter: blur(14px) saturate(160%);
@@ -263,7 +268,7 @@
   .meal-photo-remove {
     position: absolute; top: 8px; right: 8px;
     width: 28px; height: 28px; border-radius: 50%;
-    background: rgba(20,22,46,0.45);
+    background: rgba(89,63,26,0.45);
     color: #fff; display: none; align-items: center; justify-content: center;
     font-size: 14px; backdrop-filter: blur(8px) saturate(160%); -webkit-backdrop-filter: blur(8px) saturate(160%);
     border: 0.5px solid rgba(255,255,255,0.25);
@@ -271,7 +276,7 @@
   .meal-photo-uploading {
     position: absolute; inset: 0; display: none;
     align-items: center; justify-content: center;
-    background: rgba(20,22,46,0.35);
+    background: rgba(89,63,26,0.35);
     backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
     color: #fff; font-size: 13px;
   }
@@ -283,11 +288,11 @@
   .detail-photo {
     width: 100%; border-radius: var(--radius); margin-bottom: 14px; display: block;
     max-height: 340px; object-fit: cover;
-    box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.4), 0 4px 16px rgba(20,22,46,0.1);
+    box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.4), 0 4px 16px rgba(89,63,26,0.1);
   }
   .detail-photo-actions { display:flex; gap:8px; margin-bottom: 18px; }
   .detail-photo-actions button {
-    flex: 1; padding: 10px; border-radius: 10px; border: 0.5px solid rgba(10,14,36,0.1);
+    flex: 1; padding: 10px; border-radius: 10px; border: 0.5px solid rgba(59,44,30,0.1);
     background: rgba(255,255,255,0.4);
     backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
@@ -458,7 +463,7 @@
   .stat-val.water    { color: #0A93B0; }
   .stat-val.hydration { color: #1E7DD6; }
   .stat-val.forest   { color: #1E8E3E; }
-  .stat-val.trash    { color: #6B7099; }
+  .stat-val.trash    { color: #8A7458; }
   .stat-val.breakfast { color: #C97A3E; }
   .stat-val.lunch     { color: #7C9A2E; }
   .stat-val.dinner    { color: #7A54E0; }
@@ -471,7 +476,7 @@
   /* ===== AVERSION GAUGE CARD ===== */
   .aversion-card {
     background: var(--card);
-    border: 0.5px solid rgba(10,14,36,0.08);
+    border: 0.5px solid rgba(59,44,30,0.08);
     border-radius: var(--radius);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
@@ -483,7 +488,7 @@
     font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 100px;
     text-transform: uppercase; letter-spacing: .05em;
   }
-  .aversion-bar-track { height: 8px; border-radius: 4px; background: rgba(10,14,36,0.08); margin-top: 10px; overflow: hidden; }
+  .aversion-bar-track { height: 8px; border-radius: 4px; background: rgba(59,44,30,0.08); margin-top: 10px; overflow: hidden; }
   .aversion-bar-fill { height: 100%; border-radius: 4px; width: 0%; transition: width .5s ease, background .5s ease; }
   .aversion-sub { display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; color: var(--label); }
   .aversion-sub b { color: var(--text2); font-weight: 600; }
@@ -501,13 +506,13 @@
   .punish-overlay.visible { opacity: 1; pointer-events: all; }
   .punish-modal {
     width: 100%; max-width: 380px;
-    background: #FBFCFF;
+    background: #FBF5EA;
     border-radius: 20px;
     padding: 22px 20px;
   }
   .punish-stripe {
     height: 5px; border-radius: 3px; margin-bottom: 14px;
-    background: repeating-linear-gradient(45deg, var(--shortvideo) 0 8px, rgba(10,14,36,.12) 8px 16px);
+    background: repeating-linear-gradient(45deg, var(--shortvideo) 0 8px, rgba(59,44,30,.12) 8px 16px);
   }
   .punish-modal h3 { font-family: var(--font-display); font-size: 19px; font-weight: 800; font-style: italic; margin-bottom: 6px; }
   .punish-modal p.punish-desc { font-size: 13px; color: var(--label); line-height: 1.5; margin-bottom: 14px; }
@@ -516,8 +521,8 @@
     border: 1px solid rgba(255,107,74,.35); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px;
   }
   .punish-modal input[type=text] {
-    width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid rgba(10,14,36,.12);
-    background: rgba(10,14,36,.03); font-size: 14px; color: var(--text);
+    width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid rgba(59,44,30,.12);
+    background: rgba(59,44,30,.03); font-size: 14px; color: var(--text);
   }
   .punish-holdbtn {
     width: 100%; padding: 16px; border-radius: 12px; border: none;
@@ -572,7 +577,7 @@
   }
   .chart-controls {
     display: flex;
-    background: rgba(10,14,36,0.06);
+    background: rgba(59,44,30,0.06);
     border-radius: 9px;
     padding: 2px;
     gap: 2px;
@@ -590,10 +595,15 @@
     transition: all .2s;
   }
   .chart-ctrl.active {
-    background: rgba(10,14,36,0.14);
+    background: rgba(59,44,30,0.14);
     color: var(--text);
     font-weight: 600;
-    box-shadow: 0 1px 6px rgba(77,111,255,.35);
+    box-shadow: 0 1px 6px rgba(201,154,75,.35);
+  }
+  #heatmap-mode-month.active {
+    background: rgba(47,111,237,0.14);
+    color: #2F6FED;
+    box-shadow: 0 1px 6px rgba(47,111,237,.35);
   }
   .chart-grid {
     position: relative;
@@ -621,11 +631,11 @@
     width: 28px; height: 28px; border-radius: 50%;
     display:flex; align-items:center; justify-content:center;
     font-size: 16px; font-weight:700; color: var(--label);
-    background: rgba(10,14,36,0.06); cursor:pointer; user-select:none;
+    background: rgba(59,44,30,0.06); cursor:pointer; user-select:none;
     transition: background .12s;
   }
-  .calendar-nav-btn:active { background: rgba(10,14,36,0.14); }
-  .calendar-month-title { font-size: 15px; font-weight: 700; color: var(--text); }
+  .calendar-nav-btn:active { background: rgba(59,44,30,0.14); }
+  .calendar-month-title { font-size: 15px; font-weight: 700; color: #2F6FED; }
   .calendar-weekdays {
     display:grid; grid-template-columns:repeat(7,1fr);
     text-align:center; font-size: 11px; font-weight:600;
@@ -636,15 +646,15 @@
     aspect-ratio: 1; border-radius: 8px;
     display:flex; align-items:flex-start; justify-content:flex-start;
     padding: 4px 0 0 6px; font-size: 11px; font-weight:600;
-    color: var(--text); background: rgba(10,14,36,0.045);
+    color: var(--text); background: rgba(59,44,30,0.045);
     position: relative; box-sizing: border-box;
   }
   .calendar-cell.empty { background: transparent; }
   .calendar-cell.has-data { cursor: pointer; }
-  .calendar-cell.today { box-shadow: inset 0 0 0 1.5px #4D6FFF; }
+  .calendar-cell.today { box-shadow: inset 0 0 0 1.5px #C99A4B; }
   .calendar-cell .cell-count {
     position:absolute; bottom:3px; right:5px;
-    font-size:9px; font-weight:700; color: rgba(10,14,36,.55);
+    font-size:9px; font-weight:700; color: rgba(59,44,30,.55);
   }
 
   /* ===== STATS SUMMARY ===== */
@@ -660,7 +670,7 @@
   .summary-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
   .summary-name { font-size: 15px; }
   .summary-count { font-size: 15px; font-weight: 600; color: var(--text2); }
-  .summary-bar-wrap { height: 4px; background: rgba(10,14,36,0.08); border-radius: 2px; margin: 0 16px 12px; overflow: hidden; }
+  .summary-bar-wrap { height: 4px; background: rgba(59,44,30,0.08); border-radius: 2px; margin: 0 16px 12px; overflow: hidden; }
   .summary-bar { height: 100%; border-radius: 2px; transition: width .6s ease; }
 
   /* ===== HALF-SHEET DRAWER ===== */
@@ -680,11 +690,11 @@
     position: fixed;
     bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
     width: 100%; max-width: 430px;
-    background: rgba(248,250,255,0.78);
+    background: rgba(251,245,234,0.82);
     backdrop-filter: blur(28px) saturate(160%);
     -webkit-backdrop-filter: blur(28px) saturate(160%);
     border-top: 1px solid rgba(255,255,255,0.65);
-    box-shadow: 0 -12px 40px rgba(20,22,46,0.14), inset 0 1px 0 rgba(255,255,255,0.5);
+    box-shadow: 0 -12px 40px rgba(89,63,26,0.14), inset 0 1px 0 rgba(255,255,255,0.5);
     border-radius: 20px 20px 0 0;
     z-index: 201;
     transition: transform .32s cubic-bezier(.32,1,.5,1);
@@ -697,7 +707,7 @@
 
   .sheet-handle {
     width: 36px; height: 4px;
-    background: rgba(10,14,36,0.25);
+    background: rgba(59,44,30,0.25);
     border-radius: 2px;
     margin: 10px auto 4px;
     flex-shrink: 0;
@@ -706,7 +716,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 20px 14px;
+    padding: 8px 16px 14px;
     flex-shrink: 0;
   }
   .sheet-title { font-size: 17px; font-weight: 600; }
@@ -732,7 +742,7 @@
     border-radius: 100px;
     font-size: 14px;
     font-weight: 500;
-    background: rgba(10,14,36,0.08);
+    background: rgba(59,44,30,0.08);
     color: var(--text);
     cursor: pointer;
     border: 2px solid transparent;
@@ -743,12 +753,12 @@
   .chip.bowel-chip.active   { color: #A8790A; border-color: #FFD60A; background: rgba(255,214,10,.18); }
   .chip.shower-chip.active  { color: #0B8FD4; border-color: var(--shower); background: rgba(100,210,255,.18); }
   .chip.clean-chip.active   { color: #0E9F6E; border-color: var(--clean); background: rgba(47,230,165,.18); }
-  .chip.generic.active      { color: var(--blue); border-color: var(--blue); background: rgba(77,111,255,.18); }
+  .chip.generic.active      { color: var(--blue); border-color: var(--blue); background: rgba(201,154,75,.18); }
   .chip.exercise-chip.active { color: #E2622E; border-color: var(--exercise); background: rgba(255,133,82,.18); }
   .chip.sv-chip.active { color: #C74B2E; border-color: var(--shortvideo); background: rgba(255,107,74,.18); }
   .chip.water-chip.active    { color: #0A93B0; border-color: var(--water);    background: rgba(64,200,224,.18); }
   .chip.hydration-chip.active { color: #1E7DD6; border-color: var(--hydration); background: rgba(58,172,255,.18); }
-  .chip.trash-chip.active    { color: #6B7099; border-color: var(--trash);    background: rgba(157,163,199,.18); }
+  .chip.trash-chip.active    { color: #8A7458; border-color: var(--trash);    background: rgba(157,163,199,.18); }
   .chip.breakfast-chip.active { color: #C97A3E; border-color: var(--breakfast); background: rgba(255,179,123,.18); }
   .chip.lunch-chip.active     { color: #7C9A2E; border-color: var(--lunch);     background: rgba(198,232,107,.18); }
   .chip.dinner-chip.active    { color: #7A54E0; border-color: var(--dinner);    background: rgba(169,133,255,.18); }
@@ -760,7 +770,7 @@
   .bristol-btn {
     aspect-ratio: 1;
     border-radius: 10px;
-    background: rgba(10,14,36,0.08);
+    background: rgba(59,44,30,0.08);
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     cursor: pointer;
@@ -783,7 +793,7 @@
   .toggle-label { font-size: 15px; }
   .toggle {
     width: 51px; height: 31px;
-    background: rgba(10,14,36,0.14);
+    background: rgba(59,44,30,0.14);
     border-radius: 100px;
     position: relative;
     cursor: pointer;
@@ -835,16 +845,16 @@
   .save-btn {
     width: 100%;
     background: var(--blue);
-    color: white;
+    color: #3B2708;
     border: none;
     border-radius: var(--radius);
     padding: 15px;
     font-size: 17px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     margin-top: 20px;
     transition: opacity .15s;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 6px 16px rgba(20,22,46,0.16);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 6px 16px rgba(89,63,26,0.16);
   }
   .save-btn:active { opacity: .75; }
 
@@ -904,7 +914,7 @@
     transition: opacity .15s;
   }
   .import-action-btn:active { opacity: .7; }
-  .btn-skip    { background: rgba(10,14,36,0.10); color: var(--text); }
+  .btn-skip    { background: rgba(59,44,30,0.10); color: var(--text); }
   .btn-overwrite { background: rgba(255,176,32,.18); color: #B5720A; }
   .btn-commit  { background: var(--blue); color: white; }
 
@@ -912,7 +922,7 @@
     position: fixed;
     bottom: calc(var(--tab-h) + 16px);
     left: 50%; transform: translateX(-50%) translateY(20px);
-    background: #1C2350;
+    background: #2E2013;
     color: white;
     padding: 10px 20px;
     border-radius: 100px;
@@ -937,7 +947,7 @@
   /* ===== INSIGHTS ===== */
   .insight-card {
     background: var(--card);
-    border: 0.5px solid rgba(10,14,36,0.08);
+    border: 0.5px solid rgba(59,44,30,0.08);
     border-radius: var(--radius);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
@@ -972,10 +982,10 @@
     vertical-align: middle;
     letter-spacing: 0.2px;
   }
-  .insight-card.level-tip .insight-tag   { background: rgba(77,111,255,.14); color: var(--blue); }
+  .insight-card.level-tip .insight-tag   { background: rgba(201,154,75,.14); color: var(--blue); }
   .insight-card.level-good .insight-tag  { background: rgba(47,230,165,.16); color: #0E9F6E; }
   .insight-card.level-watch .insight-tag { background: rgba(255,214,10,.20); color: #A8790A; }
-  .insight-card.level-warn .insight-tag  { background: rgba(255,69,58,.16); color: var(--red); }
+  .insight-card.level-warn .insight-tag  { background: rgba(168,85,47,.16); color: var(--red); }
   .insight-meta {
     font-size: 11px;
     color: var(--label);
@@ -992,9 +1002,9 @@
     opacity: 0;
     transition: opacity .3s;
   }
-  .sync-badge.syncing { opacity: 1; background: rgba(10,14,36,0.08); color: var(--label); }
+  .sync-badge.syncing { opacity: 1; background: rgba(59,44,30,0.08); color: var(--label); }
   .sync-badge.ok      { opacity: 1; background: rgba(47,230,165,.18); color: #0E9F6E; }
-  .sync-badge.error   { opacity: 1; background: rgba(255,69,58,.18); color: var(--red); }
+  .sync-badge.error   { opacity: 1; background: rgba(168,85,47,.18); color: var(--red); }
 
   /* animations */
   @keyframes pop { 0%{transform:scale(.8);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
@@ -1066,7 +1076,7 @@
     font-size: 13px;
     color: #fff;
     border: 2px solid var(--bg);
-    box-shadow: 0 0 0 1px rgba(10,14,36,0.06);
+    box-shadow: 0 0 0 1px rgba(59,44,30,0.06);
     z-index: 1;
   }
   .sched-content {
@@ -1074,7 +1084,7 @@
     padding: 10px 14px;
     border-radius: 14px;
     background: var(--card);
-    border: 1px solid rgba(10,14,36,0.06);
+    border: 1px solid rgba(59,44,30,0.06);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
   }
@@ -1102,7 +1112,7 @@
     font-size: 10px;
     font-weight: 700;
     color: var(--blue);
-    background: rgba(77,111,255,.14);
+    background: rgba(201,154,75,.14);
     border-radius: 8px;
     padding: 1px 6px;
     margin-left: 6px;
@@ -1113,30 +1123,30 @@
     position: fixed; inset: 0; z-index: 1000;
     display: flex; align-items: center; justify-content: center;
     background:
-      radial-gradient(ellipse 140% 46% at 50% -6%, rgba(108,124,255,.18), transparent 58%),
-      #F3F5FC;
+      radial-gradient(ellipse 140% 46% at 50% -6%, rgba(240,194,123,.18), transparent 58%),
+      #F7EFE1;
     padding: 24px;
   }
   .login-card {
     width: 100%; max-width: 340px;
     background: rgba(255,255,255,0.55);
-    border: 0.5px solid rgba(10,14,36,0.08);
+    border: 0.5px solid rgba(59,44,30,0.08);
     border-radius: 20px;
     backdrop-filter: blur(24px) saturate(160%);
     -webkit-backdrop-filter: blur(24px) saturate(160%);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 12px 40px rgba(20,22,46,0.12);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 12px 40px rgba(89,63,26,0.12);
     padding: 28px 24px;
   }
   .login-title {
     font-family: var(--font-display); font-size: 26px; font-weight: 800;
     font-style: italic; text-align: center; margin-bottom: 4px;
-    background: linear-gradient(100deg, #14162E 55%, #4D6FFF 100%);
+    background: linear-gradient(100deg, #3B2C1E 55%, #C99A4B 100%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
   .login-sub { text-align: center; font-size: 13px; color: var(--label); margin-bottom: 22px; }
   .login-card input {
     width: 100%; padding: 13px 14px; margin-bottom: 10px;
-    border-radius: 12px; border: 0.5px solid rgba(10,14,36,0.12);
+    border-radius: 12px; border: 0.5px solid rgba(59,44,30,0.12);
     background: rgba(255,255,255,0.55);
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     font-size: 15px; color: var(--text);
@@ -1147,7 +1157,7 @@
     margin-top: 10px; min-height: 16px;
   }
   .logout-btn {
-    font-size: 12px; color: var(--label); background: rgba(10,14,36,0.06);
+    font-size: 12px; color: var(--label); background: rgba(59,44,30,0.06);
     border-radius: 8px; padding: 4px 10px; cursor: pointer;
   }
   .logout-btn:active { opacity: .6; }
@@ -1192,6 +1202,14 @@
         <div class="weather-feel-row" id="weather-feel-row">
           <span id="weather-feel-text" class="weather-feel-placeholder" onclick="startEditWeatherFeel()">+ Add how it feels</span>
         </div>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top:10px">
+      <div class="section-label">AI 每日日志</div>
+      <div class="card" style="padding:14px 16px;">
+        <div id="ai-daily-log-body" style="font-size:13.5px;line-height:1.6;color:var(--text2);white-space:pre-wrap;margin-bottom:10px;">点击下方按钮，根据今天已记录的数据生成一份日志。</div>
+        <button class="save-btn" id="ai-daily-log-btn" style="background:var(--blue);padding:10px;font-size:14px;" onclick="generateTodayLog()">生成今日日志</button>
       </div>
     </div>
 
@@ -1315,10 +1333,10 @@
           <div style="margin-left:auto;display:flex;align-items:center;gap:4px">
             <span style="font-size:11px;color:var(--label)">Less</span>
             <div style="display:flex;gap:2px">
-              <div style="width:12px;height:12px;border-radius:3px;background:rgba(10,14,36,0.08)"></div>
-              <div style="width:12px;height:12px;border-radius:3px;background:rgba(77,111,255,.35)"></div>
-              <div style="width:12px;height:12px;border-radius:3px;background:rgba(77,111,255,.7)"></div>
-              <div style="width:12px;height:12px;border-radius:3px;background:#4D6FFF"></div>
+              <div style="width:12px;height:12px;border-radius:3px;background:rgba(59,44,30,0.08)"></div>
+              <div style="width:12px;height:12px;border-radius:3px;background:rgba(201,154,75,.35)"></div>
+              <div style="width:12px;height:12px;border-radius:3px;background:rgba(201,154,75,.7)"></div>
+              <div style="width:12px;height:12px;border-radius:3px;background:#C99A4B"></div>
             </div>
             <span style="font-size:11px;color:var(--label)">More</span>
           </div>
@@ -1466,6 +1484,24 @@
     </div>
 
     <div class="manage-section" style="margin-top:16px">
+      <div class="section-label">AI 每日日志</div>
+      <div class="card" style="padding:14px 16px;">
+        <div style="font-size:12px;color:var(--label);margin-bottom:8px;line-height:1.5;">OpenRouter API Key，仅保存在本机浏览器（localStorage），用于在「Summary」和日历详情里生成每日日志。去 <a href="https://openrouter.ai/keys" target="_blank" style="color:var(--blue)">openrouter.ai/keys</a> 申请（key 以 sk-or- 开头）。<br><b>注意：</b>这是公开网页，浏览器开发者工具能看到这个 key，请勿使用重要账号的 key。</div>
+        <input type="password" id="openrouter-api-key-input" placeholder="sk-or-..." style="width:100%;padding:10px 12px;border-radius:10px;border:0.5px solid rgba(59,44,30,0.15);background:rgba(255,255,255,0.5);font-size:14px;margin-bottom:8px;box-sizing:border-box;">
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <button class="save-btn" style="background:var(--blue);padding:10px;font-size:14px;flex:1;" onclick="saveOpenRouterApiKey()">保存 Key</button>
+          <button class="save-btn" style="background:rgba(59,44,30,0.08);color:var(--text2);padding:10px;font-size:14px;flex:1;" onclick="clearOpenRouterApiKey()">清除</button>
+        </div>
+        <div id="openrouter-key-status" style="font-size:12px;color:var(--label);margin-bottom:10px;"></div>
+
+        <div style="font-size:12px;color:var(--label);margin-bottom:6px;">模型 ID（在 OpenRouter 上可用的任意模型都行，比如 <code>anthropic/claude-sonnet-4.5</code>、<code>openai/gpt-4o-mini</code>、<code>google/gemini-2.5-flash</code>）</div>
+        <input type="text" id="openrouter-model-input" placeholder="anthropic/claude-sonnet-4.5" style="width:100%;padding:10px 12px;border-radius:10px;border:0.5px solid rgba(59,44,30,0.15);background:rgba(255,255,255,0.5);font-size:14px;margin-bottom:8px;box-sizing:border-box;">
+        <button class="save-btn" style="background:var(--blue);padding:10px;font-size:14px;width:100%;" onclick="saveOpenRouterModel()">保存模型</button>
+        <div id="openrouter-model-status" style="font-size:12px;color:var(--label);margin-top:8px;"></div>
+      </div>
+    </div>
+
+    <div class="manage-section" style="margin-top:16px">
       <div class="section-label">All Records</div>
       <div class="card" id="all-records-list"></div>
     </div>
@@ -1474,7 +1510,7 @@
 
   <!-- ====== SCHEDULE SCREEN ====== -->
   <div class="screen" id="screen-schedule" style="display:none">
-    <div class="header" style="padding:20px 20px 8px">
+    <div class="header" style="padding:20px 16px 8px">
       <h1 style="font-size:26px;font-weight:700;margin:0">Schedule</h1>
       <div style="font-size:13px;color:var(--label);margin-top:2px">10h focus · 6 cycles · 5 real breaks</div>
     </div>
@@ -2111,7 +2147,7 @@
     </div>
     <button class="save-btn" onclick="doExport()">Generate JSON</button>
     <div class="export-area" id="export-output" style="display:none"></div>
-    <button class="save-btn" id="copy-btn" style="display:none;background:#2FE6A5;color:#08122b;margin-top:8px" onclick="copyExport()">Copy all · long-press to select all</button>
+    <button class="save-btn" id="copy-btn" style="display:none;background:#7C9A45;color:#08122b;margin-top:8px" onclick="copyExport()">Copy all · long-press to select all</button>
   </div>
 </div>
 
@@ -2455,6 +2491,209 @@ function clearOutfitPhoto() {
 }
 
 // ============================================================
+// AI DAILY LOG  (direct browser call to OpenRouter)
+//
+// This app is a static site with no server of its own, so there's no place
+// to keep an API key secret. The key is stored in this browser's
+// localStorage only and sent straight to openrouter.ai from the client.
+// Anyone with access to this browser's devtools/network tab can read the
+// key — only use a key you're fine having exposed client-side (see Manage
+// tab notes). OpenRouter (openrouter.ai) is a single-key gateway to many
+// providers' models (Anthropic, OpenAI, Google, Meta, etc.) — pick whichever
+// model id you want in Manage.
+// ============================================================
+const OPENROUTER_KEY_STORAGE = 'lifelog_openrouter_api_key';
+const OPENROUTER_MODEL_STORAGE = 'lifelog_openrouter_model';
+const DEFAULT_AI_LOG_MODEL = 'anthropic/claude-sonnet-4.5';
+
+function getOpenRouterApiKey() {
+  return (localStorage.getItem(OPENROUTER_KEY_STORAGE) || '').trim();
+}
+
+function getOpenRouterModel() {
+  return (localStorage.getItem(OPENROUTER_MODEL_STORAGE) || '').trim() || DEFAULT_AI_LOG_MODEL;
+}
+
+function saveOpenRouterApiKey() {
+  const input = document.getElementById('openrouter-api-key-input');
+  const val = input.value.trim();
+  if (!val) { showToast('请输入 API Key'); return; }
+  localStorage.setItem(OPENROUTER_KEY_STORAGE, val);
+  input.value = '';
+  updateOpenRouterKeyStatus();
+  showToast('API Key 已保存');
+}
+
+function clearOpenRouterApiKey() {
+  localStorage.removeItem(OPENROUTER_KEY_STORAGE);
+  updateOpenRouterKeyStatus();
+  showToast('已清除 API Key');
+}
+
+function updateOpenRouterKeyStatus() {
+  const el = document.getElementById('openrouter-key-status');
+  if (!el) return;
+  const key = getOpenRouterApiKey();
+  el.textContent = key
+    ? `已保存 · ${key.slice(0,8)}…${key.slice(-4)}`
+    : '尚未设置，生成每日日志前需要先填写并保存';
+}
+
+function saveOpenRouterModel() {
+  const input = document.getElementById('openrouter-model-input');
+  const val = input.value.trim();
+  localStorage.setItem(OPENROUTER_MODEL_STORAGE, val || DEFAULT_AI_LOG_MODEL);
+  updateOpenRouterModelStatus();
+  showToast('模型已保存');
+}
+
+function updateOpenRouterModelStatus() {
+  const statusEl = document.getElementById('openrouter-model-status');
+  const inputEl = document.getElementById('openrouter-model-input');
+  const model = getOpenRouterModel();
+  if (statusEl) statusEl.textContent = `当前使用：${model}`;
+  if (inputEl && !inputEl.value) inputEl.value = model;
+}
+
+// Kept as one function so Manage-tab init and app-start init can share it.
+function updateOpenRouterStatus() {
+  updateOpenRouterKeyStatus();
+  updateOpenRouterModelStatus();
+}
+
+// Caches a generated log per calendar day, so reopening the app or a past
+// day's detail view shows the last result immediately without re-calling
+// the API. Clicking "生成/重新生成" always calls the API fresh.
+function aiLogStorageKey(year, month, day) {
+  const pad = n => String(n).padStart(2,'0');
+  return `lifelog_ai_daily_log_${year}-${pad(month+1)}-${pad(day)}`;
+}
+function getCachedDailyLog(year, month, day) {
+  return localStorage.getItem(aiLogStorageKey(year, month, day));
+}
+function setCachedDailyLog(year, month, day, text) {
+  localStorage.setItem(aiLogStorageKey(year, month, day), text);
+}
+
+// Human labels for every record type, used only to build the AI prompt
+// digest (kept separate from LIFE_LABELS, which doesn't cover every type).
+const AI_TYPE_LABELS = {
+  coffee:'咖啡', bowel:'排便', shower:'洗澡', clean:'打扫', exercise:'运动',
+  water:'换水12.5L', hydration:'喝水', trash:'倒垃圾',
+  breakfast:'早餐', lunch:'午餐', dinner:'晚餐', breathing:'478呼吸',
+  goout:'出门', family:'家人', shortvideo:'刷短视频', resist:'抵抗冲动', feel:'心情/天气'
+};
+
+// Builds a plain-text, chronological digest of everything logged on the
+// given calendar day, for feeding into the AI prompt.
+function buildDayDigestText(year, month, day) {
+  const records = getRecords().filter(r => {
+    const d = new Date(r.timestamp);
+    return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
+  }).sort((a,b) => a.timestamp - b.timestamp);
+
+  if (!records.length) return null;
+
+  return records.map(r => {
+    const d = new Date(r.timestamp);
+    const hh = String(d.getHours()).padStart(2,'0');
+    const mm = String(d.getMinutes()).padStart(2,'0');
+    const label = AI_TYPE_LABELS[r.type] || r.type;
+    return `${hh}:${mm} ${label} — ${recordTitle(r)}`;
+  }).join('\n');
+}
+
+async function callOpenRouterForDailyLog(digestText, dateLabel) {
+  const apiKey = getOpenRouterApiKey();
+  if (!apiKey) throw new Error('缺少 API Key');
+
+  const prompt = `你是一个体贴、专业的私人生活教练。下面是我在 ${dateLabel} 这一天记录的原始生活日志数据（时间 类型 — 详情），请你据此写一份"每日日志"，要求：
+1. 先用一两句话总结这一天的整体状态；
+2. 分点点评几个关键的数据表现（比如饮水量、饮食规律、运动、出门、情绪相关记录等），如果某类数据当天没有就跳过，不要编造没有发生的事情；
+3. 给出2-3条具体、可执行的建议，帮助我改善生活习惯；
+4. 语气温和、鼓励为主，不要说教或指责；
+5. 直接输出日志正文，不要加"好的"之类的开场白，也不要使用 markdown 的 # 标题符号。
+
+原始数据：
+${digestText}`;
+
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+      'HTTP-Referer': location.origin,
+      'X-Title': 'LifeLog Daily Log'
+    },
+    body: JSON.stringify({
+      model: getOpenRouterModel(),
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(errText || `HTTP ${response.status}`);
+  }
+  const data = await response.json();
+  return (data.choices?.[0]?.message?.content || '').trim();
+}
+
+// Shared generator used by both the Summary tab (today) and the day-detail
+// sheet (any past day). Renders directly into the given element ids.
+async function generateDailyLog(year, month, day, opts) {
+  const { bodyElId, btnElId, dateLabel } = opts;
+  const bodyEl = document.getElementById(bodyElId);
+  const btnEl = btnElId ? document.getElementById(btnElId) : null;
+
+  if (!getOpenRouterApiKey()) {
+    showToast('请先到 Manage 页面设置 OpenRouter API Key');
+    return;
+  }
+
+  const digest = buildDayDigestText(year, month, day);
+  if (!digest) {
+    if (bodyEl) bodyEl.textContent = '这一天还没有任何记录，先去记点什么吧。';
+    return;
+  }
+
+  if (btnEl) { btnEl.disabled = true; btnEl.textContent = '生成中…'; }
+  if (bodyEl) bodyEl.textContent = '正在生成日志…';
+
+  try {
+    const text = await callOpenRouterForDailyLog(digest, dateLabel);
+    setCachedDailyLog(year, month, day, text);
+    if (bodyEl) bodyEl.textContent = text;
+  } catch (e) {
+    console.error('AI daily log failed', e);
+    if (bodyEl) bodyEl.textContent = '生成失败，请检查 API Key 或稍后重试。';
+    showToast('生成失败: ' + String(e.message || e).slice(0, 100));
+  }
+  if (btnEl) { btnEl.disabled = false; btnEl.textContent = '重新生成'; }
+}
+
+function generateTodayLog() {
+  const now = new Date();
+  generateDailyLog(now.getFullYear(), now.getMonth(), now.getDate(), {
+    bodyElId: 'ai-daily-log-body',
+    btnElId: 'ai-daily-log-btn',
+    dateLabel: `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`
+  });
+}
+
+// Paints the Summary tab's AI log card from cache (no API call) — called
+// from renderSummary() every time that tab is shown/refreshed.
+function refreshAiDailyLogUI() {
+  const now = new Date();
+  const cached = getCachedDailyLog(now.getFullYear(), now.getMonth(), now.getDate());
+  const bodyEl = document.getElementById('ai-daily-log-body');
+  const btnEl = document.getElementById('ai-daily-log-btn');
+  if (bodyEl) bodyEl.textContent = cached || '点击下方按钮，根据今天已记录的数据生成一份日志。';
+  if (btnEl) btnEl.textContent = cached ? '重新生成' : '生成今日日志';
+}
+
+// ============================================================
 // DATA LAYER  (localStorage cache + Supabase cloud)
 // ============================================================
 const SCHEMA_VERSION = 1;
@@ -2733,7 +2972,7 @@ function switchTab(name) {
     document.getElementById('tab-'+t).classList.toggle('active', t===name);
   });
   if (name === 'chart') { renderLifeHeatmap(); renderHydrationChart(); renderWaterCheckin(); renderForestStats(); }
-  if (name === 'manage') renderAllRecords();
+  if (name === 'manage') { renderAllRecords(); updateOpenRouterStatus(); }
   if (name === 'summary') renderSummary();
   if (name === 'schedule') renderSchedule();
 }
@@ -2749,6 +2988,7 @@ function renderSummary() {
 
   const records = getRecords().filter(r => r.type !== 'feel');
 
+  refreshAiDailyLogUI();
   renderAversionCard();
 
   // recent list
@@ -4188,7 +4428,7 @@ function renderLifeHeatmapWeekly() {
   ctx.scale(dpr, dpr);
 
   ctx.clearRect(0, 0, containerW, totalH);
-  ctx.fillStyle = '#FBFCFF';
+  ctx.fillStyle = '#FBF5EA';
   ctx.fillRect(0, 0, containerW, totalH);
 
   // 星期 + 日期 双行表头
@@ -4198,17 +4438,17 @@ function renderLifeHeatmapWeekly() {
     const isToday = i === todayIdx;
 
     if (isToday) {
-      ctx.fillStyle = 'rgba(77,111,255,.12)';
+      ctx.fillStyle = 'rgba(201,154,75,.12)';
       ctx.beginPath();
       ctx.roundRect(x - CELL_W / 2, 2, CELL_W, TOP_PAD - 6, 6);
       ctx.fill();
     }
 
-    ctx.fillStyle = isToday ? '#4D6FFF' : '#6B7099';
+    ctx.fillStyle = isToday ? '#C99A4B' : '#8A7458';
     ctx.font = isToday ? `bold 10px -apple-system, sans-serif` : `10px -apple-system, sans-serif`;
     ctx.fillText(weekdayLabels[i], x, TOP_PAD - 18);
 
-    ctx.fillStyle = isToday ? '#4D6FFF' : '#3A3D5C';
+    ctx.fillStyle = isToday ? '#C99A4B' : '#4A3A28';
     ctx.font = isToday ? `bold 10px -apple-system, sans-serif` : `10px -apple-system, sans-serif`;
     ctx.fillText(`${dayDates[i].getMonth()+1}/${dayDates[i].getDate()}`, x, TOP_PAD - 6);
   }
@@ -4220,7 +4460,7 @@ function renderLifeHeatmapWeekly() {
     for (let i = 0; i < DAYS; i++) {
       const cnt = counts[type][i];
       let shade;
-      if (cnt === 0) shade = 'rgba(10,14,36,0.05)';
+      if (cnt === 0) shade = 'rgba(59,44,30,0.05)';
       else if (cnt === 1) shade = palette[1];
       else if (cnt === 2) shade = palette[2];
       else shade = palette[3];
@@ -4232,7 +4472,7 @@ function renderLifeHeatmapWeekly() {
       ctx.fill();
 
       if (cnt > 0) {
-        ctx.fillStyle = (cnt >= 3) ? '#FFFFFF' : 'rgba(10,14,36,0.6)';
+        ctx.fillStyle = (cnt >= 3) ? '#FFFFFF' : 'rgba(59,44,30,0.6)';
         ctx.font = `10px -apple-system, sans-serif`;
         ctx.textAlign = 'center';
         ctx.fillText(String(cnt), x + CELL_W / 2, rowTop + CELL_H / 2 + 3.5);
@@ -4243,7 +4483,7 @@ function renderLifeHeatmapWeekly() {
   // 今天所在列的高亮描边
   if (todayIdx >= 0 && todayIdx < DAYS) {
     const x = todayIdx * (CELL_W + CELL_GAP_X) - 1;
-    ctx.strokeStyle = 'rgba(77,111,255,.6)';
+    ctx.strokeStyle = 'rgba(201,154,75,.6)';
     ctx.lineWidth = 1.5;
     ctx.strokeRect(x, TOP_PAD - 2, CELL_W + 2, ROWS * ROW_H - CELL_GAP_Y + 2);
   }
@@ -4301,12 +4541,12 @@ function renderLifeHeatmapMonthly() {
   Object.values(byDay).forEach(v => { if (v.total > maxTotal) maxTotal = v.total; });
 
   function densityStyle(total) {
-    if (total === 0 || maxTotal === 0) return { bg: 'rgba(10,14,36,0.045)', textColor: 'var(--text)' };
+    if (total === 0 || maxTotal === 0) return { bg: 'rgba(59,44,30,0.045)', textColor: 'var(--text)' };
     const ratio = total / maxTotal;
-    if (ratio <= 0.25) return { bg: 'rgba(77,111,255,.20)', textColor: 'var(--text)' };
-    if (ratio <= 0.5)  return { bg: 'rgba(77,111,255,.45)', textColor: '#fff' };
-    if (ratio <= 0.75) return { bg: 'rgba(77,111,255,.7)',  textColor: '#fff' };
-    return { bg: '#4D6FFF', textColor: '#fff' };
+    if (ratio <= 0.25) return { bg: 'rgba(201,154,75,.20)', textColor: 'var(--text)' };
+    if (ratio <= 0.5)  return { bg: 'rgba(201,154,75,.45)', textColor: '#fff' };
+    if (ratio <= 0.75) return { bg: 'rgba(201,154,75,.7)',  textColor: '#fff' };
+    return { bg: '#C99A4B', textColor: '#fff' };
   }
 
   let html = '';
@@ -4324,7 +4564,7 @@ function renderLifeHeatmapMonthly() {
     const clickAttr = total > 0 ? ` onclick="showDayDetail(${year},${month},${day})"` : '';
     html += `<div class="${classes.join(' ')}" style="background:${bg};color:${textColor}"${clickAttr}>
       <span>${day}</span>
-      ${total > 0 ? `<span class="cell-count" style="color:${textColor === '#fff' ? 'rgba(255,255,255,.85)' : 'rgba(10,14,36,.55)'}">${total}</span>` : ''}
+      ${total > 0 ? `<span class="cell-count" style="color:${textColor === '#fff' ? 'rgba(255,255,255,.85)' : 'rgba(59,44,30,.55)'}">${total}</span>` : ''}
     </div>`;
   }
 
@@ -4395,7 +4635,19 @@ function showDayDetail(year, month, day) {
       </div>
     `).join('');
 
-  document.getElementById('day-detail-body').innerHTML = weatherRow + (rows || `<div style="padding:16px 0;color:var(--label);font-size:13px;">No records</div>`);
+  const dayDateLabel = `${monthNames[month]} ${day}, ${year}`;
+  const aiLogHtml = `
+    <div class="section-label" style="margin-top:18px;">AI 每日日志</div>
+    <div class="card" style="padding:14px 16px;margin-top:8px;">
+      <div id="day-detail-ai-log-body" style="font-size:13.5px;line-height:1.6;color:var(--text2);white-space:pre-wrap;margin-bottom:10px;"></div>
+      <button class="save-btn" id="day-detail-ai-log-btn" style="background:var(--blue);padding:10px;font-size:14px;" onclick="generateDailyLog(${year}, ${month}, ${day}, {bodyElId:'day-detail-ai-log-body', btnElId:'day-detail-ai-log-btn', dateLabel:'${dayDateLabel}'})"></button>
+    </div>`;
+
+  document.getElementById('day-detail-body').innerHTML = weatherRow + (rows || `<div style="padding:16px 0;color:var(--label);font-size:13px;">No records</div>`) + aiLogHtml;
+
+  const dayAiCached = getCachedDailyLog(year, month, day);
+  document.getElementById('day-detail-ai-log-body').textContent = dayAiCached || '点击下方按钮，根据这一天已记录的数据生成一份日志。';
+  document.getElementById('day-detail-ai-log-btn').textContent = dayAiCached ? '重新生成' : '生成日志';
 
   currentSheet = 'day-detail';
   document.getElementById('sheet-day-detail').classList.add('visible');
@@ -4473,7 +4725,7 @@ function renderHydrationChart() {
   const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, containerW, totalH);
-  ctx.fillStyle = '#FBFCFF';
+  ctx.fillStyle = '#FBF5EA';
   ctx.fillRect(0, 0, containerW, totalH);
 
   const values = days.map(d => totalsByDay[dayKey(d)]);
@@ -4527,7 +4779,7 @@ function renderHydrationChart() {
     }
 
     if (i % 2 === 0 || days.length <= 7) {
-      ctx.fillStyle = '#6B7099';
+      ctx.fillStyle = '#8A7458';
       ctx.font = '9px -apple-system, sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(`${d.getMonth()+1}/${d.getDate()}`, x + barW / 2, baseY + LABEL_H);
@@ -4535,7 +4787,7 @@ function renderHydrationChart() {
   });
 
   // baseline
-  ctx.strokeStyle = 'rgba(10,14,36,0.10)';
+  ctx.strokeStyle = 'rgba(59,44,30,0.10)';
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(PAD_L, baseY);
@@ -4543,7 +4795,7 @@ function renderHydrationChart() {
   ctx.stroke();
 
   if (!values.some(v => v > 0)) {
-    ctx.fillStyle = 'rgba(10,14,36,0.25)';
+    ctx.fillStyle = 'rgba(59,44,30,0.25)';
     ctx.font = '12px -apple-system, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('No drinks logged in the last 14 days', containerW / 2, TOP_PAD + BAR_AREA_H / 2);
@@ -4582,7 +4834,7 @@ function renderWaterCheckin() {
   const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, containerW, totalH);
-  ctx.fillStyle = '#FBFCFF';
+  ctx.fillStyle = '#FBF5EA';
   ctx.fillRect(0, 0, containerW, totalH);
 
   const RANGE_DAYS = 30;
@@ -4594,7 +4846,7 @@ function renderWaterCheckin() {
   const recent = records.filter(r => new Date(r.timestamp) >= rangeStart);
 
   // axis labels
-  ctx.fillStyle = '#6B7099';
+  ctx.fillStyle = '#8A7458';
   ctx.font = '10px -apple-system, sans-serif';
   ctx.textAlign = 'left';
   ctx.fillText(`${rangeStart.getMonth()+1}/${rangeStart.getDate()}`, PAD_L, TOP_PAD - 6);
@@ -4603,7 +4855,7 @@ function renderWaterCheckin() {
 
   // baseline
   const lineY = TOP_PAD + ROW_H / 2;
-  ctx.strokeStyle = 'rgba(10,14,36,0.08)';
+  ctx.strokeStyle = 'rgba(59,44,30,0.08)';
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.moveTo(PAD_L, lineY);
@@ -4619,13 +4871,13 @@ function renderWaterCheckin() {
     ctx.beginPath();
     ctx.arc(x, lineY, 5, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(10,14,36,0.10)';
+    ctx.strokeStyle = 'rgba(59,44,30,0.10)';
     ctx.lineWidth = 1.5;
     ctx.stroke();
   });
 
   if (!recent.length) {
-    ctx.fillStyle = 'rgba(10,14,36,0.25)';
+    ctx.fillStyle = 'rgba(59,44,30,0.25)';
     ctx.font = '12px -apple-system, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('No check-ins in the last 30 days', containerW / 2, lineY + 4);
@@ -4666,7 +4918,7 @@ function renderForestStats() {
   const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, containerW, totalH);
-  ctx.fillStyle = '#FBFCFF';
+  ctx.fillStyle = '#FBF5EA';
   ctx.fillRect(0, 0, containerW, totalH);
 
   const RANGE_DAYS = 30;
@@ -4677,7 +4929,7 @@ function renderForestStats() {
 
   const recent = trees.filter(t => new Date(t.date) >= rangeStart);
 
-  ctx.fillStyle = '#6B7099';
+  ctx.fillStyle = '#8A7458';
   ctx.font = '10px -apple-system, sans-serif';
   ctx.textAlign = 'left';
   ctx.fillText(`${rangeStart.getMonth()+1}/${rangeStart.getDate()}`, PAD_L, TOP_PAD - 6);
@@ -4685,7 +4937,7 @@ function renderForestStats() {
   ctx.fillText(`${todayDate.getMonth()+1}/${todayDate.getDate()}`, containerW - PAD_R, TOP_PAD - 6);
 
   const lineY = TOP_PAD + ROW_H / 2;
-  ctx.strokeStyle = 'rgba(10,14,36,0.08)';
+  ctx.strokeStyle = 'rgba(59,44,30,0.08)';
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.moveTo(PAD_L, lineY);
@@ -4701,13 +4953,13 @@ function renderForestStats() {
     ctx.beginPath();
     ctx.arc(x, lineY, 5, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(10,14,36,0.10)';
+    ctx.strokeStyle = 'rgba(59,44,30,0.10)';
     ctx.lineWidth = 1.5;
     ctx.stroke();
   });
 
   if (!recent.length) {
-    ctx.fillStyle = 'rgba(10,14,36,0.25)';
+    ctx.fillStyle = 'rgba(59,44,30,0.25)';
     ctx.font = '12px -apple-system, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('No trees planted in the last 30 days', containerW / 2, lineY + 4);
@@ -5351,6 +5603,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // only after a signed-in session is confirmed (see enterApp / checkSessionOnLoad above).
 function initApp() {
   renderSummary();
+  updateOpenRouterStatus();
   loadWeather();
   renderWeatherFeel();
   setTimeNow('bowel-time');
