@@ -636,6 +636,48 @@
   }
   .calendar-nav-btn:active { background: rgba(59,44,30,0.14); }
   .calendar-month-title { font-size: 15px; font-weight: 700; color: #2F6FED; }
+
+  /* ===== WEEKLY GALLERY (meals / OOTD) ===== */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .gallery-cell {
+    position: relative;
+    aspect-ratio: 1/1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(59,44,30,0.06);
+    cursor: pointer;
+  }
+  .gallery-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .gallery-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    background: rgba(201,154,75,0.16);
+  }
+  .gallery-cell-tag {
+    position: absolute; top: 4px; left: 4px;
+    font-size: 9px; font-weight: 600; color: #fff;
+    background: rgba(59,44,30,0.55);
+    padding: 2px 5px; border-radius: 6px;
+  }
+  .gallery-cell-date {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    font-size: 9px; font-weight: 600; color: #fff;
+    background: linear-gradient(to top, rgba(20,14,6,0.6), transparent);
+    padding: 12px 5px 4px; text-align: center;
+  }
+  .gallery-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 24px 0;
+    font-size: 13px;
+    color: var(--label);
+  }
   .calendar-weekdays {
     display:grid; grid-template-columns:repeat(7,1fr);
     text-align:center; font-size: 11px; font-weight:600;
@@ -1367,6 +1409,30 @@
           <div class="legend-item"><div class="legend-dot" style="background:var(--goout)"></div><span class="legend-label">Go Out</span></div>
           <div class="legend-item"><div class="legend-dot" style="background:var(--family)"></div><span class="legend-label">家人到来</span></div>
         </div>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top:16px">
+      <div class="section-label">本周三餐</div>
+      <div class="chart-wrap">
+        <div class="calendar-nav">
+          <div class="calendar-nav-btn" onclick="shiftMealsGalleryWeek(-1)">‹</div>
+          <div class="calendar-month-title" id="meals-gallery-range">This week</div>
+          <div class="calendar-nav-btn" onclick="shiftMealsGalleryWeek(1)">›</div>
+        </div>
+        <div class="gallery-grid" id="meals-gallery-grid"></div>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top:16px">
+      <div class="section-label">本周穿搭 OOTD</div>
+      <div class="chart-wrap">
+        <div class="calendar-nav">
+          <div class="calendar-nav-btn" onclick="shiftOotdGalleryWeek(-1)">‹</div>
+          <div class="calendar-month-title" id="ootd-gallery-range">This week</div>
+          <div class="calendar-nav-btn" onclick="shiftOotdGalleryWeek(1)">›</div>
+        </div>
+        <div class="gallery-grid" id="ootd-gallery-grid"></div>
       </div>
     </div>
 
@@ -2235,7 +2301,12 @@ async function authRequest(grantType, body) {
     headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
   });
-  const data = await res.json();
+  let data;
+  try {
+    data = await res.json();
+  } catch(e) {
+    throw new Error(`Server returned an unexpected response (status ${res.status})`);
+  }
   if (!res.ok) throw new Error(data.error_description || data.msg || 'Authentication failed');
   return data;
 }
@@ -2260,17 +2331,31 @@ async function signIn(email, password) {
   });
 }
 
+// Supabase refresh tokens are single-use (rotating): firing two refresh
+// requests at once (e.g. several sbFetch/upload calls kicking off together
+// at app startup) can invalidate each other and log the person out. This
+// "single-flight" guard makes concurrent callers share one in-flight
+// refresh instead of racing.
+let _refreshPromise = null;
 async function refreshAccessToken() {
-  const session = getSession();
-  if (!session || !session.refresh_token) throw new Error('No session');
-  const data = await authRequest('refresh_token', { refresh_token: session.refresh_token });
-  saveSession({
-    access_token: data.access_token,
-    refresh_token: data.refresh_token,
-    expires_at: Date.now() + (data.expires_in * 1000),
-    user_id: getUserIdFromToken(data.access_token)
-  });
-  return data.access_token;
+  if (_refreshPromise) return _refreshPromise;
+  _refreshPromise = (async () => {
+    const session = getSession();
+    if (!session || !session.refresh_token) throw new Error('No session');
+    const data = await authRequest('refresh_token', { refresh_token: session.refresh_token });
+    saveSession({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_at: Date.now() + (data.expires_in * 1000),
+      user_id: getUserIdFromToken(data.access_token)
+    });
+    return data.access_token;
+  })();
+  try {
+    return await _refreshPromise;
+  } finally {
+    _refreshPromise = null;
+  }
 }
 
 // Returns a currently-valid access token, refreshing it first if it's
@@ -2710,7 +2795,12 @@ function loadData() {
 }
 
 function saveData(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch(e) {
+    console.error('Local save failed (storage full or unavailable)', e);
+    if (typeof showToast === 'function') showToast('⚠️ Local save failed — check device storage');
+  }
 }
 
 function getRecords() { return loadData().records; }
@@ -2815,7 +2905,7 @@ function deleteRecord(id) {
   data.records = data.records.filter(r => r.id !== id);
   saveData(data);
   deleteFromCloud(id); // async
-  if (rec && rec.photoUrl) deleteMealPhoto(rec.photoUrl); // async
+  if (rec && rec.photoUrl) deletePhoto(rec.photoUrl); // async
 }
 
 // 判断两个时间戳YesNo为本地同一天（用于"零点后不可删除/仅当天可改时间"的判断）
@@ -2865,7 +2955,7 @@ function replaceMealPhoto(id) {
       const compressed = await compressImage(file);
       const newUrl = await uploadMealPhoto(compressed, rec.id);
       updateRecordPhoto(id, newUrl);
-      if (oldUrl && oldUrl !== newUrl) deleteMealPhoto(oldUrl);
+      if (oldUrl && oldUrl !== newUrl) deletePhoto(oldUrl);
       showToast('Photo updated');
     } catch (e) {
       console.error('Photo replace failed', e);
@@ -2883,7 +2973,7 @@ function removeMealPhoto(id) {
   if (!rec || !rec.photoUrl) return;
   const oldUrl = rec.photoUrl;
   updateRecordPhoto(id, null);
-  deleteMealPhoto(oldUrl);
+  deletePhoto(oldUrl);
   renderSummary();
   if (document.getElementById('screen-manage').style.display!=='none') renderAllRecords();
   showDetail(id);
@@ -2971,7 +3061,7 @@ function switchTab(name) {
     document.getElementById('screen-'+t).style.display = t===name ? 'block' : 'none';
     document.getElementById('tab-'+t).classList.toggle('active', t===name);
   });
-  if (name === 'chart') { renderLifeHeatmap(); renderHydrationChart(); renderWaterCheckin(); renderForestStats(); }
+  if (name === 'chart') { renderLifeHeatmap(); renderMealsGallery(); renderOotdGallery(); renderHydrationChart(); renderWaterCheckin(); renderForestStats(); }
   if (name === 'manage') { renderAllRecords(); updateOpenRouterStatus(); }
   if (name === 'summary') renderSummary();
   if (name === 'schedule') renderSchedule();
@@ -4353,6 +4443,111 @@ function renderHeatmapRowLabels(lifeTypes, topPad, rowH) {
   el.innerHTML = html;
 }
 
+// ============================================================
+// WEEKLY GALLERIES  (meals + OOTD outfit photos, Charts tab)
+// ============================================================
+function getWeekStart(offsetWeeks) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const dow = today.getDay(); // 0=Sun ... 6=Sat
+  const mondayOffset = (dow === 0) ? -6 : 1 - dow;
+  const weekStart = new Date(today);
+  weekStart.setDate(weekStart.getDate() + mondayOffset + offsetWeeks * 7);
+  return weekStart;
+}
+
+function formatWeekRangeLabel(weekStart) {
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  const fmt = d => `${d.getMonth()+1}/${d.getDate()}`;
+  return `${fmt(weekStart)} – ${fmt(weekEnd)}`;
+}
+
+const WEEKDAY_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MEAL_GALLERY_META = {
+  breakfast: { icon: '🍳', label: 'Breakfast' },
+  lunch:     { icon: '🍜', label: 'Lunch' },
+  dinner:    { icon: '🍽', label: 'Dinner' }
+};
+
+let mealsGalleryWeekOffset = 0;
+let ootdGalleryWeekOffset = 0;
+
+function shiftMealsGalleryWeek(delta) {
+  if (mealsGalleryWeekOffset + delta > 0) return; // don't browse into the future
+  mealsGalleryWeekOffset += delta;
+  renderMealsGallery();
+}
+function shiftOotdGalleryWeek(delta) {
+  if (ootdGalleryWeekOffset + delta > 0) return;
+  ootdGalleryWeekOffset += delta;
+  renderOotdGallery();
+}
+
+function renderMealsGallery() {
+  const gridEl = document.getElementById('meals-gallery-grid');
+  const rangeEl = document.getElementById('meals-gallery-range');
+  if (!gridEl) return;
+
+  const weekStart = getWeekStart(mealsGalleryWeekOffset);
+  const weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate() + 7);
+  if (rangeEl) rangeEl.textContent = (mealsGalleryWeekOffset === 0 ? 'This week · ' : '') + formatWeekRangeLabel(weekStart);
+
+  const records = getRecords().filter(r => {
+    if (!['breakfast','lunch','dinner'].includes(r.type)) return false;
+    return r.timestamp >= weekStart.getTime() && r.timestamp < weekEnd.getTime();
+  }).sort((a,b) => a.timestamp - b.timestamp);
+
+  if (!records.length) {
+    gridEl.innerHTML = `<div class="gallery-empty">这一周还没有三餐记录</div>`;
+    return;
+  }
+
+  gridEl.innerHTML = records.map(r => {
+    const meta = MEAL_GALLERY_META[r.type];
+    const d = new Date(r.timestamp);
+    const dayLabel = `${WEEKDAY_SHORT[d.getDay()]} ${d.getMonth()+1}/${d.getDate()}`;
+    const inner = r.photoUrl
+      ? `<img src="${r.photoUrl}" alt="">`
+      : `<div class="gallery-placeholder">${meta.icon}</div>`;
+    return `
+      <div class="gallery-cell" onclick="showDetail('${r.id}')">
+        ${inner}
+        <div class="gallery-cell-tag">${meta.icon} ${meta.label}</div>
+        <div class="gallery-cell-date">${dayLabel}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderOotdGallery() {
+  const gridEl = document.getElementById('ootd-gallery-grid');
+  const rangeEl = document.getElementById('ootd-gallery-range');
+  if (!gridEl) return;
+
+  const weekStart = getWeekStart(ootdGalleryWeekOffset);
+  const weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate() + 7);
+  if (rangeEl) rangeEl.textContent = (ootdGalleryWeekOffset === 0 ? 'This week · ' : '') + formatWeekRangeLabel(weekStart);
+
+  const records = getRecords().filter(r => {
+    if (r.type !== 'goout' || !r.photoUrl) return false;
+    return r.timestamp >= weekStart.getTime() && r.timestamp < weekEnd.getTime();
+  }).sort((a,b) => a.timestamp - b.timestamp);
+
+  if (!records.length) {
+    gridEl.innerHTML = `<div class="gallery-empty">这一周还没有穿搭照片</div>`;
+    return;
+  }
+
+  gridEl.innerHTML = records.map(r => {
+    const d = new Date(r.timestamp);
+    const dayLabel = `${WEEKDAY_SHORT[d.getDay()]} ${d.getMonth()+1}/${d.getDate()}`;
+    return `
+      <div class="gallery-cell" onclick="showDetail('${r.id}')">
+        <img src="${r.photoUrl}" alt="">
+        <div class="gallery-cell-date">${dayLabel}</div>
+      </div>`;
+  }).join('');
+}
+
 function renderLifeHeatmapWeekly() {
   const canvas = document.getElementById('lifeHeatmap');
   if (!canvas) return;
@@ -4968,6 +5163,8 @@ function renderForestStats() {
 
 function renderChart() {
   renderLifeHeatmap();
+  renderMealsGallery();
+  renderOotdGallery();
   renderHydrationChart();
   renderWaterCheckin();
   renderForestStats();
