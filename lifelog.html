@@ -1055,16 +1055,70 @@
     margin-left: 6px;
     vertical-align: middle;
   }
+  /* ===== LOGIN GATE ===== */
+  #login-gate {
+    position: fixed; inset: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    background:
+      radial-gradient(ellipse 140% 46% at 50% -6%, rgba(108,124,255,.18), transparent 58%),
+      #F3F5FC;
+    padding: 24px;
+  }
+  .login-card {
+    width: 100%; max-width: 340px;
+    background: rgba(255,255,255,0.7);
+    border: 0.5px solid rgba(10,14,36,0.08);
+    border-radius: 20px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    padding: 28px 24px;
+  }
+  .login-title {
+    font-family: var(--font-display); font-size: 26px; font-weight: 800;
+    font-style: italic; text-align: center; margin-bottom: 4px;
+    background: linear-gradient(100deg, #14162E 55%, #4D6FFF 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .login-sub { text-align: center; font-size: 13px; color: var(--label); margin-bottom: 22px; }
+  .login-card input {
+    width: 100%; padding: 13px 14px; margin-bottom: 10px;
+    border-radius: 12px; border: 0.5px solid rgba(10,14,36,0.12);
+    background: rgba(255,255,255,0.7); font-size: 15px; color: var(--text);
+  }
+  .login-card input:focus { outline: none; border-color: var(--blue); }
+  .login-error {
+    color: var(--red); font-size: 12.5px; text-align: center;
+    margin-top: 10px; min-height: 16px;
+  }
+  .logout-btn {
+    font-size: 12px; color: var(--label); background: rgba(10,14,36,0.06);
+    border-radius: 8px; padding: 4px 10px; cursor: pointer;
+  }
+  .logout-btn:active { opacity: .6; }
 </style>
 </head>
 <body>
-<div id="app">
+<!-- ====== LOGIN GATE ====== -->
+<div id="login-gate">
+  <div class="login-card">
+    <div class="login-title">LifeLog</div>
+    <div class="login-sub">Sign in to continue</div>
+    <input type="email" id="login-email" placeholder="Email" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('login-password').focus()">
+    <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')handleLogin()">
+    <button class="save-btn" id="login-btn" onclick="handleLogin()">Sign In</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+<div id="app" style="display:none">
   <!-- ====== SUMMARY TAB ====== -->
   <div class="screen" id="screen-summary" style="display:block">
     <div class="nav-header">
       <div style="display:flex;align-items:baseline;justify-content:space-between">
         <h1>Summary</h1>
-        <span id="sync-badge" class="sync-badge"></span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span id="sync-badge" class="sync-badge"></span>
+          <span class="logout-btn" onclick="logout()">Log out</span>
+        </div>
       </div>
       <div class="nav-sub" id="today-label"></div>
     </div>
@@ -2124,12 +2178,123 @@ const FOREST_TABLE = 'forest_trees';
 // insert, select, and delete objects. See setup notes at bottom of file.
 const MEAL_PHOTO_BUCKET = 'meal-photos';
 
+// ============================================================
+// AUTH  (real Supabase email/password login — no public access)
+// ============================================================
+const AUTH_STORAGE_KEY = 'lifelog_auth_v1';
+
+function getSession() {
+  try { return JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || 'null'); }
+  catch(e) { return null; }
+}
+function saveSession(s) { localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(s)); }
+function clearSession() { localStorage.removeItem(AUTH_STORAGE_KEY); }
+
+async function authRequest(grantType, body) {
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=${grantType}`, {
+    method: 'POST',
+    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error_description || data.msg || 'Authentication failed');
+  return data;
+}
+
+// Decodes the `sub` (user id) claim out of a Supabase JWT access token.
+// Used instead of trusting the auth response shape, since it's reliable
+// across both the password-login and refresh-token responses.
+function getUserIdFromToken(accessToken) {
+  try {
+    const payload = JSON.parse(atob(accessToken.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+    return payload.sub;
+  } catch(e) { return null; }
+}
+
+async function signIn(email, password) {
+  const data = await authRequest('password', { email, password });
+  saveSession({
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+    expires_at: Date.now() + (data.expires_in * 1000),
+    user_id: getUserIdFromToken(data.access_token)
+  });
+}
+
+async function refreshAccessToken() {
+  const session = getSession();
+  if (!session || !session.refresh_token) throw new Error('No session');
+  const data = await authRequest('refresh_token', { refresh_token: session.refresh_token });
+  saveSession({
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+    expires_at: Date.now() + (data.expires_in * 1000),
+    user_id: getUserIdFromToken(data.access_token)
+  });
+  return data.access_token;
+}
+
+// Returns a currently-valid access token, refreshing it first if it's
+// expired or about to expire. Every authenticated request should call this
+// instead of reading the token directly.
+async function getValidAccessToken() {
+  const session = getSession();
+  if (!session) throw new Error('Not signed in');
+  if (session.expires_at - Date.now() < 60000) { // refresh if <60s left
+    return await refreshAccessToken();
+  }
+  return session.access_token;
+}
+
+function logout() {
+  clearSession();
+  location.reload();
+}
+
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+  errEl.textContent = '';
+  if (!email || !password) { errEl.textContent = 'Enter your email and password'; return; }
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  try {
+    await signIn(email, password);
+    enterApp();
+  } catch (e) {
+    errEl.textContent = e.message || 'Sign in failed';
+  }
+  btn.disabled = false; btn.textContent = 'Sign In';
+}
+
+// Called once a valid session exists (either at load, or right after login)
+function enterApp() {
+  document.getElementById('login-gate').style.display = 'none';
+  document.getElementById('app').style.display = '';
+  initApp();
+}
+
+// Checks for a stored session on page load; refreshes it if needed so a
+// login persists across visits instead of asking every time.
+async function checkSessionOnLoad() {
+  const session = getSession();
+  if (!session) return; // stays on login gate
+  try {
+    await getValidAccessToken(); // refreshes if needed, throws if refresh_token is dead
+    enterApp();
+  } catch (e) {
+    clearSession(); // stale/expired session, back to login gate
+  }
+}
+
 async function sbFetch(path, options = {}) {
+  const accessToken = await getValidAccessToken();
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     ...options,
     headers: {
       'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Authorization': `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
       'Prefer': options.prefer || '',
       ...(options.headers || {})
@@ -2193,12 +2358,14 @@ function compressImage(file, maxDim = 1600, quality = 0.8) {
 
 // Upload a compressed image blob to Supabase Storage and return its public URL
 async function uploadMealPhoto(blob, recordId) {
-  const path = `${recordId}.jpg`;
+  const session = getSession();
+  const path = `${session.user_id}/${recordId}.jpg`;
+  const accessToken = await getValidAccessToken();
   const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${MEAL_PHOTO_BUCKET}/${path}`, {
     method: 'POST',
     headers: {
       'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Authorization': `Bearer ${accessToken}`,
       'Content-Type': 'image/jpeg',
       'x-upsert': 'true'
     },
@@ -2215,9 +2382,10 @@ async function deleteMealPhoto(photoUrl) {
     const idx = photoUrl.indexOf(marker);
     if (idx === -1) return;
     const path = photoUrl.slice(idx + marker.length);
+    const accessToken = await getValidAccessToken();
     await fetch(`${SUPABASE_URL}/storage/v1/object/${MEAL_PHOTO_BUCKET}/${path}`, {
       method: 'DELETE',
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${accessToken}` }
     });
   } catch (e) { console.error('Photo delete failed', e); }
 }
@@ -2304,11 +2472,12 @@ async function syncFromCloud() {
 // Push a single record to Supabase
 async function pushToCloud(rec) {
   const { id, type, timestamp, ...rest } = rec;
+  const session = getSession();
   try {
     await sbFetch('records', {
       method: 'POST',
       prefer: 'resolution=merge-duplicates',
-      body: JSON.stringify({ id, type, timestamp, data: rest })
+      body: JSON.stringify({ id, type, timestamp, user_id: session?.user_id, data: rest })
     });
     showSyncBadge('ok');
   } catch(e) {
@@ -4937,6 +5106,12 @@ function showToast(msg) {
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
+  checkSessionOnLoad(); // shows the app + runs initApp() if a valid session exists, otherwise leaves the login gate visible
+});
+
+// Everything that used to run unconditionally on DOMContentLoaded now runs
+// only after a signed-in session is confirmed (see enterApp / checkSessionOnLoad above).
+function initApp() {
   renderSummary();
   setTimeNow('bowel-time');
   setTimeNow('shower-time');
@@ -4964,7 +5139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target.closest('.sheet-body,.screen')) return;
     e.preventDefault();
   }, { passive:false });
-});
+}
 
 window.addEventListener('resize', ()=>{
   if (document.getElementById('screen-chart').style.display!=='none') {
