@@ -256,7 +256,8 @@
     cursor: pointer;
   }
   .meal-photo-placeholder { font-size: 13px; color: var(--label); text-align: center; padding: 12px; }
-  .meal-photo-picker img#meal-photo-preview {
+  .meal-photo-picker img#meal-photo-preview,
+  .meal-photo-picker img#outfit-photo-preview {
     width: 100%; height: 100%; object-fit: cover; display: none;
   }
   .meal-photo-remove {
@@ -1281,72 +1282,6 @@
     </div>
 
     <div class="section" style="margin-top:20px">
-      <div class="section-label">Today</div>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-val coffee" id="stat-coffee">0</div>
-          <div class="stat-name">Coffee</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val bowel" id="stat-bowel">0</div>
-          <div class="stat-name">Bowel</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val shower" id="stat-shower">0</div>
-          <div class="stat-name">Shower</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val clean" id="stat-clean">0</div>
-          <div class="stat-name">Clean</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val exercise" id="stat-exercise">0</div>
-          <div class="stat-name">Exercise</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val water" id="stat-water">0</div>
-          <div class="stat-name">12.5L</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val hydration" id="stat-hydration">0</div>
-          <div class="stat-name">Drink Water</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val trash" id="stat-trash">0</div>
-          <div class="stat-name">Trash</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val breakfast" id="stat-breakfast">0</div>
-          <div class="stat-name">Breakfast</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val lunch" id="stat-lunch">0</div>
-          <div class="stat-name">Lunch</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val dinner" id="stat-dinner">0</div>
-          <div class="stat-name">Dinner</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val breathing" id="stat-breathing">0</div>
-          <div class="stat-name">Breathing</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val goout" id="stat-goout">0</div>
-          <div class="stat-name">Go Out</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val family" id="stat-family">0</div>
-          <div class="stat-name">家人到来</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val forest" id="stat-forest">0</div>
-          <div class="stat-name">🌳 Trees</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section" style="margin-top:20px">
       <div class="section-label">Recent</div>
       <div class="card" id="recent-list">
         <div class="empty-state" style="padding:24px">
@@ -2033,6 +1968,16 @@
   </div>
   <div class="sheet-body">
     <div class="form-section">
+      <div class="form-label">今日穿搭</div>
+      <div class="meal-photo-picker" id="outfit-photo-picker" onclick="document.getElementById('outfit-photo-input').click()">
+        <div class="meal-photo-placeholder" id="outfit-photo-placeholder">👗<br>点击拍照<br>或从相册选择</div>
+        <img id="outfit-photo-preview" alt="">
+        <div class="meal-photo-remove" id="outfit-photo-remove" onclick="event.stopPropagation(); clearOutfitPhoto()">✕</div>
+        <div class="meal-photo-uploading" id="outfit-photo-uploading">Uploading…</div>
+      </div>
+      <input type="file" id="outfit-photo-input" accept="image/*" style="display:none" onchange="onOutfitPhotoSelected(event)">
+    </div>
+    <div class="form-section">
       <div class="form-label">Reason</div>
       <div class="chip-row" id="goout-reason">
         <div class="chip goout-chip" data-val="Work" onclick="toggleChipExclusive(this,'goout-reason')">💼 Work</div>
@@ -2415,9 +2360,8 @@ function compressImage(file, maxDim = 1600, quality = 0.8) {
 }
 
 // Upload a compressed image blob to Supabase Storage and return its public URL
-async function uploadMealPhoto(blob, recordId) {
-  const session = getSession();
-  const path = `${session.user_id}/${recordId}.jpg`;
+// Upload a compressed image blob to a given path in the shared photo bucket
+async function uploadPhotoToBucket(blob, path) {
   const accessToken = await getValidAccessToken();
   const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${MEAL_PHOTO_BUCKET}/${path}`, {
     method: 'POST',
@@ -2433,8 +2377,18 @@ async function uploadMealPhoto(blob, recordId) {
   return `${SUPABASE_URL}/storage/v1/object/public/${MEAL_PHOTO_BUCKET}/${path}`;
 }
 
-// Delete a previously uploaded meal photo from Storage, given its public URL
-async function deleteMealPhoto(photoUrl) {
+async function uploadMealPhoto(blob, recordId) {
+  const session = getSession();
+  return uploadPhotoToBucket(blob, `${session.user_id}/${recordId}.jpg`);
+}
+
+async function uploadOutfitPhoto(blob, recordId) {
+  const session = getSession();
+  return uploadPhotoToBucket(blob, `${session.user_id}/outfit_${recordId}.jpg`);
+}
+
+// Delete a previously uploaded photo (meal or outfit) from Storage, given its public URL
+async function deletePhoto(photoUrl) {
   try {
     const marker = `/object/public/${MEAL_PHOTO_BUCKET}/`;
     const idx = photoUrl.indexOf(marker);
@@ -2472,6 +2426,32 @@ function clearMealPhoto() {
   document.getElementById('meal-photo-preview').style.display = 'none';
   document.getElementById('meal-photo-placeholder').style.display = 'block';
   document.getElementById('meal-photo-remove').style.display = 'none';
+}
+
+// ---- Outfit photo picker state/UI (Go Out sheet) ----
+let selectedOutfitPhotoFile = null;
+
+function onOutfitPhotoSelected(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  selectedOutfitPhotoFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.getElementById('outfit-photo-preview');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    document.getElementById('outfit-photo-placeholder').style.display = 'none';
+    document.getElementById('outfit-photo-remove').style.display = 'flex';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearOutfitPhoto() {
+  selectedOutfitPhotoFile = null;
+  document.getElementById('outfit-photo-input').value = '';
+  document.getElementById('outfit-photo-preview').style.display = 'none';
+  document.getElementById('outfit-photo-placeholder').style.display = 'block';
+  document.getElementById('outfit-photo-remove').style.display = 'none';
 }
 
 // ============================================================
@@ -2671,6 +2651,48 @@ function removeMealPhoto(id) {
   showToast('Photo removed');
 }
 
+// Same as replaceMealPhoto/removeMealPhoto above, but for outfit photos on
+// Go Out records (uses the outfit_ path in Storage via uploadOutfitPhoto).
+function replaceOutfitPhoto(id) {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = async () => {
+    const file = input.files[0];
+    if (!file) return;
+    const rec = getRecords().find(r => r.id === id);
+    if (!rec) return;
+    showToast('Uploading photo…');
+    try {
+      const oldUrl = rec.photoUrl;
+      const compressed = await compressImage(file);
+      const newUrl = await uploadOutfitPhoto(compressed, rec.id);
+      updateRecordPhoto(id, newUrl);
+      if (oldUrl && oldUrl !== newUrl) deletePhoto(oldUrl);
+      showToast('Photo updated');
+    } catch (e) {
+      console.error('Photo replace failed', e);
+      showToast('Photo upload failed');
+    }
+    renderSummary();
+    if (document.getElementById('screen-manage').style.display!=='none') renderAllRecords();
+    showDetail(id);
+  };
+  input.click();
+}
+
+function removeOutfitPhoto(id) {
+  const rec = getRecords().find(r => r.id === id);
+  if (!rec || !rec.photoUrl) return;
+  const oldUrl = rec.photoUrl;
+  updateRecordPhoto(id, null);
+  deletePhoto(oldUrl);
+  renderSummary();
+  if (document.getElementById('screen-manage').style.display!=='none') renderAllRecords();
+  showDetail(id);
+  showToast('Photo removed');
+}
+
 // ---- Sync badge in nav header ----
 function showSyncBadge(state) {
   let el = document.getElementById('sync-badge');
@@ -2726,26 +2748,6 @@ function renderSummary() {
     now.toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
 
   const records = getRecords().filter(r => r.type !== 'feel');
-  const today = records.filter(r => {
-    const d = new Date(r.timestamp);
-    const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    return ds === todayStr;
-  });
-
-  document.getElementById('stat-coffee').textContent = today.filter(r=>r.type==='coffee').length;
-  document.getElementById('stat-bowel').textContent  = today.filter(r=>r.type==='bowel').length;
-  document.getElementById('stat-shower').textContent = today.filter(r=>r.type==='shower').length;
-  document.getElementById('stat-clean').textContent  = today.filter(r=>r.type==='clean').length;
-  document.getElementById('stat-exercise').textContent = today.filter(r=>r.type==='exercise').length;
-  document.getElementById('stat-water').textContent   = today.filter(r=>r.type==='water').length;
-  document.getElementById('stat-hydration').textContent = today.filter(r=>r.type==='hydration').length;
-  document.getElementById('stat-trash').textContent   = today.filter(r=>r.type==='trash').length;
-  document.getElementById('stat-breakfast').textContent = today.filter(r=>r.type==='breakfast').length;
-  document.getElementById('stat-lunch').textContent     = today.filter(r=>r.type==='lunch').length;
-  document.getElementById('stat-dinner').textContent    = today.filter(r=>r.type==='dinner').length;
-  document.getElementById('stat-breathing').textContent = today.filter(r=>r.type==='breathing').length;
-  document.getElementById('stat-goout').textContent     = today.filter(r=>r.type==='goout').length;
-  document.getElementById('stat-family').textContent    = today.filter(r=>r.type==='family').length;
 
   renderAversionCard();
 
@@ -2929,6 +2931,7 @@ function openSheet(name) {
   if (name==='goout') {
     document.querySelectorAll('#sheet-goout .chip').forEach(c=>c.classList.remove('active'));
     document.getElementById('goout-note').value = '';
+    clearOutfitPhoto();
     setTimeNow('goout-time');
   }
   if (name==='shortvideo') {
@@ -3239,6 +3242,19 @@ async function saveRecord(type) {
     if (t) rec.timestamp = new Date(t).getTime();
     rec.reason = document.querySelector('#goout-reason .chip.active')?.dataset.val || '';
     rec.note   = document.getElementById('goout-note').value.trim();
+
+    if (selectedOutfitPhotoFile) {
+      const uploadingEl = document.getElementById('outfit-photo-uploading');
+      if (uploadingEl) uploadingEl.style.display = 'flex';
+      try {
+        const compressed = await compressImage(selectedOutfitPhotoFile);
+        rec.photoUrl = await uploadOutfitPhoto(compressed, rec.id);
+      } catch (e) {
+        console.error('Photo upload failed', e);
+        showToast('Photo upload failed — saved without photo');
+      }
+      if (uploadingEl) uploadingEl.style.display = 'none';
+    }
   }
 
   if (type==='family') {
@@ -3801,6 +3817,17 @@ function showDetail(id) {
   }
 
   if (r.type==='goout') {
+    if (r.photoUrl) {
+      html += `<img class="detail-photo" src="${r.photoUrl}" alt="">`;
+      if (isToday) {
+        html += `<div class="detail-photo-actions">
+          <button onclick="replaceOutfitPhoto('${r.id}')">Replace photo</button>
+          <button onclick="removeOutfitPhoto('${r.id}')">Remove photo</button>
+        </div>`;
+      }
+    } else if (isToday) {
+      html += `<div class="detail-photo-actions"><button onclick="replaceOutfitPhoto('${r.id}')">📷 Add photo</button></div>`;
+    }
     if (r.reason) html += `<div class="detail-field"><div class="detail-key">Reason</div><div class="detail-val">${r.reason}</div></div>`;
     if (r.note)   html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${r.note}</div></div>`;
   }
