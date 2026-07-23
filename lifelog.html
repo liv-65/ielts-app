@@ -103,14 +103,15 @@
 
   /* ===== NAV HEADER ===== */
   .nav-header {
-    background: rgba(243,245,252,0.72);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(243,245,252,0.68);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
     padding: 46px 20px 10px;
     position: sticky;
     top: 0;
     z-index: 10;
     border-bottom: 0.5px solid var(--separator);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
   }
   .nav-header h1 {
     font-family: var(--font-display);
@@ -134,10 +135,11 @@
     width: 100%;
     max-width: 430px;
     height: var(--tab-h);
-    background: rgba(246,247,253,0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(246,247,253,0.8);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
     border-top: 0.5px solid var(--separator);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
     display: flex;
     align-items: flex-start;
     padding-top: 10px;
@@ -183,6 +185,7 @@
     overflow: hidden;
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 1px 3px rgba(20,22,46,0.04);
   }
   .card-row {
     display: flex;
@@ -203,6 +206,36 @@
     border: 0.5px solid rgba(10,14,36,0.08);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+  }
+
+  /* ===== WEATHER CARD ===== */
+  .weather-card {
+    padding: 14px 16px;
+    border-radius: var(--radius);
+    background: var(--card);
+    border: 0.5px solid rgba(10,14,36,0.08);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), 0 1px 3px rgba(20,22,46,0.04);
+    margin-top: 10px;
+  }
+  .weather-main { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .weather-icon { font-size: 30px; line-height: 1; flex-shrink: 0; }
+  .weather-info { flex: 1; min-width: 0; }
+  .weather-temp { font-size: 20px; font-weight: 700; color: var(--text); line-height: 1.2; }
+  .weather-desc { font-size: 12.5px; color: var(--label); margin-top: 1px; }
+  .weather-range { font-size: 12.5px; color: var(--label); text-align: right; flex-shrink: 0; white-space: nowrap; }
+  .weather-feel-row {
+    margin-top: 10px; padding-top: 10px;
+    border-top: 0.5px solid rgba(10,14,36,0.08);
+    font-size: 13px; min-height: 18px;
+  }
+  .weather-feel-placeholder { color: var(--label); cursor: pointer; }
+  .weather-feel-text { color: var(--text); cursor: pointer; }
+  .weather-feel-input {
+    width: 100%; border: none; background: transparent;
+    font-size: 13px; color: var(--text); outline: none; font-family: inherit; padding: 0;
   }
 
   /* ===== MEAL PHOTO PICKER ===== */
@@ -212,7 +245,10 @@
     aspect-ratio: 4/3;
     border-radius: var(--radius);
     border: 1.5px dashed rgba(10,14,36,0.18);
-    background: rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.35);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -226,27 +262,35 @@
   .meal-photo-remove {
     position: absolute; top: 8px; right: 8px;
     width: 28px; height: 28px; border-radius: 50%;
-    background: rgba(20,22,46,0.55);
+    background: rgba(20,22,46,0.45);
     color: #fff; display: none; align-items: center; justify-content: center;
-    font-size: 14px; backdrop-filter: blur(6px);
+    font-size: 14px; backdrop-filter: blur(8px) saturate(160%); -webkit-backdrop-filter: blur(8px) saturate(160%);
+    border: 0.5px solid rgba(255,255,255,0.25);
   }
   .meal-photo-uploading {
     position: absolute; inset: 0; display: none;
     align-items: center; justify-content: center;
-    background: rgba(20,22,46,0.4); color: #fff; font-size: 13px;
+    background: rgba(20,22,46,0.35);
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    color: #fff; font-size: 13px;
   }
   .record-photo-thumb {
     width: 44px; height: 44px; border-radius: 10px; object-fit: cover;
     flex-shrink: 0;
+    box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.4);
   }
   .detail-photo {
     width: 100%; border-radius: var(--radius); margin-bottom: 14px; display: block;
     max-height: 340px; object-fit: cover;
+    box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.4), 0 4px 16px rgba(20,22,46,0.1);
   }
   .detail-photo-actions { display:flex; gap:8px; margin-bottom: 18px; }
   .detail-photo-actions button {
-    flex: 1; padding: 10px; border-radius: 10px; border: 0.5px solid rgba(10,14,36,0.12);
-    background: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600; color: var(--text2);
+    flex: 1; padding: 10px; border-radius: 10px; border: 0.5px solid rgba(10,14,36,0.1);
+    background: rgba(255,255,255,0.4);
+    backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+    font-size: 13px; font-weight: 600; color: var(--text2);
   }
 
   /* ===== QUICK RECORD BUTTONS ===== */
@@ -512,6 +556,7 @@
   .record-icon.shortvideo { background: rgba(255,107,74,.16); }
   .record-icon.family    { background: rgba(255,194,75,.16); }
   .record-icon.resist     { background: rgba(47,230,165,.16); }
+  .record-icon.feel       { background: rgba(255,214,138,.18); }
   .record-info { flex: 1; min-width: 0; }
   .record-title { font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .record-time  { font-size: 12px; color: var(--label); margin-top: 1px; }
@@ -620,7 +665,9 @@
   /* ===== HALF-SHEET DRAWER ===== */
   .overlay {
     position: fixed; inset: 0;
-    background: rgba(0,0,0,.45);
+    background: rgba(16,18,40,.38);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
     z-index: 200;
     opacity: 0;
     pointer-events: none;
@@ -632,7 +679,11 @@
     position: fixed;
     bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
     width: 100%; max-width: 430px;
-    background: #FBFCFF;
+    background: rgba(248,250,255,0.78);
+    backdrop-filter: blur(28px) saturate(160%);
+    -webkit-backdrop-filter: blur(28px) saturate(160%);
+    border-top: 1px solid rgba(255,255,255,0.65);
+    box-shadow: 0 -12px 40px rgba(20,22,46,0.14), inset 0 1px 0 rgba(255,255,255,0.5);
     border-radius: 20px 20px 0 0;
     z-index: 201;
     transition: transform .32s cubic-bezier(.32,1,.5,1);
@@ -792,6 +843,7 @@
     cursor: pointer;
     margin-top: 20px;
     transition: opacity .15s;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 6px 16px rgba(20,22,46,0.16);
   }
   .save-btn:active { opacity: .75; }
 
@@ -1066,11 +1118,12 @@
   }
   .login-card {
     width: 100%; max-width: 340px;
-    background: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.55);
     border: 0.5px solid rgba(10,14,36,0.08);
     border-radius: 20px;
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 12px 40px rgba(20,22,46,0.12);
     padding: 28px 24px;
   }
   .login-title {
@@ -1083,7 +1136,9 @@
   .login-card input {
     width: 100%; padding: 13px 14px; margin-bottom: 10px;
     border-radius: 12px; border: 0.5px solid rgba(10,14,36,0.12);
-    background: rgba(255,255,255,0.7); font-size: 15px; color: var(--text);
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    font-size: 15px; color: var(--text);
   }
   .login-card input:focus { outline: none; border-color: var(--blue); }
   .login-error {
@@ -1121,6 +1176,22 @@
         </div>
       </div>
       <div class="nav-sub" id="today-label"></div>
+    </div>
+
+    <div class="section" style="margin-top:0">
+      <div class="weather-card" id="weather-card">
+        <div class="weather-main" onclick="loadWeather(true)">
+          <div class="weather-icon" id="weather-icon">⛅</div>
+          <div class="weather-info">
+            <div class="weather-temp" id="weather-temp">--°</div>
+            <div class="weather-desc" id="weather-desc">Tap to get today's weather</div>
+          </div>
+          <div class="weather-range" id="weather-range"></div>
+        </div>
+        <div class="weather-feel-row" id="weather-feel-row">
+          <span id="weather-feel-text" class="weather-feel-placeholder" onclick="startEditWeatherFeel()">+ Add how it feels</span>
+        </div>
+      </div>
     </div>
 
     <div class="section" style="margin-top:10px">
@@ -2143,19 +2214,6 @@
   <div class="sheet-body" id="day-detail-body"></div>
 </div>
 
-<!-- ====== DAILY REMINDER SHEET ====== -->
-<div class="sheet" id="sheet-reminder">
-  <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <div class="sheet-title">💡 Today's Check-in</div>
-    <div class="sheet-close" onclick="closeSheet()">Got it</div>
-  </div>
-  <div class="sheet-body" id="reminder-body"></div>
-  <div style="padding:0 20px 20px">
-    <button class="save-btn" onclick="closeSheet(); switchTab('chart')">View charts</button>
-  </div>
-</div>
-
 <!-- ====== TOAST ====== -->
 <div class="toast" id="toast"></div>
 
@@ -2667,7 +2725,7 @@ function renderSummary() {
   document.getElementById('today-label').textContent =
     now.toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
 
-  const records = getRecords();
+  const records = getRecords().filter(r => r.type !== 'feel');
   const today = records.filter(r => {
     const d = new Date(r.timestamp);
     const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -2716,7 +2774,7 @@ function recordIconHtml(r) {
 }
 
 function typeIcon(t) {
-  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'🪣':t==='hydration'?'💧':t==='trash'?'🗑️':t==='breakfast'?'🍳':t==='lunch'?'🍱':t==='dinner'?'🍜':t==='breathing'?'🌬️':t==='goout'?'🚪':t==='shortvideo'?'📱':t==='resist'?'✊':t==='family'?'👪':'🧹';
+  return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'🪣':t==='hydration'?'💧':t==='trash'?'🗑️':t==='breakfast'?'🍳':t==='lunch'?'🍱':t==='dinner'?'🍜':t==='breathing'?'🌬️':t==='goout'?'🚪':t==='shortvideo'?'📱':t==='resist'?'✊':t==='family'?'👪':t==='feel'?'🌡️':'🧹';
 }
 
 function recordTitle(r) {
@@ -2799,6 +2857,7 @@ function recordTitle(r) {
     if (r.note) parts.push(r.note);
     return parts.join(' · ') || '家人到来';
   }
+  if (r.type==='feel') return r.note || 'How today feels';
   return 'Record';
 }
 
@@ -2894,7 +2953,7 @@ function closeSheet() {
   }
   stopBreathingSession();
   // also close detail, export, import
-  ['detail','day-detail','export','import','shower','clean','exercise','water','hydration','trash','meal','breathing','goout','shortvideo','reminder'].forEach(n => {
+  ['detail','day-detail','export','import','shower','clean','exercise','water','hydration','trash','meal','breathing','goout','shortvideo'].forEach(n => {
     const el = document.getElementById('sheet-'+n);
     if (el) el.classList.remove('visible');
   });
@@ -3823,7 +3882,7 @@ function deleteFromDetail(id) {
 // ============================================================
 function renderAllRecords() {
   const list = document.getElementById('all-records-list');
-  const records = getRecords();
+  const records = getRecords().filter(r => r.type !== 'feel');
   if (!records.length) {
     list.innerHTML = `<div class="empty-state"><div class="empty-icon">📂</div><p>No records yet</p></div>`;
     return;
@@ -4271,6 +4330,32 @@ function showDayDetail(year, month, day) {
   const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   document.getElementById('day-detail-title').textContent = `${monthNames[month]} ${day}, ${year}`;
 
+  // Weather/feel record for this day, if one was saved
+  const feelRec = records.find(r => {
+    if (r.type !== 'feel') return false;
+    const d = new Date(r.timestamp);
+    return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
+  });
+  let weatherRow = '';
+  if (feelRec) {
+    const hasWeather = feelRec.code !== undefined && feelRec.temp !== undefined;
+    const [icon, desc] = hasWeather ? weatherMeta(feelRec.code) : ['🌡️', ''];
+    const rangeText = (feelRec.tmax != null && feelRec.tmin != null) ? `H:${Math.round(feelRec.tmax)}° L:${Math.round(feelRec.tmin)}°` : '';
+    weatherRow = `
+      <div class="weather-card" style="margin-top:0;margin-bottom:14px;">
+        ${hasWeather ? `
+        <div class="weather-main" style="cursor:default;">
+          <div class="weather-icon">${icon}</div>
+          <div class="weather-info">
+            <div class="weather-temp">${Math.round(feelRec.temp)}°</div>
+            <div class="weather-desc">${desc}</div>
+          </div>
+          <div class="weather-range">${rangeText}</div>
+        </div>` : ''}
+        ${feelRec.note ? `<div class="weather-feel-row" style="${hasWeather ? '' : 'margin-top:0;padding-top:0;border-top:none;'}"><span class="weather-feel-text">${feelRec.note}</span></div>` : ''}
+      </div>`;
+  }
+
   const rows = lifeTypes
     .filter(t => counts[t] > 0)
     .map(t => `
@@ -4283,7 +4368,7 @@ function showDayDetail(year, month, day) {
       </div>
     `).join('');
 
-  document.getElementById('day-detail-body').innerHTML = rows || `<div style="padding:16px 0;color:var(--label);font-size:13px;">No records</div>`;
+  document.getElementById('day-detail-body').innerHTML = weatherRow + (rows || `<div style="padding:16px 0;color:var(--label);font-size:13px;">No records</div>`);
 
   currentSheet = 'day-detail';
   document.getElementById('sheet-day-detail').classList.add('visible');
@@ -5026,68 +5111,194 @@ function computeLifestyleInsights() {
 }
 
 // ============================================================
-// DAILY REMINDER (shown once/day on the Summary tab)
+// WEATHER (Open-Meteo — free, no API key needed)
 // ============================================================
-const REMINDER_SHOWN_KEY = 'lifelog_reminder_shown_date';
+const WEATHER_LOC_KEY = 'lifelog_weather_loc_v1';
+const WEATHER_CACHE_KEY = 'lifelog_weather_cache_v1';
 
-function todayKey() {
+// WMO weather codes -> emoji + short description
+// https://open-meteo.com/en/docs (weather_code table)
+function weatherMeta(code) {
+  const map = {
+    0:  ['☀️', 'Clear sky'],
+    1:  ['🌤️', 'Mostly clear'],
+    2:  ['⛅', 'Partly cloudy'],
+    3:  ['☁️', 'Overcast'],
+    45: ['🌫️', 'Fog'],
+    48: ['🌫️', 'Fog'],
+    51: ['🌦️', 'Light drizzle'],
+    53: ['🌦️', 'Drizzle'],
+    55: ['🌦️', 'Dense drizzle'],
+    56: ['🌧️', 'Freezing drizzle'],
+    57: ['🌧️', 'Freezing drizzle'],
+    61: ['🌧️', 'Light rain'],
+    63: ['🌧️', 'Rain'],
+    65: ['🌧️', 'Heavy rain'],
+    66: ['🌧️', 'Freezing rain'],
+    67: ['🌧️', 'Freezing rain'],
+    71: ['🌨️', 'Light snow'],
+    73: ['🌨️', 'Snow'],
+    75: ['❄️', 'Heavy snow'],
+    77: ['❄️', 'Snow grains'],
+    80: ['🌦️', 'Rain showers'],
+    81: ['🌧️', 'Rain showers'],
+    82: ['⛈️', 'Violent showers'],
+    85: ['🌨️', 'Snow showers'],
+    86: ['❄️', 'Snow showers'],
+    95: ['⛈️', 'Thunderstorm'],
+    96: ['⛈️', 'Thunderstorm + hail'],
+    99: ['⛈️', 'Thunderstorm + hail'],
+  };
+  return map[code] || ['🌡️', 'Weather'];
+}
+
+function getSavedLocation() {
+  try { return JSON.parse(localStorage.getItem(WEATHER_LOC_KEY) || 'null'); }
+  catch(e) { return null; }
+}
+
+function requestLocation() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) { reject(new Error('Geolocation not supported')); return; }
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+      err => reject(err),
+      { timeout: 10000, maximumAge: 3600000 }
+    );
+  });
+}
+
+function renderWeather(data) {
+  const [icon, desc] = weatherMeta(data.code);
+  document.getElementById('weather-icon').textContent = icon;
+  document.getElementById('weather-temp').textContent = `${Math.round(data.temp)}°`;
+  document.getElementById('weather-desc').textContent = desc;
+  document.getElementById('weather-range').textContent =
+    (data.tmax != null && data.tmin != null) ? `H:${Math.round(data.tmax)}° L:${Math.round(data.tmin)}°` : '';
+}
+
+function renderWeatherMessage(msg) {
+  document.getElementById('weather-icon').textContent = '📍';
+  document.getElementById('weather-temp').textContent = '';
+  document.getElementById('weather-desc').textContent = msg;
+  document.getElementById('weather-range').textContent = '';
+}
+
+// Loads today's weather. Uses a cached result (keyed by day) unless
+// forceRefresh is passed (e.g. the person taps the weather card).
+async function loadWeather(forceRefresh = false) {
+  try {
+    const cacheRaw = localStorage.getItem(WEATHER_CACHE_KEY);
+    const cache = cacheRaw ? JSON.parse(cacheRaw) : null;
+    const today = todayKeyLocal();
+    if (!forceRefresh && cache && cache.date === today) {
+      renderWeather(cache.data);
+      return;
+    }
+
+    let loc = getSavedLocation();
+    if (!loc || forceRefresh) {
+      renderWeatherMessage('Locating…');
+      try {
+        loc = await requestLocation();
+        localStorage.setItem(WEATHER_LOC_KEY, JSON.stringify(loc));
+      } catch(e) {
+        if (!loc) { renderWeatherMessage('Tap to allow location for weather'); return; }
+        // fall back to previously saved location if a refresh's geolocation call fails
+      }
+    }
+
+    renderWeatherMessage('Loading weather…');
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto&temperature_unit=celsius`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Weather request failed');
+    const json = await res.json();
+    const data = {
+      temp: json.current.temperature_2m,
+      code: json.current.weather_code,
+      tmax: json.daily?.temperature_2m_max?.[0],
+      tmin: json.daily?.temperature_2m_min?.[0]
+    };
+    localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ date: today, data }));
+    upsertTodayFeelRecord({ temp: data.temp, code: data.code, tmax: data.tmax, tmin: data.tmin });
+    renderWeather(data);
+  } catch(e) {
+    console.error('Weather fetch failed', e);
+    renderWeatherMessage('Weather unavailable — tap to retry');
+  }
+}
+
+function todayKeyLocal() {
   const d = new Date();
   const pad = n => String(n).padStart(2,'0');
   return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 }
 
-function maybeShowDailyReminder() {
-  try {
-    if (localStorage.getItem(REMINDER_SHOWN_KEY) === todayKey()) return;
+// ---- Custom "how it feels" note, one per day, attached to the weather card ----
+function getTodayFeelRecord() {
+  const now = Date.now();
+  return getRecords().find(r => r.type === 'feel' && isSameLocalDay(r.timestamp, now));
+}
 
-    const bowelCards = computeBowelInsights();
-    const lifeCards = computeLifestyleInsights();
-    const all = [...bowelCards, ...lifeCards];
-
-    const priority = { warn: 0, watch: 1, tip: 2, good: 3 };
-    const actionable = all.filter(i => i.level !== 'good').sort((a, b) => priority[a.level] - priority[b.level]);
-
-    let items;
-    if (actionable.length) {
-      // Something worth flagging — lead with the most important issues
-      items = actionable.slice(0, 2);
-    } else {
-      // Nothing to flag — brag on the person a little
-      const goodOnes = all.filter(i => i.level === 'good');
-      items = [praiseBanner(goodOnes), ...goodOnes.slice(0, 2)];
-    }
-
-    showReminderSheet(items);
-    localStorage.setItem(REMINDER_SHOWN_KEY, todayKey());
-  } catch(e) {
-    console.error('Reminder check failed', e);
+// Merges `patch` fields (weather data and/or a note) into today's single
+// 'feel' record, creating it if it doesn't exist yet. Used both by the
+// weather fetch (temp/code/tmax/tmin) and by the manual note editor, so
+// the two never stomp on each other's fields.
+function upsertTodayFeelRecord(patch) {
+  const rec = getTodayFeelRecord();
+  if (rec) {
+    const data = loadData();
+    const target = data.records.find(r => r.id === rec.id);
+    if (target) { Object.assign(target, patch); saveData(data); pushToCloud(target); }
+  } else {
+    addRecord({ id: genId(), type: 'feel', timestamp: Date.now(), ...patch });
   }
 }
 
-function praiseBanner(goodOnes) {
-  const headlines = [
-    "Great numbers today! 🎉",
-    "You're on a roll! ✨",
-    "Solid week — nicely done! 👏",
-    "Your habits are paying off 💪",
-    "Look at you, staying consistent! 🌟",
-    "Textbook week, honestly 😌"
-  ];
-  const headline = headlines[Math.floor(Math.random() * headlines.length)];
-  const text = goodOnes.length
-    ? `Nothing to flag this week — ${goodOnes.length} healthy pattern${goodOnes.length > 1 ? 's' : ''} spotted below. Whatever you're doing, keep doing it.`
-    : `No red flags in your recent logs. Keep those habits going!`;
-  return { level: 'good', icon: '🎉', title: headline, text, tag: 'Nice work' };
+function renderWeatherFeel() {
+  const el = document.getElementById('weather-feel-text');
+  if (!el) return;
+  const rec = getTodayFeelRecord();
+  if (rec && rec.note) {
+    el.textContent = rec.note;
+    el.className = 'weather-feel-text';
+  } else {
+    el.textContent = '+ Add how it feels';
+    el.className = 'weather-feel-placeholder';
+  }
 }
 
-function showReminderSheet(items) {
-  const body = document.getElementById('reminder-body');
-  if (!body) return;
-  body.innerHTML = items.map(i => insightCard(i.level, i.icon, i.title, i.text, i.tag)).join('');
-  currentSheet = 'reminder';
-  document.getElementById('sheet-reminder').classList.add('visible');
-  document.getElementById('overlay').classList.add('visible');
-  document.body.style.overflow = 'hidden';
+function startEditWeatherFeel() {
+  const row = document.getElementById('weather-feel-row');
+  const rec = getTodayFeelRecord();
+  const current = rec && rec.note ? rec.note : '';
+  row.innerHTML = `<input type="text" id="weather-feel-input" class="weather-feel-input" placeholder="How does today feel?">`;
+  const input = document.getElementById('weather-feel-input');
+  input.value = current;
+  input.focus();
+  input.select();
+  input.addEventListener('blur', () => saveWeatherFeel(input.value.trim()));
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') input.blur(); });
+}
+
+function saveWeatherFeel(text) {
+  const rec = getTodayFeelRecord();
+  if (text) {
+    upsertTodayFeelRecord({ note: text });
+  } else if (rec) {
+    // Clearing the note: if the record has no weather data either, delete it outright;
+    // otherwise just drop the note text and keep the weather data.
+    if (rec.temp === undefined) {
+      deleteRecord(rec.id);
+    } else {
+      const data = loadData();
+      const target = data.records.find(r => r.id === rec.id);
+      if (target) { delete target.note; saveData(data); pushToCloud(target); }
+    }
+  }
+  const row = document.getElementById('weather-feel-row');
+  row.innerHTML = `<span id="weather-feel-text" onclick="startEditWeatherFeel()"></span>`;
+  renderWeatherFeel();
 }
 
 // ============================================================
@@ -5113,6 +5324,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // only after a signed-in session is confirmed (see enterApp / checkSessionOnLoad above).
 function initApp() {
   renderSummary();
+  loadWeather();
+  renderWeatherFeel();
   setTimeNow('bowel-time');
   setTimeNow('shower-time');
   setTimeNow('clean-time');
@@ -5122,10 +5335,7 @@ function initApp() {
   updateMealTypeUI();
 
   // Cloud sync on startup
-  syncFromCloud().then(() => {
-    // Show today's reminder (once/day) after data is up to date
-    setTimeout(maybeShowDailyReminder, 400);
-  });
+  syncFromCloud().then(renderWeatherFeel);
   renderForestStats(); // paint from cache immediately, then refresh from cloud
   syncForestTrees();
 
