@@ -736,7 +736,7 @@
     backdrop-filter: blur(28px) saturate(160%);
     -webkit-backdrop-filter: blur(28px) saturate(160%);
     border-top: 1px solid rgba(255,255,255,0.65);
-    box-shadow: 0 -12px 40px rgba(89,63,26,0.14), inset 0 1px 0 rgba(255,255,255,0.5);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
     border-radius: 20px 20px 0 0;
     z-index: 201;
     transition: transform .32s cubic-bezier(.32,1,.5,1);
@@ -745,7 +745,14 @@
     flex-direction: column;
     padding-bottom: var(--safe-bottom);
   }
-  .sheet.visible { transform: translateX(-50%) translateY(0); }
+  /* The outward drop-shadow only applies once the sheet is actually on
+     screen — otherwise (position: fixed + a big negative-offset shadow)
+     it bleeds upward past the sheet's own off-screen bounds and shows up
+     as a dark smear hovering over the tab bar even while "closed". */
+  .sheet.visible {
+    transform: translateX(-50%) translateY(0);
+    box-shadow: 0 -12px 40px rgba(89,63,26,0.14), inset 0 1px 0 rgba(255,255,255,0.5);
+  }
 
   .sheet-handle {
     width: 36px; height: 4px;
@@ -1204,6 +1211,18 @@
   }
   .logout-btn:active { opacity: .6; }
 </style>
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline';
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src https://fonts.gstatic.com;
+  img-src 'self' data: blob: https://olndbldkugwjyfmhvdqr.supabase.co https://qhxodrovsruyqpwjbxqx.supabase.co;
+  connect-src 'self' https://olndbldkugwjyfmhvdqr.supabase.co https://qhxodrovsruyqpwjbxqx.supabase.co https://api.open-meteo.com https://openrouter.ai;
+  base-uri 'self';
+  form-action 'self';
+  frame-ancestors 'none';
+  object-src 'none';
+">
 </head>
 <body>
 <!-- ====== LOGIN GATE ====== -->
@@ -3092,7 +3111,7 @@ function renderSummary() {
     <div class="card-row" onclick="showDetail('${r.id}')">
       ${recordIconHtml(r)}
       <div class="record-info">
-        <div class="record-title">${recordTitle(r)}</div>
+        <div class="record-title">${escapeHtml(recordTitle(r))}</div>
         <div class="record-time">${formatTs(r.timestamp)}</div>
       </div>
       <div class="record-chevron">›</div>
@@ -3109,6 +3128,24 @@ function typeIcon(t) {
   return t==='coffee'?'☕':t==='bowel'?'💩':t==='shower'?'🚿':t==='exercise'?'🏃':t==='water'?'🪣':t==='hydration'?'💧':t==='trash'?'🗑️':t==='breakfast'?'🍳':t==='lunch'?'🍱':t==='dinner'?'🍜':t==='breathing'?'🌬️':t==='goout'?'🚪':t==='shortvideo'?'📱':t==='resist'?'✊':t==='family'?'👪':t==='feel'?'🌡️':'🧹';
 }
 
+// Escapes HTML-significant characters so free-typed text (notes, food,
+// custom fields, etc.) can never be interpreted as markup/script when it's
+// inserted into innerHTML. Always run user-entered text through this
+// before it goes into a template string that gets assigned to innerHTML.
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// recordTitle() builds a human-readable one-line summary for a record,
+// mixing in free-typed fields (note/food/kind). It's used both as plain
+// text (textContent, AI digest) and as HTML (innerHTML) — callers that
+// insert it into innerHTML must wrap it with escapeHtml() themselves.
 function recordTitle(r) {
   if (r.type==='coffee') {
     const parts = [];
@@ -4099,7 +4136,7 @@ function showDetail(id) {
   if (r.type==='clean') {
     if (r.areas?.length)   html += `<div class="detail-field"><div class="detail-key">Area</div><div class="detail-val">${r.areas.join('、')}</div></div>`;
     if (r.methods?.length) html += `<div class="detail-field"><div class="detail-key">Method</div><div class="detail-val">${r.methods.join('、')}</div></div>`;
-    if (r.note)            html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${r.note}</div></div>`;
+    if (r.note)            html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${escapeHtml(r.note)}</div></div>`;
   }
 
   if (r.type==='shower') {
@@ -4110,18 +4147,18 @@ function showDetail(id) {
     if (r.exerciseType) html += `<div class="detail-field"><div class="detail-key">Type</div><div class="detail-val">${r.exerciseType}</div></div>`;
     if (r.duration)     html += `<div class="detail-field"><div class="detail-key">Duration</div><div class="detail-val">${r.duration} min</div></div>`;
     if (r.intensity)    html += `<div class="detail-field"><div class="detail-key">Intensity</div><div class="detail-val">${r.intensity}</div></div>`;
-    if (r.note)         html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${r.note}</div></div>`;
+    if (r.note)         html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${escapeHtml(r.note)}</div></div>`;
   }
 
   if (r.type==='water' || r.type==='hydration') {
-    if (r.kind)   html += `<div class="detail-field"><div class="detail-key">Drink</div><div class="detail-val">${r.kind}</div></div>`;
+    if (r.kind)   html += `<div class="detail-field"><div class="detail-key">Drink</div><div class="detail-val">${escapeHtml(r.kind)}</div></div>`;
     if (r.volume) html += `<div class="detail-field"><div class="detail-key">Volume</div><div class="detail-val">${r.volume}</div></div>`;
   }
 
   if (r.type==='trash') {
     if (r.trashTypes?.length) html += `<div class="detail-field"><div class="detail-key">Type</div><div class="detail-val">${r.trashTypes.join('、')}</div></div>`;
     if (r.bags)  html += `<div class="detail-field"><div class="detail-key">Count</div><div class="detail-val">${r.bags} bags</div></div>`;
-    if (r.note)  html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${r.note}</div></div>`;
+    if (r.note)  html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${escapeHtml(r.note)}</div></div>`;
   }
 
   if (r.type==='breakfast' || r.type==='lunch' || r.type==='dinner') {
@@ -4136,14 +4173,14 @@ function showDetail(id) {
     } else if (isToday) {
       html += `<div class="detail-photo-actions"><button onclick="replaceMealPhoto('${r.id}')">📷 Add photo</button></div>`;
     }
-    if (r.food)        html += `<div class="detail-field"><div class="detail-key">What did you eat</div><div class="detail-val">${r.food}</div></div>`;
-    if (r.tags?.length) html += `<div class="detail-field"><div class="detail-key">Tags</div><div class="detail-val">${r.tags.join('、')}</div></div>`;
+    if (r.food)        html += `<div class="detail-field"><div class="detail-key">What did you eat</div><div class="detail-val">${escapeHtml(r.food)}</div></div>`;
+    if (r.tags?.length) html += `<div class="detail-field"><div class="detail-key">Tags</div><div class="detail-val">${escapeHtml(r.tags.join('、'))}</div></div>`;
   }
 
   if (r.type==='breathing') {
-    if (r.rounds)  html += `<div class="detail-field"><div class="detail-key">Rounds</div><div class="detail-val">${r.rounds}</div></div>`;
-    if (r.feeling) html += `<div class="detail-field"><div class="detail-key">Feeling</div><div class="detail-val">${r.feeling}</div></div>`;
-    if (r.note)    html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${r.note}</div></div>`;
+    if (r.rounds)  html += `<div class="detail-field"><div class="detail-key">Rounds</div><div class="detail-val">${escapeHtml(r.rounds)}</div></div>`;
+    if (r.feeling) html += `<div class="detail-field"><div class="detail-key">Feeling</div><div class="detail-val">${escapeHtml(r.feeling)}</div></div>`;
+    if (r.note)    html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${escapeHtml(r.note)}</div></div>`;
   }
 
   if (r.type==='goout') {
@@ -4158,15 +4195,15 @@ function showDetail(id) {
     } else if (isToday) {
       html += `<div class="detail-photo-actions"><button onclick="replaceOutfitPhoto('${r.id}')">📷 Add photo</button></div>`;
     }
-    if (r.reason) html += `<div class="detail-field"><div class="detail-key">Reason</div><div class="detail-val">${r.reason}</div></div>`;
-    if (r.note)   html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${r.note}</div></div>`;
+    if (r.reason) html += `<div class="detail-field"><div class="detail-key">Reason</div><div class="detail-val">${escapeHtml(r.reason)}</div></div>`;
+    if (r.note)   html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${escapeHtml(r.note)}</div></div>`;
   }
 
   if (r.type==='shortvideo') {
     if (r.duration) html += `<div class="detail-field"><div class="detail-key">时长</div><div class="detail-val">${r.duration} 分钟</div></div>`;
     if (typeof r.delta === 'number') html += `<div class="detail-field"><div class="detail-key">厌恶值变化</div><div class="detail-val">+${r.delta}</div></div>`;
     if (r.intensity) html += `<div class="detail-field"><div class="detail-key">净化任务</div><div class="detail-val">${r.intensity}</div></div>`;
-    if (r.note) html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${r.note}</div></div>`;
+    if (r.note) html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${escapeHtml(r.note)}</div></div>`;
   }
 
   if (r.type==='resist') {
@@ -4174,8 +4211,8 @@ function showDetail(id) {
   }
 
   if (r.type==='family') {
-    if (r.kind) html += `<div class="detail-field"><div class="detail-key">方式</div><div class="detail-val">${r.kind === 'Phone call' ? '打电话' : r.kind === 'Visit' ? '到家里来' : r.kind}</div></div>`;
-    if (r.note) html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${r.note}</div></div>`;
+    if (r.kind) html += `<div class="detail-field"><div class="detail-key">方式</div><div class="detail-val">${escapeHtml(r.kind === 'Phone call' ? '打电话' : r.kind === 'Visit' ? '到家里来' : r.kind)}</div></div>`;
+    if (r.note) html += `<div class="detail-field"><div class="detail-key">Note</div><div class="detail-val">${escapeHtml(r.note)}</div></div>`;
   }
 
   if (isToday) {
@@ -4248,7 +4285,7 @@ function renderAllRecords() {
     <div class="card-row" onclick="showDetail('${r.id}')">
       ${recordIconHtml(r)}
       <div class="record-info">
-        <div class="record-title">${recordTitle(r)}</div>
+        <div class="record-title">${escapeHtml(recordTitle(r))}</div>
         <div class="record-time">${formatTs(r.timestamp)}</div>
       </div>
       <div class="record-chevron">›</div>
@@ -4333,7 +4370,7 @@ function parseImport() {
   toAdd.slice(0,20).forEach(r => {
     html += `<div class="conflict-row new">
       <div class="conflict-badge new">New</div>
-      <div class="conflict-desc">${typeIcon(r.type)} ${recordTitle(r)} · ${formatTs(r.timestamp)}</div>
+      <div class="conflict-desc">${typeIcon(r.type)} ${escapeHtml(recordTitle(r))} · ${formatTs(r.timestamp)}</div>
     </div>`;
   });
   if (toAdd.length > 20) html += `<div style="color:var(--label);font-size:13px;padding:4px 4px 8px">…and ${toAdd.length-20} more new</div>`;
@@ -4341,7 +4378,7 @@ function parseImport() {
   toUpdate.slice(0,10).forEach(r => {
     html += `<div class="conflict-row update">
       <div class="conflict-badge update">Conflict</div>
-      <div class="conflict-desc">${typeIcon(r.type)} ${recordTitle(r)} · ${formatTs(r.timestamp)}</div>
+      <div class="conflict-desc">${typeIcon(r.type)} ${escapeHtml(recordTitle(r))} · ${formatTs(r.timestamp)}</div>
     </div>`;
   });
   if (toUpdate.length > 10) html += `<div style="color:var(--label);font-size:13px;padding:4px 4px 8px">…and ${toUpdate.length-10} more conflicting</div>`;
@@ -4814,7 +4851,7 @@ function showDayDetail(year, month, day) {
           </div>
           <div class="weather-range">${rangeText}</div>
         </div>` : ''}
-        ${feelRec.note ? `<div class="weather-feel-row" style="${hasWeather ? '' : 'margin-top:0;padding-top:0;border-top:none;'}"><span class="weather-feel-text">${feelRec.note}</span></div>` : ''}
+        ${feelRec.note ? `<div class="weather-feel-row" style="${hasWeather ? '' : 'margin-top:0;padding-top:0;border-top:none;'}"><span class="weather-feel-text">${escapeHtml(feelRec.note)}</span></div>` : ''}
       </div>`;
   }
 
